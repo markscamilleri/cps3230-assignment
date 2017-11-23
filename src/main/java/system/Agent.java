@@ -4,12 +4,13 @@ public class Agent {
 
     public String id;
     public String name;
+    public Supervisor supervisor;
 
     /**
      * Initiates contact with a supervisor to get a login key and subsequently logs into the system.
      */
     public boolean login() {
-        return false;
+        final String loginKey = supervisor.getLoginKey(id);
     }
 
     /**
@@ -18,4 +19,6 @@ public class Agent {
     public boolean sendMessage(final String destinationAgentId, final String message) {
         return false;
     }
+    
+    
 }
