@@ -36,6 +36,7 @@ public class AgentTest {
     @After
     public void tearDown() throws Exception {
         mockSupervisor = null;
+        mockMessagingSystem = null;
     }
 
     @Test
