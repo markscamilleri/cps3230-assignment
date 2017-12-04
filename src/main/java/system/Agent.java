@@ -10,7 +10,8 @@ public class Agent {
      * Initiates contact with a supervisor to get a login key and subsequently logs into the system.
      */
     public boolean login() {
-        final String loginKey = supervisor.getLoginKey(id);
+        //final String loginKey = supervisor.getLoginKey(id);
+        return false;
     }
 
     /**
