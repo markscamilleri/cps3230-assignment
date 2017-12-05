@@ -2,6 +2,15 @@ package system;
 
 public class MessagingSystem {
 
+    private static final MessagingSystem INSTANCE = new MessagingSystem();
+
+    private MessagingSystem() {
+    }
+
+    public static MessagingSystem getInstance() {
+        return INSTANCE;
+    }
+
     /**
      * Takes a login key and agentId such that when an agent with that Id
      * tries to login she will only be allowed access if the key also matches.
