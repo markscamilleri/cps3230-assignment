@@ -9,14 +9,19 @@ public class Agent {
     public String name;
     public Supervisor supervisor;
 
+    private String sessionKey = null;
+
     /**
      * Initiates contact with a supervisor to get a login key and subsequently logs into the system.
      *
      * @return true if login successful, false otherwise.
      */
     public boolean login() {
-        //final String loginKey = supervisor.getLoginKey(id);
-        return false;
+
+        final String loginKey = supervisor.getLoginKey(id);
+        sessionKey = MessagingSystem.getInstance().login(id, loginKey);
+
+        return sessionKey != null;
     }
 
     /**
@@ -27,8 +32,12 @@ public class Agent {
      * @return true if successful, false otherwise.
      */
     public boolean sendMessage(final String destinationAgentId, final String message) {
-        return false;
+
+        if (sessionKey == null) {
+            return false;
+        } else {
+            final String temp = MessagingSystem.getInstance().sendMessage(sessionKey, id, destinationAgentId, message);
+            return temp.equals(MessagingSystem.OK);
+        }
     }
-    
-    
 }
