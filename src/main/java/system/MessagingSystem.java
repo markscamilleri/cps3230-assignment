@@ -18,11 +18,11 @@ public class MessagingSystem {
      * This method also checks that the login key is exactly 10 characters long
      * and that the key is unique.
      *
-     * @param loginKey The login key.
      * @param agentId The agent ID.
+     * @param loginKey The login key.
      * @return true if the checks on the key succeed and the (agent,key) pair has been stored.
      */
-    public boolean registerLoginKey(String loginKey, String agentId) {
+    public boolean registerLoginKey(String agentId, String loginKey) {
         return false;
     }
 
