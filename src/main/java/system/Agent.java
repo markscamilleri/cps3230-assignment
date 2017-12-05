@@ -9,7 +9,7 @@ public class Agent {
     public String name;
     public Supervisor supervisor;
 
-    private String sessionKey = null;
+    protected String sessionKey = null;
 
     /**
      * Initiates contact with a supervisor to get a login key and subsequently logs into the system.
