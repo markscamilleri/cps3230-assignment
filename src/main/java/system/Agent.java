@@ -19,8 +19,11 @@ public class Agent {
     public boolean login() {
 
         final String loginKey = supervisor.getLoginKey(id);
-        sessionKey = MessagingSystem.getInstance().login(id, loginKey);
+        if (loginKey == null) {
+            return false;
+        }
 
+        sessionKey = MessagingSystem.getInstance().login(id, loginKey);
         return sessionKey != null;
     }
 
