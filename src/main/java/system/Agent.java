@@ -37,7 +37,7 @@ public class Agent {
             return false;
         } else {
             final String temp = MessagingSystem.getInstance().sendMessage(sessionKey, id, destinationAgentId, message);
-            return temp.equals(MessagingSystem.OK);
+            return temp.equals(MessagingSystemStatusCodes.OK);
         }
     }
 }

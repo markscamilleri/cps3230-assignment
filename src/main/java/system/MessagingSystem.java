@@ -4,8 +4,6 @@ public class MessagingSystem {
 
     private static final MessagingSystem INSTANCE = new MessagingSystem();
 
-    public static final String OK = "OK";
-
     private MessagingSystem() {
     }
 
