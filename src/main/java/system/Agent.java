@@ -8,6 +8,7 @@ public class Agent {
     public String id;
     public String name;
     public Supervisor supervisor;
+    public MessagingSystem messagingSystem;
 
     protected String sessionKey = null;
 
@@ -23,7 +24,7 @@ public class Agent {
             return false;
         }
 
-        sessionKey = MessagingSystem.getInstance().login(id, loginKey);
+        sessionKey = messagingSystem.login(id, loginKey);
         return sessionKey != null;
     }
 
@@ -39,7 +40,7 @@ public class Agent {
         if (sessionKey == null) {
             return false;
         } else {
-            final String temp = MessagingSystem.getInstance().sendMessage(sessionKey, id, destinationAgentId, message);
+            final String temp = messagingSystem.sendMessage(sessionKey, id, destinationAgentId, message);
             return temp.equals(MessagingSystemStatusCodes.OK.getValue());
         }
     }

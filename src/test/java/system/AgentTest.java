@@ -19,6 +19,7 @@ public class AgentTest {
     private final String CORRECT_AGENT_ID = "1234xy";
     private final String LOGIN_KEY = getNRandomCharacters(10);
     private Agent testAgent;
+    private LoggedInTestAgent loggedInTestAgent;
 
     private class LoggedInTestAgent extends Agent {
         LoggedInTestAgent(String sessionKey){
@@ -46,10 +47,18 @@ public class AgentTest {
 
     @Before
     public void setUp() throws Exception {
+
         testAgent = new Agent();
         testAgent.id = CORRECT_AGENT_ID;
         testAgent.name = "Gamri";
         testAgent.supervisor = mockSupervisor;
+        testAgent.messagingSystem = mockMessagingSystem;
+
+        loggedInTestAgent = new LoggedInTestAgent(getNRandomCharacters(50));
+        loggedInTestAgent.id = CORRECT_AGENT_ID;
+        loggedInTestAgent.name = "Gamri";
+        loggedInTestAgent.supervisor = mockSupervisor;
+        loggedInTestAgent.messagingSystem = mockMessagingSystem;
     }
 
     @After
@@ -98,8 +107,6 @@ public class AgentTest {
                 Mockito.anyString())).thenReturn(
                    MessagingSystemStatusCodes.ERROR.getValue());
 
-        LoggedInTestAgent loggedInTestAgent = new LoggedInTestAgent(getNRandomCharacters(50));
-
         Assert.assertFalse(loggedInTestAgent.sendMessage("Agent P", "Hello"));
     }
 
@@ -110,8 +117,6 @@ public class AgentTest {
                 Mockito.anyString(),
                 Mockito.anyString())).thenReturn(
                 MessagingSystemStatusCodes.OK.getValue());
-
-        LoggedInTestAgent loggedInTestAgent = new LoggedInTestAgent(getNRandomCharacters(50));
 
         Assert.assertTrue(loggedInTestAgent.sendMessage("Agent P", "Hello"));
 
