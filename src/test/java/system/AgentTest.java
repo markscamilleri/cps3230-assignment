@@ -4,13 +4,16 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Random;
 
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class AgentTest {
     
     private final String CORRECT_AGENT_ID = "1234xy";
@@ -18,7 +21,7 @@ public class AgentTest {
     private Agent testAgent;
 
     private class LoggedInTestAgent extends Agent {
-        public LoggedInTestAgent(String sessionKey){
+        LoggedInTestAgent(String sessionKey){
             this.sessionKey = sessionKey;
         }
     }
