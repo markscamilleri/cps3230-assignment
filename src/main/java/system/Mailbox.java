@@ -1,5 +1,6 @@
 package system;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,7 +13,7 @@ public class Mailbox {
      */
     public String ownerId;
 
-    private List<Message> messages;
+    private List<Message> messages = new ArrayList<>();
 
     /**
      * Returns the next message in the box on a FIFO basis.
