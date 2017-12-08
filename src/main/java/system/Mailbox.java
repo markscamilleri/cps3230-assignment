@@ -12,7 +12,7 @@ public class Mailbox {
      */
     public String ownerId;
 
-    private List<String> messages;
+    private List<Message> messages;
 
     /**
      * Returns the next message in the box on a FIFO basis.
