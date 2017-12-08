@@ -8,6 +8,8 @@ import java.util.List;
  */
 public class Mailbox {
 
+    public final static int MAX_MESSAGES = 25;
+
     /**
      * The id of the owner of the mailbox.
      */
@@ -39,9 +41,10 @@ public class Mailbox {
     /**
      * Adds a message to the mailbox.
      *
+     * @param message Message to add to mailbox.
      * @return true if successful, false otherwise.
      */
-    public boolean addMessage() {
+    public boolean addMessage(Message message) {
         return false;
     }
 }
