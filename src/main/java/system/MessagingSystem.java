@@ -45,7 +45,7 @@ public class MessagingSystem {
 
     /**
      * Sends a message from the sourceAgent to the targetAgent.
-     * Creates a message object and stores it in the taret agent's mailbox.
+     * Creates a message object and stores it in the target agent's mailbox.
      *
      * Should check that the sourceAgent is the same as the one currently logged in (by matching the session key).
      * Should check that a message does not contain any blocked words.
