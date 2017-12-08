@@ -24,6 +24,7 @@ public class MessagingSystemTest {
 
     @Test
     public void sendMessage() throws Exception {
+        // todo: does not exceed 140 characters
+        // todo: does not contain blocked words
     }
-
 }
