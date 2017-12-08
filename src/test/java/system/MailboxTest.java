@@ -1,27 +1,90 @@
 package system;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
-import static org.junit.Assert.*;
+// todo: consumeMessage fails if single message was deleted
 
 public class MailboxTest {
 
+    private final String OWNER_ID = "1234xy";
+    private final String SENDER_ID = "5678vw";
+    private final Message DUMMY_MESSAGE = new Message();
+    private Mailbox testMailbox;
+    private Mailbox testSingleMessageMailbox;
+
+    /*public MailboxTest() {
+        DUMMY_MESSAGE.message = "DUMMY_MESSAGE";
+        DUMMY_MESSAGE.sourceAgentId = SENDER_ID;
+        DUMMY_MESSAGE.targetAgentId = OWNER_ID;
+        DUMMY_MESSAGE.timestamp = System.currentTimeMillis();
+    }*/
+
+    private class SingleMessageMailbox extends Mailbox {
+        SingleMessageMailbox() {
+            this.messages.add(DUMMY_MESSAGE);
+        }
+    }
+
     @Before
     public void setUp() throws Exception {
+        testMailbox = new Mailbox();
+        testMailbox.ownerId = OWNER_ID;
+
+        testSingleMessageMailbox = new Mailbox();
+        testSingleMessageMailbox.ownerId = OWNER_ID;
     }
 
     @After
     public void tearDown() throws Exception {
+        testMailbox = null;
     }
 
     @Test
-    public void consumeNextMessage() throws Exception {
+    public void consumeNextMessageSuccessfulIfMailboxHasMessage() throws Exception {
+        Assert.assertNotEquals(null, testSingleMessageMailbox.consumeNextMessage());
     }
 
     @Test
-    public void hasMessages() throws Exception {
+    public void consumeNextMessageUnsuccessfulIfMailboxIsEmpty() throws Exception {
+        Assert.assertEquals(null, testMailbox.consumeNextMessage());
     }
 
+    @Test
+    public void consumeNextMessageUnsuccessfulIfTimeLimitExceeded() throws Exception {
+        // todo: 30 minutes elapse
+        Assert.assertEquals(null, testMailbox.consumeNextMessage());
+    }
+
+    @Test
+    public void hasMessagesTrueIfMailboxHasMessages() throws Exception {
+        Assert.assertTrue(testSingleMessageMailbox.hasMessages());
+    }
+
+    @Test
+    public void hasMessagesFalseIfMailboxIsEmpty() throws Exception {
+        Assert.assertFalse(testMailbox.hasMessages());
+    }
+
+    @Test
+    public void hasMessagesFalseIfTimeLimitExceeded() throws Exception {
+        // todo: 30 minutes elapse
+        Assert.assertFalse(testMailbox.hasMessages());
+    }
+
+    @Test
+    public void addMessageSuccessfulBelowLimit() throws Exception {
+
+        for (int i = 0; i < Mailbox.MAX_MESSAGES; i++) {
+            Assert.assertTrue(testMailbox.addMessage(DUMMY_MESSAGE));
+        }
+    }
+
+    @Test
+    public void addMessageUnsuccessfulIfMailboxFull() throws Exception {
+
+        for (int i = 0; i < Mailbox.MAX_MESSAGES; i++) {
+            Assume.assumeTrue(testMailbox.addMessage(DUMMY_MESSAGE));
+        }
+        Assert.assertFalse(testMailbox.addMessage(DUMMY_MESSAGE));
+    }
 }
