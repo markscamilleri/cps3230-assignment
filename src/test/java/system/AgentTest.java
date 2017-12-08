@@ -19,7 +19,7 @@ public class AgentTest {
     private final String CORRECT_AGENT_ID = "1234xy";
     private final String LOGIN_KEY = getNRandomCharacters(10);
     private Agent testAgent;
-    private LoggedInTestAgent loggedInTestAgent;
+    private Agent loggedInTestAgent;
 
     private class LoggedInTestAgent extends Agent {
         LoggedInTestAgent(String sessionKey){
