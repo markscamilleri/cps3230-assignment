@@ -13,6 +13,9 @@ public class Mailbox {
      */
     public String ownerId;
 
+    /**
+     * The list of unconsumed messages in the mailbox.
+     */
     private List<Message> messages = new ArrayList<>();
 
     /**
