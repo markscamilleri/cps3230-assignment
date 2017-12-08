@@ -9,6 +9,7 @@ import java.util.List;
 public class Mailbox {
 
     public final static int MAX_MESSAGES = 25;
+    public final static int TIME_LIMIT = 30;
 
     /**
      * The id of the owner of the mailbox.
@@ -18,7 +19,7 @@ public class Mailbox {
     /**
      * The list of unconsumed messages in the mailbox.
      */
-    private List<Message> messages = new ArrayList<>();
+    protected List<Message> messages = new ArrayList<>();
 
     /**
      * Returns the next message in the box on a FIFO basis.
