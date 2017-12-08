@@ -1,8 +1,13 @@
 package system;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class MessagingSystem {
 
     private static final MessagingSystem INSTANCE = new MessagingSystem();
+
+    private Map<Integer, Mailbox> mailboxes = new HashMap<>();
 
     private MessagingSystem() {
     }
@@ -38,10 +43,6 @@ public class MessagingSystem {
     public String login(String agentId, String loginKey) {
         return "";
     }
-
-    /**
-     * Sends a message from the sourceAgent to the targetAgent.
-     */
 
     /**
      * Sends a message from the sourceAgent to the targetAgent.
