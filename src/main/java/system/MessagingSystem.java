@@ -7,7 +7,7 @@ public class MessagingSystem {
 
     private static final MessagingSystem INSTANCE = new MessagingSystem();
 
-    private Map<Integer, Mailbox> mailboxes = new HashMap<>();
+    private Map<String, Mailbox> mailboxes = new HashMap<>();
 
     public final static int MAX_MESSAGE_LENGTH = 140;
     public final static String BLOCKED_WORDS[] = {"recipe", "ginger", "nuclear"};
