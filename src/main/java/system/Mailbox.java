@@ -31,4 +31,13 @@ public class Mailbox {
     public boolean hasMessages() {
         return false;
     }
+
+    /**
+     * Adds a message to the mailbox.
+     *
+     * @return true if successful, false otherwise.
+     */
+    public boolean addMessage() {
+        return false;
+    }
 }
