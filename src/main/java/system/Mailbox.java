@@ -48,4 +48,6 @@ public class Mailbox {
     public boolean addMessage(Message message) {
         return false;
     }
+
+    //todo: (Suggestion) addMessage returns false if targetAgentId not equal to ownerId ?
 }
