@@ -15,24 +15,26 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AgentTest {
-    
+
     private final String CORRECT_AGENT_ID = "1234xy";
     private final String LOGIN_KEY = getNRandomCharacters(10);
     private Agent testAgent;
     private Agent loggedInTestAgent;
 
     private class LoggedInTestAgent extends Agent {
-        LoggedInTestAgent(String sessionKey){
+        LoggedInTestAgent(String id, String name, Supervisor supervisor,
+                          MessagingSystem messagingSystem, String sessionKey) {
+            super(id, name, supervisor, messagingSystem);
             this.sessionKey = sessionKey;
         }
     }
 
     @Mock
     private Supervisor mockSupervisor;
-    
+
     @Mock
     private MessagingSystem mockMessagingSystem;
-    
+
     private String getNRandomCharacters(int n) {
         String characters = "";
 
@@ -48,17 +50,9 @@ public class AgentTest {
     @Before
     public void setUp() throws Exception {
 
-        testAgent = new Agent();
-        testAgent.id = CORRECT_AGENT_ID;
-        testAgent.name = "Gamri";
-        testAgent.supervisor = mockSupervisor;
-        testAgent.messagingSystem = mockMessagingSystem;
-
-        loggedInTestAgent = new LoggedInTestAgent(getNRandomCharacters(50));
-        loggedInTestAgent.id = CORRECT_AGENT_ID;
-        loggedInTestAgent.name = "Gamri";
-        loggedInTestAgent.supervisor = mockSupervisor;
-        loggedInTestAgent.messagingSystem = mockMessagingSystem;
+        testAgent = new Agent(CORRECT_AGENT_ID, "Gamri", mockSupervisor, mockMessagingSystem);
+        loggedInTestAgent = new LoggedInTestAgent(CORRECT_AGENT_ID, "Gamri",
+                mockSupervisor, mockMessagingSystem, getNRandomCharacters(50));
     }
 
     @After
@@ -69,13 +63,12 @@ public class AgentTest {
 
     @Test
     public void testLoginSuccessfulReturnsTrue() throws Exception {
-        testAgent.id = CORRECT_AGENT_ID;
         when(mockSupervisor.getLoginKey(CORRECT_AGENT_ID)).thenReturn(LOGIN_KEY);
         when(mockMessagingSystem.login(CORRECT_AGENT_ID, LOGIN_KEY)).thenReturn(getNRandomCharacters(50));
 
         Assert.assertTrue(testAgent.login());
     }
-    
+
     @Test
     public void testLoginNoLoginKeyReturnsFalse() throws Exception {
         when(mockSupervisor.getLoginKey(Mockito.anyString())).thenReturn(null);
@@ -105,7 +98,7 @@ public class AgentTest {
                 Mockito.anyString(),
                 Mockito.anyString(),
                 Mockito.anyString())).thenReturn(
-                   MessagingSystemStatusCodes.ERROR.getValue());
+                MessagingSystemStatusCodes.ERROR.getValue());
 
         Assert.assertFalse(loggedInTestAgent.sendMessage("Agent P", "Hello"));
     }

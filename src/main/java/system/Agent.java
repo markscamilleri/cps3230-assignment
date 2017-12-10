@@ -5,12 +5,19 @@ package system;
  */
 public class Agent {
 
-    public String id;
-    public String name;
-    public Supervisor supervisor;
-    public MessagingSystem messagingSystem;
+    public final String id;
+    public final String name;
+    public final Supervisor supervisor;
+    public final MessagingSystem messagingSystem;
 
     protected String sessionKey = null;
+
+    public Agent(String id, String name, Supervisor supervisor, MessagingSystem messagingSystem) {
+        this.id = id;
+        this.name = name;
+        this.supervisor = supervisor;
+        this.messagingSystem = messagingSystem;
+    }
 
     /**
      * Initiates contact with a supervisor to get a login key and subsequently logs into the system.

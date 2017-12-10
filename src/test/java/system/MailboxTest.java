@@ -8,7 +8,7 @@ public class MailboxTest {
 
     private final String OWNER_ID = "1234xy";
     private final String SENDER_ID = "5678vw";
-    private final Message DUMMY_MESSAGE = new Message();
+    private final Message DUMMY_MESSAGE = new Message("DUMMY_MESSAGE", SENDER_ID, OWNER_ID);
     private Mailbox testMailbox;
     private Mailbox testSingleMessageMailbox;
 
@@ -20,18 +20,17 @@ public class MailboxTest {
     }*/
 
     private class SingleMessageMailbox extends Mailbox {
-        SingleMessageMailbox() {
+        SingleMessageMailbox(String ownerId) {
+            super(ownerId);
             this.messages.add(DUMMY_MESSAGE);
         }
     }
 
     @Before
     public void setUp() throws Exception {
-        testMailbox = new Mailbox();
-        testMailbox.ownerId = OWNER_ID;
 
-        testSingleMessageMailbox = new Mailbox();
-        testSingleMessageMailbox.ownerId = OWNER_ID;
+        testMailbox = new Mailbox(OWNER_ID);
+        testSingleMessageMailbox = new SingleMessageMailbox(OWNER_ID);
     }
 
     @After

@@ -14,12 +14,17 @@ public class Mailbox {
     /**
      * The id of the owner of the mailbox.
      */
-    public String ownerId;
+    public final String ownerId;
 
     /**
      * The list of unconsumed messages in the mailbox.
      */
-    protected List<Message> messages = new ArrayList<>();
+    protected final List<Message> messages;
+
+    Mailbox(String ownerId) {
+        this.ownerId = ownerId;
+        this.messages = new ArrayList<>();
+    }
 
     /**
      * Returns the next message in the box on a FIFO basis.
