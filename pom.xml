@@ -8,6 +8,11 @@
     <artifactId>cps3230_assignment</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -19,26 +24,37 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>LATEST</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-core</artifactId>
             <version>LATEST</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-java</artifactId>
             <version>LATEST</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-junit</artifactId>
             <version>LATEST</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>LATEST</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>nz.ac.waikato.modeljunit</groupId>
             <artifactId>modeljunit</artifactId>
             <version>LATEST</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
