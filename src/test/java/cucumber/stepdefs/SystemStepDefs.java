@@ -149,4 +149,16 @@ public class SystemStepDefs {
         // Write code here that turns the phrase above into concrete actions
         throw new PendingException();
     }
+
+    @When("^I click on “Log out”$")
+    public void i_click_on_Log_out() throws Exception {
+        // Write code here that turns the phrase above into concrete actions
+        throw new PendingException();
+    }
+
+    @Then("^I should be logged out$")
+    public void i_should_be_logged_out() throws Exception {
+        // Write code here that turns the phrase above into concrete actions
+        throw new PendingException();
+    }
 }
