@@ -56,7 +56,7 @@ public class Mailbox {
     }
     
     private boolean isValidMessage(Message message) {
-        return (message.targetAgentId.equals(this.ownerId)) &&
-                       Instant.now().isBefore(message.timestamp.plus(TIME_LIMIT));
+        return (message.getTargetAgentId().equals(this.ownerId)) &&
+                       Instant.now().isBefore(message.getTimestamp().plus(TIME_LIMIT));
     }
 }
