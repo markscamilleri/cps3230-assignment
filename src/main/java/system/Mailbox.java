@@ -1,7 +1,9 @@
 package system;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * This class encapsulates the functionality of a mailbox that holds all messages for a user.
@@ -9,7 +11,7 @@ import java.util.List;
 public class Mailbox {
 
     public final static int MAX_MESSAGES = 25;
-    public final static int TIME_LIMIT = 30;
+    public final static Duration TIME_LIMIT = Duration.ofMinutes(30);
 
     /**
      * The id of the owner of the mailbox.
@@ -19,11 +21,10 @@ public class Mailbox {
     /**
      * The list of unconsumed messages in the mailbox.
      */
-    protected final List<Message> messages;
+    protected final Queue<Message> messages = new LinkedBlockingQueue<>(MAX_MESSAGES);
 
     Mailbox(String ownerId) {
         this.ownerId = ownerId;
-        this.messages = new ArrayList<>();
     }
 
     /**
@@ -32,7 +33,7 @@ public class Mailbox {
      * @return A message or null if the mailbox is empty.
      */
     public Message consumeNextMessage() {
-        return null;
+        return messages.poll();
     }
 
     /**
@@ -41,7 +42,7 @@ public class Mailbox {
      * @return true if there is at least one message in the mailbox.
      */
     public boolean hasMessages() {
-        return false;
+        return !messages.isEmpty();
     }
 
     /**
@@ -51,6 +52,11 @@ public class Mailbox {
      * @return true if successful, false otherwise.
      */
     public boolean addMessage(Message message) {
-        return false;
+        return isValidMessage(message) && messages.add(message);
+    }
+    
+    private boolean isValidMessage(Message message) {
+        return (message.targetAgentId.equals(this.ownerId)) &&
+                       Instant.now().isBefore(message.timestamp.plus(TIME_LIMIT));
     }
 }
