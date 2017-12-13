@@ -2,6 +2,8 @@ package webapp;
 
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 
 public class StartJettyHandler {
 
@@ -13,7 +15,14 @@ public class StartJettyHandler {
                 final Server server = new Server(8080);
                 try {
                     server.getConnectors()[0].getConnectionFactory(HttpConnectionFactory.class);
-                    server.setHandler(new HttpRequestHandler());
+
+                    ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+                    context.setContextPath("/");
+                    server.setHandler(context);
+
+                    context.addServlet(new ServletHolder(new Serverlet()),"/*");
+                    //context.addServlet(new ServletHolder(new Serverlet("Buongiorno Mondo")),"/it/*");
+                    //context.addServlet(new ServletHolder(new Serverlet("Bonjour le Monde")),"/fr/*");
 
                     server.start();
                     server.join();
@@ -23,5 +32,9 @@ public class StartJettyHandler {
             }
         };
         new Thread(runnable).start();
+    }
+
+    public static void main(String[] args) {
+        startServer();
     }
 }
