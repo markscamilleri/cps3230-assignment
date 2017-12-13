@@ -52,7 +52,7 @@ public class Mailbox {
      * @return true if successful, false otherwise.
      */
     public boolean addMessage(Message message) {
-        return isValidMessage(message) && messages.add(message);
+        return isValidMessage(message) && messages.offer(message);
     }
     
     private boolean isValidMessage(Message message) {

@@ -8,7 +8,7 @@ public class MailboxTest {
 
     private final String OWNER_ID = "1234xy";
     private final String SENDER_ID = "5678vw";
-    private final Message DUMMY_MESSAGE = new Message("DUMMY_MESSAGE", SENDER_ID, OWNER_ID);
+    private final Message DUMMY_MESSAGE = new Message(SENDER_ID, OWNER_ID, "DUMMY_MESSAGE");
     private Mailbox testMailbox;
     private Mailbox testSingleMessageMailbox;
 
