@@ -1,28 +1,34 @@
 package system;
 
 import org.junit.*;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import java.time.Duration;
+import java.time.Instant;
+
+import static org.mockito.Mockito.when;
 
 // todo: consumeMessage fails if single message was deleted
 
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class MailboxTest {
 
     private final String OWNER_ID = "1234xy";
     private final String SENDER_ID = "5678vw";
-    private final Message DUMMY_MESSAGE = new Message(SENDER_ID, OWNER_ID, "DUMMY_MESSAGE");
+
+    @Mock
+    private Message mockMessage;
+    private final Duration TIME_MARGIN = Duration.ofSeconds(2);
+
     private Mailbox testMailbox;
     private Mailbox testSingleMessageMailbox;
-
-    /*public MailboxTest() {
-        DUMMY_MESSAGE.message = "DUMMY_MESSAGE";
-        DUMMY_MESSAGE.sourceAgentId = SENDER_ID;
-        DUMMY_MESSAGE.targetAgentId = OWNER_ID;
-        DUMMY_MESSAGE.timestamp = System.currentTimeMillis();
-    }*/
 
     private class SingleMessageMailbox extends Mailbox {
         SingleMessageMailbox(String ownerId) {
             super(ownerId);
-            this.messages.add(DUMMY_MESSAGE);
+            this.messages.add(mockMessage);
         }
     }
 
@@ -31,6 +37,11 @@ public class MailboxTest {
 
         testMailbox = new Mailbox(OWNER_ID);
         testSingleMessageMailbox = new SingleMessageMailbox(OWNER_ID);
+
+        when(mockMessage.getSourceAgentId()).thenReturn(SENDER_ID);
+        when(mockMessage.getTargetAgentId()).thenReturn(OWNER_ID);
+        when(mockMessage.getMessage()).thenReturn("MOCK_MESSAGE");
+        when(mockMessage.getTimestamp()).thenReturn(Instant.now());
     }
 
     @After
@@ -50,7 +61,12 @@ public class MailboxTest {
 
     @Test
     public void consumeNextMessageUnsuccessfulIfTimeLimitExceeded() throws Exception {
-        // todo: 30 minutes elapse
+        final Duration lessThanThirtyMinutes = Mailbox.TIME_LIMIT.minus(TIME_MARGIN);
+        when(mockMessage.getTimestamp()).thenReturn(Instant.now().minus(lessThanThirtyMinutes));
+        Assume.assumeTrue(testMailbox.addMessage(mockMessage));
+
+        Thread.sleep(TIME_MARGIN.toMillis());
+
         Assert.assertEquals(null, testMailbox.consumeNextMessage());
     }
 
@@ -66,7 +82,12 @@ public class MailboxTest {
 
     @Test
     public void hasMessagesFalseIfTimeLimitExceeded() throws Exception {
-        // todo: 30 minutes elapse
+        final Duration lessThanThirtyMinutes = Mailbox.TIME_LIMIT.minus(TIME_MARGIN);
+        when(mockMessage.getTimestamp()).thenReturn(Instant.now().minus(lessThanThirtyMinutes));
+        Assume.assumeTrue(testMailbox.addMessage(mockMessage));
+
+        Thread.sleep(TIME_MARGIN.toMillis());
+
         Assert.assertFalse(testMailbox.hasMessages());
     }
 
@@ -74,7 +95,7 @@ public class MailboxTest {
     public void addMessageSuccessfulBelowLimit() throws Exception {
 
         for (int i = 0; i < Mailbox.MAX_MESSAGES; i++) {
-            Assert.assertTrue(testMailbox.addMessage(DUMMY_MESSAGE));
+            Assert.assertTrue(testMailbox.addMessage(mockMessage));
         }
     }
 
@@ -82,8 +103,23 @@ public class MailboxTest {
     public void addMessageUnsuccessfulIfMailboxFull() throws Exception {
 
         for (int i = 0; i < Mailbox.MAX_MESSAGES; i++) {
-            Assume.assumeTrue(testMailbox.addMessage(DUMMY_MESSAGE));
+            Assume.assumeTrue(testMailbox.addMessage(mockMessage));
         }
-        Assert.assertFalse(testMailbox.addMessage(DUMMY_MESSAGE));
+        Assert.assertFalse(testMailbox.addMessage(mockMessage));
+    }
+
+    @Test
+    public void addMessageUnsuccessfulIfMessageTimeLimitExceeded() throws Exception {
+        final Instant thirtyMinutesAgo = Instant.now().minus(Mailbox.TIME_LIMIT);
+        when(mockMessage.getTimestamp()).thenReturn(thirtyMinutesAgo);
+
+        Assert.assertFalse(testMailbox.addMessage(mockMessage));
+    }
+
+    @Test
+    public void addMessageUnsuccessfulIfOwnerIsNotMessageTarget() throws Exception {
+        when(mockMessage.getTargetAgentId()).thenReturn("AnotherID");
+
+        Assert.assertFalse(testMailbox.addMessage(mockMessage));
     }
 }
