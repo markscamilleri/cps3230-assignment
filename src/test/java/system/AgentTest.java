@@ -8,8 +8,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import java.util.Random;
+import util.Utils;
 
 import static org.mockito.Mockito.when;
 
@@ -17,7 +16,7 @@ import static org.mockito.Mockito.when;
 public class AgentTest {
 
     private final String CORRECT_AGENT_ID = "1234xy";
-    private final String LOGIN_KEY = getNRandomCharacters(10);
+    private final String LOGIN_KEY = Utils.getNRandomCharacters(10);
     private Agent testAgent;
     private Agent loggedInTestAgent;
 
@@ -35,24 +34,12 @@ public class AgentTest {
     @Mock
     private MessagingSystem mockMessagingSystem;
 
-    private String getNRandomCharacters(int n) {
-        String characters = "";
-
-        Random r = new Random();
-
-        for (int i = 0; i < n; i++) {
-            characters = characters + (char) r.nextInt();
-        }
-
-        return characters;
-    }
-
     @Before
     public void setUp() throws Exception {
 
         testAgent = new Agent(CORRECT_AGENT_ID, "Gamri", mockSupervisor, mockMessagingSystem);
         loggedInTestAgent = new LoggedInTestAgent(CORRECT_AGENT_ID, "Gamri",
-                mockSupervisor, mockMessagingSystem, getNRandomCharacters(50));
+                mockSupervisor, mockMessagingSystem, Utils.getNRandomCharacters(50));
     }
 
     @After
@@ -64,7 +51,7 @@ public class AgentTest {
     @Test
     public void testLoginSuccessfulReturnsTrue() throws Exception {
         when(mockSupervisor.getLoginKey(CORRECT_AGENT_ID)).thenReturn(LOGIN_KEY);
-        when(mockMessagingSystem.login(CORRECT_AGENT_ID, LOGIN_KEY)).thenReturn(getNRandomCharacters(50));
+        when(mockMessagingSystem.login(CORRECT_AGENT_ID, LOGIN_KEY)).thenReturn(Utils.getNRandomCharacters(50));
 
         Assert.assertTrue(testAgent.login());
     }
@@ -97,8 +84,7 @@ public class AgentTest {
         when(mockMessagingSystem.sendMessage(Mockito.anyString(),
                 Mockito.anyString(),
                 Mockito.anyString(),
-                Mockito.anyString())).thenReturn(
-                MessagingSystemStatusCodes.ERROR.getValue());
+                Mockito.anyString())).thenReturn(MessagingSystemStatusCodes.GENERIC_ERROR.getValue());
 
         Assert.assertFalse(loggedInTestAgent.sendMessage("Agent P", "Hello"));
     }
