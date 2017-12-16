@@ -13,7 +13,7 @@ public class Mailbox {
 
     public final static int MAX_MESSAGES = 25;
     public final static Duration TIME_LIMIT = Duration.ofMinutes(30);
-    
+
     /**
      * The id of the owner of the mailbox.
      */
@@ -35,12 +35,12 @@ public class Mailbox {
      */
     public synchronized Message consumeNextMessage() {
         Message message;
-        
-        while(!Objects.isNull(message = messages.poll())){
-            if(!message.isDeleted())
+
+        while (!Objects.isNull(message = messages.poll())) {
+            if (!message.isDeleted())
                 return message;
         }
-        
+
         return null;
     }
 
@@ -62,9 +62,9 @@ public class Mailbox {
     public synchronized boolean addMessage(Message message) {
         return isValidMessage(message) && messages.offer(message);
     }
-    
+
     private boolean isValidMessage(Message message) {
         return message.getTargetAgentId().equals(this.ownerId) &&
-                       Instant.now().isBefore(message.getTimestamp().plus(TIME_LIMIT));
+                Instant.now().isBefore(message.getTimestamp().plus(TIME_LIMIT));
     }
 }

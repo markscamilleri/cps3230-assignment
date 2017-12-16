@@ -17,13 +17,13 @@ public class Timeout {
      * The queue of objects that are "waiting to be deleted"
      */
     private volatile Queue<Timeoutable> timeoutableObjects = new PriorityBlockingQueue<>();
-    
+
     /**
      * Creates a new thread for this singleton object. The thread is run but is put to sleep
      */
     private Timeout() {
     }
-    
+
     /**
      * Returns the singleton instance of this Timeout
      *
@@ -32,7 +32,7 @@ public class Timeout {
     public static Timeout getInstance() {
         return instance;
     }
-    
+
     /**
      * Registers an object to be timed out
      *
@@ -42,9 +42,10 @@ public class Timeout {
     public synchronized boolean register(Timeoutable timeoutable) {
         return timeoutableObjects.add(timeoutable);
     }
-    
+
     /**
      * Checks if there are any objects that timed out.
+     *
      * @return the number of objects that timed out.
      */
     public synchronized int checkAndDelete() {
@@ -53,12 +54,13 @@ public class Timeout {
             timeoutableObjects.poll().delete();
             count++;
         }
-        
+
         return count;
     }
-    
+
     /**
      * Checks whether there are any objects that will timeout
+     *
      * @return true if there are, false if there aren't
      */
     public synchronized boolean isEmpty() {

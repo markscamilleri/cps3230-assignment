@@ -11,11 +11,10 @@ import java.time.ZoneId;
 
 public class MessageTest {
 
-    private Message message;
-
     private final String src = "src", trg = "trg", msg = "msg";
     private final Clock fixedClock = Clock.fixed(Instant.EPOCH, ZoneId.of("UTC"));
     private final Instant expectedTimestamp = fixedClock.instant().plus(Mailbox.TIME_LIMIT);
+    private Message message;
 
     @Before
     public void setUp() throws Exception {
