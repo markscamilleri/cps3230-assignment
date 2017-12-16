@@ -2,6 +2,7 @@ package system;
 
 import util.Timeoutable;
 
+import java.time.Clock;
 import java.time.Instant;
 
 public class Message extends Timeoutable {
@@ -18,7 +19,18 @@ public class Message extends Timeoutable {
      * @param message The message contents
      */
     Message(String sourceAgentId, String targetAgentId, String message) {
-        super(Instant.now().plus(Mailbox.TIME_LIMIT));
+        this(sourceAgentId, targetAgentId, message, Clock.systemUTC());
+    }
+
+    /**
+     * Creates a new message
+     * @param sourceAgentId Sender of the message
+     * @param targetAgentId Receiver of the message
+     * @param message The message contents
+     * @param clock Clock to use for setting the timestamp
+     */
+    Message(String sourceAgentId, String targetAgentId, String message, Clock clock) {
+        super(Instant.now(clock).plus(Mailbox.TIME_LIMIT));
         this.sourceAgentId = sourceAgentId;
         this.targetAgentId = targetAgentId;
         this.message = message;

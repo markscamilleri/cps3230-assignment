@@ -5,17 +5,21 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.time.Duration;
+import java.time.Clock;
 import java.time.Instant;
+import java.time.ZoneId;
 
 public class MessageTest {
 
     private Message message;
+
     private final String src = "src", trg = "trg", msg = "msg";
+    private final Clock fixedClock = Clock.fixed(Instant.EPOCH, ZoneId.of("UTC"));
+    private final Instant expectedTimestamp = fixedClock.instant().plus(Mailbox.TIME_LIMIT);
 
     @Before
     public void setUp() throws Exception {
-        message = new Message(src, trg, msg);
+        message = new Message(src, trg, msg, fixedClock);
     }
 
     @After
@@ -29,10 +33,6 @@ public class MessageTest {
         Assert.assertEquals(src, message.getSourceAgentId());
         Assert.assertEquals(trg, message.getTargetAgentId());
         Assert.assertEquals(msg, message.getMessage());
-
-        // Check that timestamp is within 3 seconds of current time
-        final Duration marginOfError = Duration.ofSeconds(3);
-        final Instant recent = Instant.now().minus(marginOfError);
-        Assert.assertTrue(message.getTimestamp().isAfter(recent));
+        Assert.assertEquals(expectedTimestamp, message.getTimeout());
     }
 }
