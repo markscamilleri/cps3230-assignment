@@ -2,6 +2,7 @@ package system;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -12,29 +13,6 @@ public class Mailbox {
 
     public final static int MAX_MESSAGES = 25;
     public final static Duration TIME_LIMIT = Duration.ofMinutes(30);
-
-    
-    private volatile Runnable timeoutTask = new Runnable() {
-        @Override
-        public void run() {
-            timeoutMessages();
-        }
-    
-        /**
-         * To be run on a separate thread
-         * This will consume expired messages and discard them.
-         * Note, this will run until the object is destroyed
-         */
-        private void timeoutMessages() {
-            Thread thisThread = Thread.currentThread();
-            while(timeoutThread == thisThread) {
-                if(hasMessages() && !isValidMessage(messages.peek())) {
-                        consumeNextMessage();
-                }
-            }
-        }
-    };
-    private volatile Thread timeoutThread = new Thread(timeoutTask);
     
     /**
      * The id of the owner of the mailbox.
@@ -48,8 +26,6 @@ public class Mailbox {
 
     Mailbox(String ownerId) {
         this.ownerId = ownerId;
-        
-        //timeoutThread.start();
     }
 
     /**
@@ -58,7 +34,14 @@ public class Mailbox {
      * @return A message or null if the mailbox is empty.
      */
     public synchronized Message consumeNextMessage() {
-        return messages.poll();
+        Message message;
+        
+        while(!Objects.isNull(message = messages.poll())){
+            if(!message.isDeleted())
+                return message;
+        }
+        
+        return null;
     }
 
     /**
