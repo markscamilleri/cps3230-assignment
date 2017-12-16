@@ -10,8 +10,7 @@ public abstract class Timeoutable extends Deletable implements Comparable<Timeou
     private Instant timeout;
 
     protected Timeoutable(Instant timeout) {
-        this.timeout = timeout;
-        Timeout.getInstance().register(this);
+        this(timeout, Timeout.getInstance());
     }
 
     protected Timeoutable(Instant timeout, Timeout timeoutHandler) {
