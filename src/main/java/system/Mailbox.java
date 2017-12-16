@@ -2,6 +2,7 @@ package system;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -32,8 +33,15 @@ public class Mailbox {
      *
      * @return A message or null if the mailbox is empty.
      */
-    public Message consumeNextMessage() {
-        return messages.poll();
+    public synchronized Message consumeNextMessage() {
+        Message message;
+
+        while (!Objects.isNull(message = messages.poll())) {
+            if (!message.isDeleted())
+                return message;
+        }
+
+        return null;
     }
 
     /**
@@ -41,7 +49,7 @@ public class Mailbox {
      *
      * @return true if there is at least one message in the mailbox.
      */
-    public boolean hasMessages() {
+    public synchronized boolean hasMessages() {
         return !messages.isEmpty();
     }
 
@@ -51,12 +59,12 @@ public class Mailbox {
      * @param message Message to add to mailbox.
      * @return true if successful, false otherwise.
      */
-    public boolean addMessage(Message message) {
+    public synchronized boolean addMessage(Message message) {
         return isValidMessage(message) && messages.offer(message);
     }
-    
+
     private boolean isValidMessage(Message message) {
-        return (message.getTargetAgentId().equals(this.ownerId)) &&
-                       Instant.now().isBefore(message.getTimestamp().plus(TIME_LIMIT));
+        return message.getTargetAgentId().equals(this.ownerId) &&
+                Instant.now().isBefore(message.getTimestamp().plus(TIME_LIMIT));
     }
 }
