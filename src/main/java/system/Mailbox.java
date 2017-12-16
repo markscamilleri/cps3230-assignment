@@ -1,5 +1,7 @@
 package system;
 
+import util.Timeout;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
@@ -76,8 +78,10 @@ public class Mailbox {
     private int removeExpiredMessages() {
         Message message;
         int count = 0;
+
+        Timeout.getInstance().checkAndDelete();
         while (!Objects.isNull(message = messages.peek())) {
-            if (!message.isDeleted()) {
+            if (message.isDeleted()) {
                 messages.poll();
                 count++;
             } else {
