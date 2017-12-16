@@ -7,23 +7,23 @@ import org.junit.Test;
 public class MessagingSystemTest {
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
     }
 
     @Test
-    public void registerLoginKey() throws Exception {
+    public void registerLoginKey() {
     }
 
     @Test
-    public void login() throws Exception {
+    public void login() {
     }
 
     @Test
-    public void sendMessage() throws Exception {
+    public void sendMessage() {
         // todo: does not exceed 140 characters
         // todo: does not contain blocked words
     }

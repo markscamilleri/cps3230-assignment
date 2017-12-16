@@ -38,7 +38,7 @@ public class AgentTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
 
         testAgent = new Agent(CORRECT_AGENT_ID, "Gamri", mockSupervisor, mockMessagingSystem);
         loggedInTestAgent = new LoggedInTestAgent(CORRECT_AGENT_ID, "Gamri",
@@ -46,13 +46,13 @@ public class AgentTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mockSupervisor = null;
         mockMessagingSystem = null;
     }
 
     @Test
-    public void testLoginSuccessfulReturnsTrue() throws Exception {
+    public void testLoginSuccessfulReturnsTrue() {
         when(mockSupervisor.getLoginKey(CORRECT_AGENT_ID)).thenReturn(LOGIN_KEY);
         when(mockMessagingSystem.login(CORRECT_AGENT_ID, LOGIN_KEY)).thenReturn(getNRandomCharacters(50));
 
@@ -60,14 +60,14 @@ public class AgentTest {
     }
 
     @Test
-    public void testLoginNoLoginKeyReturnsFalse() throws Exception {
+    public void testLoginNoLoginKeyReturnsFalse() {
         when(mockSupervisor.getLoginKey(Mockito.anyString())).thenReturn(null);
 
         Assert.assertFalse(testAgent.login());
     }
 
     @Test
-    public void testLoginNoSessionKeyReturnsFalse() throws Exception {
+    public void testLoginNoSessionKeyReturnsFalse() {
         when(mockSupervisor.getLoginKey(CORRECT_AGENT_ID)).thenReturn(LOGIN_KEY);
         when(mockMessagingSystem.login(CORRECT_AGENT_ID, LOGIN_KEY)).thenReturn(null);
 
@@ -75,14 +75,14 @@ public class AgentTest {
     }
 
     @Test
-    public void testSendMessageNotLoggedInFailure() throws Exception {
+    public void testSendMessageNotLoggedInFailure() {
         // by default agent is not logged in
 
         Assert.assertFalse(testAgent.sendMessage("Agent P", "Hello"));
     }
 
     @Test
-    public void testSendMessageMessagingSystemErrorFailure() throws Exception {
+    public void testSendMessageMessagingSystemErrorFailure() {
         when(mockMessagingSystem.sendMessage(Mockito.anyString(),
                 Mockito.anyString(),
                 Mockito.anyString(),
@@ -93,7 +93,7 @@ public class AgentTest {
     }
 
     @Test
-    public void testSendMessageSuccess() throws Exception {
+    public void testSendMessageSuccess() {
         when(mockMessagingSystem.sendMessage(Mockito.anyString(),
                 Mockito.anyString(),
                 Mockito.anyString(),
