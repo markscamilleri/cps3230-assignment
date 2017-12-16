@@ -13,6 +13,29 @@ public class Mailbox {
     public final static int MAX_MESSAGES = 25;
     public final static Duration TIME_LIMIT = Duration.ofMinutes(30);
 
+    
+    private volatile Runnable timeoutTask = new Runnable() {
+        @Override
+        public void run() {
+            timeoutMessages();
+        }
+    
+        /**
+         * To be run on a separate thread
+         * This will consume expired messages and discard them.
+         * Note, this will run until the object is destroyed
+         */
+        private void timeoutMessages() {
+            Thread thisThread = Thread.currentThread();
+            while(timeoutThread == thisThread) {
+                if(hasMessages() && !isValidMessage(messages.peek())) {
+                        consumeNextMessage();
+                }
+            }
+        }
+    };
+    private volatile Thread timeoutThread = new Thread(timeoutTask);
+    
     /**
      * The id of the owner of the mailbox.
      */
@@ -25,6 +48,8 @@ public class Mailbox {
 
     Mailbox(String ownerId) {
         this.ownerId = ownerId;
+        
+        //timeoutThread.start();
     }
 
     /**
@@ -32,7 +57,7 @@ public class Mailbox {
      *
      * @return A message or null if the mailbox is empty.
      */
-    public Message consumeNextMessage() {
+    public synchronized Message consumeNextMessage() {
         return messages.poll();
     }
 
@@ -41,7 +66,7 @@ public class Mailbox {
      *
      * @return true if there is at least one message in the mailbox.
      */
-    public boolean hasMessages() {
+    public synchronized boolean hasMessages() {
         return !messages.isEmpty();
     }
 
@@ -51,12 +76,12 @@ public class Mailbox {
      * @param message Message to add to mailbox.
      * @return true if successful, false otherwise.
      */
-    public boolean addMessage(Message message) {
+    public synchronized boolean addMessage(Message message) {
         return isValidMessage(message) && messages.offer(message);
     }
     
     private boolean isValidMessage(Message message) {
-        return (message.getTargetAgentId().equals(this.ownerId)) &&
+        return message.getTargetAgentId().equals(this.ownerId) &&
                        Instant.now().isBefore(message.getTimestamp().plus(TIME_LIMIT));
     }
 }
