@@ -39,7 +39,7 @@ public class Agent {
      * Sends a message to the destination agent.
      *
      * @param destinationAgentId The id of the destination agent.
-     * @param message The content of the message.
+     * @param message            The content of the message.
      * @return true if successful, false otherwise.
      */
     public boolean sendMessage(final String destinationAgentId, final String message) {

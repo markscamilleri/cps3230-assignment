@@ -19,18 +19,8 @@ public class AgentTest {
     private final String LOGIN_KEY = Utils.getNRandomCharacters(10);
     private Agent testAgent;
     private Agent loggedInTestAgent;
-
-    private class LoggedInTestAgent extends Agent {
-        LoggedInTestAgent(String id, String name, Supervisor supervisor,
-                          MessagingSystem messagingSystem, String sessionKey) {
-            super(id, name, supervisor, messagingSystem);
-            this.sessionKey = sessionKey;
-        }
-    }
-
     @Mock
     private Supervisor mockSupervisor;
-
     @Mock
     private MessagingSystem mockMessagingSystem;
 
@@ -62,7 +52,6 @@ public class AgentTest {
 
         Assert.assertFalse(testAgent.login());
     }
-
 
     @Test
     public void testLoginNoSessionKeyReturnsFalse() throws Exception {
@@ -99,5 +88,13 @@ public class AgentTest {
 
         Assert.assertTrue(loggedInTestAgent.sendMessage("Agent P", "Hello"));
 
+    }
+
+    private class LoggedInTestAgent extends Agent {
+        LoggedInTestAgent(String id, String name, Supervisor supervisor,
+                          MessagingSystem messagingSystem, String sessionKey) {
+            super(id, name, supervisor, messagingSystem);
+            this.sessionKey = sessionKey;
+        }
     }
 }

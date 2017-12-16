@@ -30,12 +30,12 @@ Feature: Messaging System
     When I attempt to send the message <message> to another agent
     Then the other agent should receive the message <new-message>
 
-  Examples:
-  |message                  | new-message |
-  |Hello there              | Hello there |
-  |Send recipe now          | Send now    |
-  |Nuclear recipe is ready  | ready       |
-  |GinGer nuclear RECipE.   | .           |
+    Examples:
+      | message                 | new-message |
+      | Hello there             | Hello there |
+      | Send recipe now         | Send now    |
+      | Nuclear recipe is ready | ready       |
+      | GinGer nuclear RECipE.  | .           |
 
   Scenario: Logging out
     Given I am a logged in agent

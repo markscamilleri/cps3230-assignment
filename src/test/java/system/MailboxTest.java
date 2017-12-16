@@ -17,20 +17,11 @@ public class MailboxTest {
 
     private final String OWNER_ID = "1234xy";
     private final String SENDER_ID = "5678vw";
-
+    private final Duration TIME_MARGIN = Duration.ofSeconds(2);
     @Mock
     private Message mockMessage;
-    private final Duration TIME_MARGIN = Duration.ofSeconds(2);
-
     private Mailbox testMailbox;
     private Mailbox testSingleMessageMailbox;
-
-    private class SingleMessageMailbox extends Mailbox {
-        SingleMessageMailbox(String ownerId) {
-            super(ownerId);
-            this.messages.add(mockMessage);
-        }
-    }
 
     @Before
     public void setUp() throws Exception {
@@ -121,5 +112,12 @@ public class MailboxTest {
         when(mockMessage.getTargetAgentId()).thenReturn("AnotherID");
 
         Assert.assertFalse(testMailbox.addMessage(mockMessage));
+    }
+
+    private class SingleMessageMailbox extends Mailbox {
+        SingleMessageMailbox(String ownerId) {
+            super(ownerId);
+            this.messages.add(mockMessage);
+        }
     }
 }
