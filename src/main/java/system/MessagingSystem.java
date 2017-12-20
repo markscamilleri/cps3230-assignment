@@ -1,14 +1,32 @@
 package system;
 
+import util.Timeout;
+import util.Timeoutable;
+import util.Utils;
+
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+
+import static system.MessagingSystemStatusCodes.*;
 
 public class MessagingSystem {
 
+    private static final MessagingSystem INSTANCE = new MessagingSystem();
+
+    public final static Duration LOGIN_KEY_TIME_LIMIT = Duration.ofMinutes(1);
+    public final static Duration SESSION_KEY_TIME_LIMIT = Duration.ofMinutes(10);
+
+    public final static int LOGIN_KEY_LENGTH = 10;
+    public final static int SESSION_KEY_LENGTH = 50;
+
     public final static int MAX_MESSAGE_LENGTH = 140;
     public final static String BLOCKED_WORDS[] = {"recipe", "ginger", "nuclear"};
-    private static final MessagingSystem INSTANCE = new MessagingSystem();
-    private Map<String, Mailbox> mailboxes = new HashMap<>();
+
+    private Map<String, AgentInfo> agentInfos = new HashMap<>();
 
     private MessagingSystem() {
     }
@@ -29,7 +47,21 @@ public class MessagingSystem {
      * @return true if the checks on the key succeed and the (agent,key) pair has been stored.
      */
     public boolean registerLoginKey(String agentId, String loginKey) {
-        return false;
+        deleteExpiredKeys();
+
+        if (isValidRegister(loginKey)) {
+
+            // Obtain (or create) agent info and set login key
+            AgentInfo info = agentInfos.get(agentId);
+            if (info == null) {
+                info = new AgentInfo(agentId);
+                agentInfos.put(agentId, info);
+            }
+            info.loginKey = new TemporaryKey(loginKey, LOGIN_KEY_TIME_LIMIT);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -42,7 +74,15 @@ public class MessagingSystem {
      * @return A randomly generated 50-character session key if login succeeds, null otherwise.
      */
     public String login(String agentId, String loginKey) {
-        return "";
+        deleteExpiredKeys();
+
+        final AgentInfo info = agentInfos.get(agentId);
+        if (info != null && isValidLogin(info.loginKey, loginKey)) {
+            info.sessionKey = new TemporaryKey(Utils.getNRandomCharacters(SESSION_KEY_LENGTH), SESSION_KEY_TIME_LIMIT);
+            return info.sessionKey.key;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -60,6 +100,123 @@ public class MessagingSystem {
      * @return "OK" if the message is sent, or an appropriate error if not.
      */
     public String sendMessage(String sessionKey, String sourceAgentId, String targetAgentId, String message) {
-        return "";
+        deleteExpiredKeys();
+
+        final AgentInfo sourceAgentInfo = agentInfos.get(sourceAgentId);
+        final AgentInfo targetAgentInfo = agentInfos.get(targetAgentId);
+
+        if (sourceAgentInfo == null || targetAgentInfo == null) {
+            return AGENT_DOES_NOT_EXIST.getValue();
+
+        } else if (sourceAgentInfo.sessionKey == null) {
+            return AGENT_NOT_LOGGED_IN.getValue();
+
+        } else if (!sourceAgentInfo.sessionKey.equals(sessionKey)) {
+            return SESSION_KEY_UNRECOGNIZED.getValue();
+
+        } else if (message.length() > MAX_MESSAGE_LENGTH) {
+            return MESSAGE_LENGTH_EXCEEDED.getValue();
+
+        } else {
+            for (final String word : BLOCKED_WORDS) {
+                if (message.contains(word)) {
+                    return MESSAGE_CONTAINS_BLOCKED_WORD.getValue();
+                }
+            }
+
+            final Message toSend = new Message(sourceAgentId, targetAgentId, message);
+            if (targetAgentInfo.mailbox.addMessage(toSend)) {
+                return MessagingSystemStatusCodes.OK.getValue();
+            } else {
+                return MessagingSystemStatusCodes.INVALID_MESSAGE.getValue();
+            }
+        }
     }
+
+    /**
+     * Checks length of login key and that it is unique.
+     */
+    private boolean isValidRegister(String loginKeyToCheck) {
+        Timeout.getInstance().checkAndDelete();
+        return loginKeyToCheck.length() == LOGIN_KEY_LENGTH
+                && agentInfos.values().stream().noneMatch(v -> v.loginKey.equals(loginKeyToCheck));
+    }
+
+    /**
+     * Checks agent had a registered login key and that it matches the login key
+     * used to attempt to login. Also checks that login time limit was not exceeded.
+     */
+    private boolean isValidLogin(TemporaryKey registeredLoginKey, String loginKeyToCheck) {
+        return registeredLoginKey != null
+                && registeredLoginKey.key.equals(loginKeyToCheck)
+                && !registeredLoginKey.isDeleted();
+    }
+
+    private void deleteExpiredKeys() {
+
+        for (AgentInfo info : agentInfos.values()) {
+            if (info.loginKey.isDeleted()) {
+                info.loginKey = null;
+            }
+            if (info.sessionKey.isDeleted()) {
+                info.sessionKey = null;
+            }
+        }
+    }
+
+    private class AgentInfo {
+
+        final String agentId;
+        final Mailbox mailbox;
+        TemporaryKey loginKey = null;
+        TemporaryKey sessionKey = null;
+
+        AgentInfo(String agentId) {
+            this.agentId = agentId;
+            this.mailbox = new Mailbox(agentId);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(agentId);
+        }
+    }
+
+    private class TemporaryKey extends Timeoutable {
+
+        public final String key;
+
+        public TemporaryKey(String key, Duration timeLimit) {
+            this(key, timeLimit, Clock.systemUTC());
+        }
+
+        public TemporaryKey(String key, Duration timeLimit, Clock clock) {
+            super(Instant.now(clock).plus(timeLimit));
+            this.key = key;
+        }
+    }
+
+    /*
+    private class SessionKey extends TemporaryKey {
+
+        public SessionKey(String key) {
+            this(key, Clock.systemUTC());
+        }
+
+        public SessionKey(String key, Clock clock) {
+            super(key, SESSION_KEY_TIME_LIMIT, clock);
+        }
+    }
+
+    private class LoginKey extends TemporaryKey {
+
+        public LoginKey(String key) {
+            this(key, Clock.systemUTC());
+        }
+
+        public LoginKey(String key, Clock clock) {
+            super(key, LOGIN_KEY_TIME_LIMIT, clock);
+        }
+    }
+     */
 }
