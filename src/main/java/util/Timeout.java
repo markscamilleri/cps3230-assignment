@@ -4,10 +4,6 @@ import java.time.Instant;
 import java.util.Queue;
 import java.util.concurrent.PriorityBlockingQueue;
 
-/**
- * @author Mark Said Camilleri
- * @version 16/12/17.
- */
 public class Timeout {
     /**
      * Keeps an instance of this object -> singleton
