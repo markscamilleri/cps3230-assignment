@@ -68,7 +68,7 @@ public class Mailbox extends Timeout{
      */
     private boolean isValidMessage(Message message) {
         return message.getTargetAgentId().equals(this.ownerId) &&
-                Instant.now().isBefore(message.getTimestamp().plus(TIME_LIMIT));
+                Instant.now().isBefore(message.getTimeout());
     }
     
     @Override
