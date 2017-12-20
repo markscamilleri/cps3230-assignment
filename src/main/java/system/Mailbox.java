@@ -1,7 +1,5 @@
 package system;
 
-import util.TimeoutContainer;
-
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Queue;
@@ -10,10 +8,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * This class encapsulates the functionality of a mailbox that holds all container for a user.
  */
-public class Mailbox extends TimeoutContainer<Queue<Message>, Message> {
+public class Mailbox {
     
     public final static int MAX_MESSAGES = 25;
     public final static Duration TIME_LIMIT = Duration.ofMinutes(30);
+
+    protected final Queue<Message> messages = new LinkedBlockingQueue<>(MAX_MESSAGES);
 
     /**
      * The id of the owner of the mailbox.
@@ -21,7 +21,6 @@ public class Mailbox extends TimeoutContainer<Queue<Message>, Message> {
     public final String ownerId;
     
     Mailbox(String ownerId) {
-        super(new LinkedBlockingQueue<>(MAX_MESSAGES));
         this.ownerId = ownerId;
     }
     
@@ -32,7 +31,7 @@ public class Mailbox extends TimeoutContainer<Queue<Message>, Message> {
      */
     public synchronized Message consumeNextMessage() {
         checkAndDelete();
-        return container.poll();
+        return messages.poll();
     }
     
     /**
@@ -42,7 +41,7 @@ public class Mailbox extends TimeoutContainer<Queue<Message>, Message> {
      */
     public synchronized boolean hasMessages() {
         checkAndDelete();
-        return !container.isEmpty();
+        return !messages.isEmpty();
     }
     
     /**
@@ -53,7 +52,7 @@ public class Mailbox extends TimeoutContainer<Queue<Message>, Message> {
      */
     public synchronized boolean addMessage(Message message) {
         checkAndDelete();
-        return isValidMessage(message) && container.offer(message);
+        return isValidMessage(message) && messages.offer(message);
     }
 
     /**
@@ -64,5 +63,24 @@ public class Mailbox extends TimeoutContainer<Queue<Message>, Message> {
     private boolean isValidMessage(Message  message) {
         return message.getTargetAgentId().equals(this.ownerId) &&
                 Instant.now().isBefore(message.getTimeout());
+    }
+
+    /**
+     * Checks if there are any objects that timed out.
+     * This must be called before any operation on messages
+     *
+     * @return the number of objects that timed out.
+     */
+    protected int checkAndDelete() {
+        int count = 0;
+        for (Message msg : messages) {
+            if (msg.isExpired()){
+                messages.remove(msg);
+                count++;
+            }
+        }
+
+        return count;
+
     }
 }
