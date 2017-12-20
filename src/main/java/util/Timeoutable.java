@@ -9,11 +9,10 @@ import java.time.Instant;
  * For the timeout functionality, this must be used with a timeout
  * handler
  *
- * @See util.Timeout
+ * @See util.TimeoutContainer
  */
 public abstract class Timeoutable implements Comparable<Timeoutable> {
     private Instant timeout;
-    private boolean deleted = false;
     
     protected Timeoutable(Instant timeout) {
         this.timeout = timeout;
