@@ -14,7 +14,7 @@ import static system.MessagingSystemStatusCodes.*;
 
 public class MessagingSystem {
 
-    private static final MessagingSystem INSTANCE = new MessagingSystem();
+    private static MessagingSystem INSTANCE = null;
 
     public final static Duration LOGIN_KEY_TIME_LIMIT = Duration.ofMinutes(1);
     public final static Duration SESSION_KEY_TIME_LIMIT = Duration.ofMinutes(10);
@@ -31,6 +31,9 @@ public class MessagingSystem {
     }
 
     public static MessagingSystem getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new MessagingSystem();
+        }
         return INSTANCE;
     }
 
@@ -146,8 +149,8 @@ public class MessagingSystem {
      */
     private boolean isValidLogin(TemporaryKey registeredLoginKey, String loginKeyToCheck) {
         return registeredLoginKey != null
-                && registeredLoginKey.key.equals(loginKeyToCheck)
-                && !registeredLoginKey.isDeleted();
+                && registeredLoginKey.equals(loginKeyToCheck)
+                && !registeredLoginKey.isExpired();
     }
 
     //@Override
@@ -155,11 +158,11 @@ public class MessagingSystem {
 
         int count = 0;
         for (AgentInfo info : agentInfos.values()) {
-            if (info.loginKey.isDeleted()) {
+            if (info.loginKey != null && info.loginKey.isExpired()) {
                 info.loginKey = null;
                 count++;
             }
-            if (info.sessionKey.isDeleted()) {
+            if (info.sessionKey != null && info.sessionKey.isExpired()) {
                 info.sessionKey = null;
                 count++;
             }
@@ -196,6 +199,10 @@ public class MessagingSystem {
         public TemporaryKey(String key, Duration timeLimit, Clock clock) {
             super(Instant.now(clock).plus(timeLimit));
             this.key = key;
+        }
+
+        public boolean equals(String anotherKey) {
+            return this.key.equals(anotherKey);
         }
     }
 }
