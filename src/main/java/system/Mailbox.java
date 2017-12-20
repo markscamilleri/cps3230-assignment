@@ -11,7 +11,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * This class encapsulates the functionality of a mailbox that holds all messages for a user.
  */
-public class Mailbox {
+public class Mailbox extends Timeout{
     
     public final static int MAX_MESSAGES = 25;
     public final static Duration TIME_LIMIT = Duration.ofMinutes(30);
@@ -36,7 +36,7 @@ public class Mailbox {
      * @return A message or null if the mailbox is empty.
      */
     public synchronized Message consumeNextMessage() {
-        removeExpiredMessages();
+        checkAndDelete();
         return messages.poll();
     }
     
@@ -46,7 +46,7 @@ public class Mailbox {
      * @return true if there is at least one message in the mailbox.
      */
     public synchronized boolean hasMessages() {
-        removeExpiredMessages();
+        checkAndDelete();
         return !messages.isEmpty();
     }
     
@@ -57,7 +57,7 @@ public class Mailbox {
      * @return true if successful, false otherwise.
      */
     public synchronized boolean addMessage(Message message) {
-        removeExpiredMessages();
+        checkAndDelete();
         return isValidMessage(message) && messages.offer(message);
     }
 
@@ -71,24 +71,20 @@ public class Mailbox {
                 Instant.now().isBefore(message.getTimestamp().plus(TIME_LIMIT));
     }
     
-    /**
-     * Removes all expired messages from the mailbox.
-     * @return the amount of messages that got deleted
-     */
-    private int removeExpiredMessages() {
+    @Override
+    protected int checkAndDelete() {
         Message message;
         int count = 0;
-
-        Timeout.getInstance().checkAndDelete();
+        
         while (!Objects.isNull(message = messages.peek())) {
-            if (message.isDeleted()) {
+            if (isValidMessage(message)) {
+                break;
+            } else{
                 messages.poll();
                 count++;
-            } else {
-                break;
             }
         }
-        
+    
         return count;
     }
 }
