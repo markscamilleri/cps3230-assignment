@@ -17,17 +17,17 @@ public class MessageTest {
     private Message message;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         message = new Message(src, trg, msg, fixedClock);
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         message = null;
     }
 
     @Test
-    public void constructorSetsFieldsCorrectly() throws Exception {
+    public void constructorSetsFieldsCorrectly() {
 
         Assert.assertEquals(src, message.getSourceAgentId());
         Assert.assertEquals(trg, message.getTargetAgentId());

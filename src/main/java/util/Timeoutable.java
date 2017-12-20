@@ -3,15 +3,20 @@ package util;
 import java.time.Instant;
 
 /**
- * @author Mark Said Camilleri
- * @version 16/12/17.
+ * An object that would timeout must extend this class.
+ * It provides functionality for marking this object as deleted
+ *
+ * For the timeout functionality, this must be used with a timeout
+ * handler
+ *
+ * @See util.Timeout
  */
-public abstract class Timeoutable extends Deletable implements Comparable<Timeoutable> {
+public abstract class Timeoutable implements Comparable<Timeoutable> {
     private Instant timeout;
-
+    private boolean deleted = false;
+    
     protected Timeoutable(Instant timeout) {
-        this.timeout = timeout;
-        Timeout.getInstance().register(this);
+        this(timeout, Timeout.getInstance());
     }
 
     protected Timeoutable(Instant timeout, Timeout timeoutHandler) {
@@ -26,5 +31,24 @@ public abstract class Timeoutable extends Deletable implements Comparable<Timeou
     @Override
     public int compareTo(Timeoutable timeoutable) {
         return this.timeout.compareTo(timeoutable.getTimeout());
+    }
+    
+    /**
+     * Flags this object as deleted
+     *
+     * @return true if successful, false otherwise.
+     */
+    public boolean delete() {
+        this.deleted = true;
+        return this.deleted;
+    }
+    
+    /**
+     * Returns whether this object is deleted or not
+     *
+     * @return true if it is flagged as deleted, false otherwise
+     */
+    public boolean isDeleted() {
+        return this.deleted;
     }
 }
