@@ -22,8 +22,7 @@ public abstract class Timeoutable implements Comparable<Timeoutable> {
         return timeout;
     }
 
-    @Override
-    public int compareTo(Timeoutable timeoutable) {
-        return this.timeout.compareTo(timeoutable.getTimeout());
+    public boolean isExpired() {
+        return Instant.now().isAfter(timeout);
     }
 }
