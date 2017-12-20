@@ -1,6 +1,5 @@
 package system;
 
-import util.Timeout;
 import util.Timeoutable;
 import util.Utils;
 
@@ -137,7 +136,6 @@ public class MessagingSystem {
      * Checks length of login key and that it is unique.
      */
     private boolean isValidRegister(String loginKeyToCheck) {
-        Timeout.getInstance().checkAndDelete();
         return loginKeyToCheck.length() == LOGIN_KEY_LENGTH
                 && agentInfos.values().stream().noneMatch(v -> v.loginKey.equals(loginKeyToCheck));
     }
@@ -152,16 +150,21 @@ public class MessagingSystem {
                 && !registeredLoginKey.isDeleted();
     }
 
-    private void deleteExpiredKeys() {
+    //@Override
+    protected int deleteExpiredKeys() {
 
+        int count = 0;
         for (AgentInfo info : agentInfos.values()) {
             if (info.loginKey.isDeleted()) {
                 info.loginKey = null;
+                count++;
             }
             if (info.sessionKey.isDeleted()) {
                 info.sessionKey = null;
+                count++;
             }
         }
+        return count;
     }
 
     private class AgentInfo {
@@ -195,28 +198,4 @@ public class MessagingSystem {
             this.key = key;
         }
     }
-
-    /*
-    private class SessionKey extends TemporaryKey {
-
-        public SessionKey(String key) {
-            this(key, Clock.systemUTC());
-        }
-
-        public SessionKey(String key, Clock clock) {
-            super(key, SESSION_KEY_TIME_LIMIT, clock);
-        }
-    }
-
-    private class LoginKey extends TemporaryKey {
-
-        public LoginKey(String key) {
-            this(key, Clock.systemUTC());
-        }
-
-        public LoginKey(String key, Clock clock) {
-            super(key, LOGIN_KEY_TIME_LIMIT, clock);
-        }
-    }
-     */
 }
