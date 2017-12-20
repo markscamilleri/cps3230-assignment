@@ -21,7 +21,7 @@ public class MailboxTest {
     private class SingleMessageMailbox extends Mailbox {
         SingleMessageMailbox(String ownerId) {
             super(ownerId);
-            this.container.add(mockMessage);
+            this.messages.add(mockMessage);
         }
     }
 

@@ -13,7 +13,7 @@ public class Mailbox {
     public final static int MAX_MESSAGES = 25;
     public final static Duration TIME_LIMIT = Duration.ofMinutes(30);
 
-    private final Queue<Message> messages = new LinkedBlockingQueue<>(MAX_MESSAGES);
+    protected final Queue<Message> messages = new LinkedBlockingQueue<>(MAX_MESSAGES);
 
     /**
      * The id of the owner of the mailbox.
@@ -67,8 +67,7 @@ public class Mailbox {
 
     /**
      * Checks if there are any objects that timed out.
-     * This must be called before any operation on the data structure
-     * storing timeoutable objects
+     * This must be called before any operation on messages
      *
      * @return the number of objects that timed out.
      */

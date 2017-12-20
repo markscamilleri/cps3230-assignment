@@ -4,14 +4,9 @@ import java.time.Instant;
 
 /**
  * An object that would timeout must extend this class.
- * It provides functionality for marking this object as deleted
- *
- * For the timeout functionality, this must be used with a timeout
- * handler
- *
- * @See util.TimeoutContainer
+ * It provides functionality for timing objects out
  */
-public abstract class Timeoutable implements Comparable<Timeoutable> {
+public abstract class Timeoutable {
     private Instant timeout;
     
     protected Timeoutable(Instant timeout) {
