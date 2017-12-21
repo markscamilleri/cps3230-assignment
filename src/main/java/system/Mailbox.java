@@ -10,18 +10,23 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class Mailbox {
     
-    public final static int MAX_MESSAGES = 25;
-    public final static Duration TIME_LIMIT = Duration.ofMinutes(30);
+    final static int MAX_MESSAGES = 25;
+    final static Duration MESSAGE_TIME_LIMIT = Duration.ofMinutes(30);
 
-    protected final Queue<Message> messages = new LinkedBlockingQueue<>(MAX_MESSAGES);
+    private final Queue<Message> messages;
 
     /**
      * The id of the owner of the mailbox.
      */
-    public final String ownerId;
+    private final String ownerId;
     
     Mailbox(String ownerId) {
+        this(ownerId, new LinkedBlockingQueue<>(MAX_MESSAGES));
+    }
+
+    Mailbox(String ownerId, Queue<Message> messages) {
         this.ownerId = ownerId;
+        this.messages = messages;
     }
     
     /**
@@ -30,7 +35,7 @@ public class Mailbox {
      * @return A message or null if the mailbox is empty.
      */
     public synchronized Message consumeNextMessage() {
-        checkAndDelete();
+        deleteExpiredMessages();
         return messages.poll();
     }
     
@@ -40,7 +45,7 @@ public class Mailbox {
      * @return true if there is at least one message in the mailbox.
      */
     public synchronized boolean hasMessages() {
-        checkAndDelete();
+        deleteExpiredMessages();
         return !messages.isEmpty();
     }
     
@@ -51,7 +56,7 @@ public class Mailbox {
      * @return true if successful, false otherwise.
      */
     public synchronized boolean addMessage(Message message) {
-        checkAndDelete();
+        deleteExpiredMessages();
         return isValidMessage(message) && messages.offer(message);
     }
 
@@ -71,7 +76,7 @@ public class Mailbox {
      *
      * @return the number of objects that timed out.
      */
-    protected int checkAndDelete() {
+    private int deleteExpiredMessages() {
         int count = 0;
         for (Message msg : messages) {
             if (msg.isExpired()){
