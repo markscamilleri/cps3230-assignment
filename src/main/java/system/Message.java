@@ -32,11 +32,11 @@ public class Message extends Timeoutable {
      * @param clock         Clock to use for setting the timestamp
      */
     Message(String sourceAgentId, String targetAgentId, String message, Clock clock) {
-        super(Instant.now(clock).plus(Mailbox.TIME_LIMIT));
+        super(Instant.now(clock).plus(Mailbox.MESSAGE_TIME_LIMIT));
         this.sourceAgentId = sourceAgentId;
         this.targetAgentId = targetAgentId;
         this.message = message;
-        this.timestamp = getTimeout().minus(Mailbox.TIME_LIMIT); //To keep the same timestamp
+        this.timestamp = getTimeout().minus(Mailbox.MESSAGE_TIME_LIMIT); //To keep the same timestamp
     }
 
     public String getSourceAgentId() {
