@@ -5,6 +5,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.time.Duration;
 import java.time.Instant;
 
 import static org.mockito.Mockito.when;
@@ -39,6 +40,7 @@ public class MailboxTest {
         when(mockMessage.getTargetAgentId()).thenReturn(OWNER_ID);
         when(mockMessage.getMessage()).thenReturn(MESSAGE);
         when(mockMessage.getTimestamp()).thenReturn(TIMESTAMP);
+        when(mockMessage.getTimeout()).thenReturn(TIMESTAMP.plus(Duration.ofMinutes(30)));
     }
 
     @After
@@ -112,6 +114,8 @@ public class MailboxTest {
     public void addMessageUnsuccessfulIfMessageTimestampIsTooLongAgo() {
 
         when(mockMessage.getTimestamp()).thenReturn(Instant.EPOCH);
+        when(mockMessage.getTimeout()).thenReturn(Instant.EPOCH.plus(Duration.ofMinutes(30)));
+        
         Assert.assertFalse(testMailbox.addMessage(mockMessage));
     }
 

@@ -1,30 +1,24 @@
 package system;
 
-import util.Timeout;
-
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * This class encapsulates the functionality of a mailbox that holds all messages for a user.
+ * This class encapsulates the functionality of a mailbox that holds all container for a user.
  */
 public class Mailbox {
     
     public final static int MAX_MESSAGES = 25;
     public final static Duration TIME_LIMIT = Duration.ofMinutes(30);
 
+    protected final Queue<Message> messages = new LinkedBlockingQueue<>(MAX_MESSAGES);
+
     /**
      * The id of the owner of the mailbox.
      */
     public final String ownerId;
-    
-    /**
-     * The list of unconsumed messages in the mailbox.
-     */
-    protected final Queue<Message> messages = new LinkedBlockingQueue<>(MAX_MESSAGES);
     
     Mailbox(String ownerId) {
         this.ownerId = ownerId;
@@ -36,17 +30,17 @@ public class Mailbox {
      * @return A message or null if the mailbox is empty.
      */
     public synchronized Message consumeNextMessage() {
-        removeExpiredMessages();
+        checkAndDelete();
         return messages.poll();
     }
     
     /**
-     * Checks if there are any messages in the mailbox.
+     * Checks if there are any container in the mailbox.
      *
      * @return true if there is at least one message in the mailbox.
      */
     public synchronized boolean hasMessages() {
-        removeExpiredMessages();
+        checkAndDelete();
         return !messages.isEmpty();
     }
     
@@ -57,7 +51,7 @@ public class Mailbox {
      * @return true if successful, false otherwise.
      */
     public synchronized boolean addMessage(Message message) {
-        removeExpiredMessages();
+        checkAndDelete();
         return isValidMessage(message) && messages.offer(message);
     }
 
@@ -66,29 +60,27 @@ public class Mailbox {
      * @param message the message to check
      * @return true if it is valid, false otherwise.
      */
-    private boolean isValidMessage(Message message) {
+    private boolean isValidMessage(Message  message) {
         return message.getTargetAgentId().equals(this.ownerId) &&
-                Instant.now().isBefore(message.getTimestamp().plus(TIME_LIMIT));
+                Instant.now().isBefore(message.getTimeout());
     }
-    
-    /**
-     * Removes all expired messages from the mailbox.
-     * @return the amount of messages that got deleted
-     */
-    private int removeExpiredMessages() {
-        Message message;
-        int count = 0;
 
-        Timeout.getInstance().checkAndDelete();
-        while (!Objects.isNull(message = messages.peek())) {
-            if (message.isDeleted()) {
-                messages.poll();
+    /**
+     * Checks if there are any objects that timed out.
+     * This must be called before any operation on messages
+     *
+     * @return the number of objects that timed out.
+     */
+    protected int checkAndDelete() {
+        int count = 0;
+        for (Message msg : messages) {
+            if (msg.isExpired()){
+                messages.remove(msg);
                 count++;
-            } else {
-                break;
             }
         }
-        
+
         return count;
+
     }
 }
