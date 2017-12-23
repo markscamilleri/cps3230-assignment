@@ -11,13 +11,13 @@ import java.io.IOException;
  * Servlet implementation class FirstServlet
  */
 @WebServlet("/FirstServlet")
-public class Serverlet extends HttpServlet {
+public class Servlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
      * Default constructor.
      */
-    public Serverlet() {
+    public Servlet() {
         // TODO Auto-generated constructor stub
     }
 
@@ -28,10 +28,10 @@ public class Serverlet extends HttpServlet {
 
         response.setContentType("text/html");
         response.getWriter().println(
-                "First Servlet on Jetty - Java Code Geeks\n" +
+                "First Servlet on Jetty\n" +
                 "<form method=\"POST\" action=\"FirstServlet\"/>\n" +
-                "<input name=\"field\" type=\"text\" />\n" +
-                "<input type=\"submit\" value=\"Submit\" />");
+                "<input name=\"field\" type=\"text\" /> <input type=\"submit\" value=\"Submit\" />"
+        );
     }
 
     /**
@@ -39,7 +39,7 @@ public class Serverlet extends HttpServlet {
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        response.getWriter().println("In POST - First Servlet content - Java code geeks");
+        response.getWriter().println("In POST - First Servlet content");
         response.getWriter().println(request.getParameter("field"));
     }
 

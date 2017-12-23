@@ -20,9 +20,9 @@ public class StartJettyHandler {
                     context.setContextPath("/");
                     server.setHandler(context);
 
-                    context.addServlet(new ServletHolder(new Serverlet()),"/*");
-                    //context.addServlet(new ServletHolder(new Serverlet("Buongiorno Mondo")),"/it/*");
-                    //context.addServlet(new ServletHolder(new Serverlet("Bonjour le Monde")),"/fr/*");
+                    context.addServlet(new ServletHolder(new Servlet()),"/*");
+                    //context.addServlet(new ServletHolder(new Servlet("Buongiorno Mondo")),"/it/*");
+                    //context.addServlet(new ServletHolder(new Servlet("Bonjour le Monde")),"/fr/*");
 
                     server.start();
                     server.join();
