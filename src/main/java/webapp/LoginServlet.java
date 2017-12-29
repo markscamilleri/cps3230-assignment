@@ -39,7 +39,7 @@ public class LoginServlet extends HttpServlet {
 
         final String id = request.getParameter("id");
         final String name = request.getParameter("name");
-        final Supervisor supervisor = new SupervisorImpl();
+        final Supervisor supervisor = new SupervisorImpl(messagingSystem);
 
         final Agent agent = new Agent(id, name, supervisor, messagingSystem);
         if (agent.login()) {
