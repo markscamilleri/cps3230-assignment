@@ -1,7 +1,5 @@
 package system;
 
-import java.util.Objects;
-
 class AgentInfo {
 
     final Mailbox mailbox;
