@@ -26,7 +26,8 @@ public class LoginServlet extends HttpServlet {
 
         response.setContentType("text/html");
         response.getWriter().println("" +
-                "<form method=\"POST\">" +
+                "<h1>Login Screen</h1>" +
+                "<form method=\"POST\" action=\"login\">" +
                 "   <input id=\"id\" name=\"id\" type=\"text\" placeholder=\"Agent ID\" /><br>" +
                 "   <input id==\"name\" name=\"name\" type=\"text\" placeholder=\"Agent name\" /><br>" +
                 "   <input id=\"submit\" type=\"submit\" value=\"Login\" />" +
@@ -39,10 +40,14 @@ public class LoginServlet extends HttpServlet {
         final String id = request.getParameter("id");
         final String name = request.getParameter("name");
         final Supervisor supervisor = new SupervisorImpl();
-        new Agent(id, name, supervisor, messagingSystem).login();
 
-        response.addCookie(new Cookie("id", id));
-        response.addCookie(new Cookie("name", name));
-        response.sendRedirect("/sendmail");
+        final Agent agent = new Agent(id, name, supervisor, messagingSystem);
+        if (agent.login()) {
+            response.addCookie(new Cookie("id", id));
+            response.addCookie(new Cookie("skey", agent.getSessionKey()));
+            response.sendRedirect("/sendmail");
+        } else {
+            response.sendRedirect("/login");
+        }
     }
 }
