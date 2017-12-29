@@ -10,14 +10,13 @@ import java.io.IOException;
 /**
  * Servlet implementation class FirstServlet
  */
-@WebServlet("/FirstServlet")
-public class Servlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
+@WebServlet("/login")
+public class LoginServlet extends HttpServlet {
 
     /**
      * Default constructor.
      */
-    public Servlet() {
+    public LoginServlet() {
         // TODO Auto-generated constructor stub
     }
 
@@ -27,10 +26,12 @@ public class Servlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         response.setContentType("text/html");
-        response.getWriter().println(
-                "First Servlet on Jetty\n" +
-                "<form method=\"POST\" action=\"FirstServlet\"/>\n" +
-                "<input name=\"field\" type=\"text\" /> <input type=\"submit\" value=\"Submit\" />"
+        response.getWriter().println("" +
+                "<form method=\"POST\" action=\"login\">" +
+                "   <input name=\"id\" type=\"text\" placeholder=\"Agent ID\" /><br>" +
+                "   <input name=\"name\" type=\"text\" placeholder=\"Agent name\" /><br>" +
+                "   <input type=\"submit\" value=\"Login\" />" +
+                "</form>"
         );
     }
 
@@ -39,8 +40,8 @@ public class Servlet extends HttpServlet {
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        response.getWriter().println("In POST - First Servlet content");
-        response.getWriter().println(request.getParameter("field"));
+        response.getWriter().println("Agent ID: " + request.getParameter("id"));
+        response.getWriter().println("Agent name: " + request.getParameter("name"));
     }
 
 }
