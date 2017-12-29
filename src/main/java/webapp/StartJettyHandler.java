@@ -9,7 +9,7 @@ import system.MessagingSystem;
 public class StartJettyHandler {
 
     private static final int PORT_NUMBER = 8080;
-
+    
     public static void startServer() {
 
         final MessagingSystem messagingSystem = new MessagingSystem();
@@ -25,7 +25,8 @@ public class StartJettyHandler {
                     server.setHandler(context);
 
                     context.addServlet(new ServletHolder(new LoginServlet(messagingSystem)),"/login/*");
-
+                    context.addServlet(new ServletHolder(new SendMailServlet(messagingSystem)), "/sendmail/*");
+                    
                     server.start();
                     server.join();
                 } catch (Exception e) {

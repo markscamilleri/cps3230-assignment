@@ -55,9 +55,15 @@
             <artifactId>modeljunit</artifactId>
             <version>LATEST</version>
             <scope>test</scope>
-        </dependency><dependency>
+        </dependency>
+        <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-servlet</artifactId>
+            <version>LATEST</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-rewrite</artifactId>
             <version>LATEST</version>
         </dependency>
         <dependency>
