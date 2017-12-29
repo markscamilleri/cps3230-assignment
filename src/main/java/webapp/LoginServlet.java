@@ -7,41 +7,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- * Servlet implementation class FirstServlet
- */
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
-    /**
-     * Default constructor.
-     */
     public LoginServlet() {
         // TODO Auto-generated constructor stub
     }
 
-    /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         response.setContentType("text/html");
         response.getWriter().println("" +
-                "<form method=\"POST\" action=\"login\">" +
+                "<form method=\"POST\" action=\"loggedin\">" +
                 "   <input name=\"id\" type=\"text\" placeholder=\"Agent ID\" /><br>" +
                 "   <input name=\"name\" type=\"text\" placeholder=\"Agent name\" /><br>" +
                 "   <input type=\"submit\" value=\"Login\" />" +
                 "</form>"
         );
     }
-
-    /**
-     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-     */
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-        response.getWriter().println("Agent ID: " + request.getParameter("id"));
-        response.getWriter().println("Agent name: " + request.getParameter("name"));
-    }
-
 }
