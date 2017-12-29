@@ -15,57 +15,65 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class AgentTest {
 
-    private final String CORRECT_AGENT_ID = "1234xy";
-    private final String LOGIN_KEY = Utils.getNRandomCharacters(10);
-    private Agent testAgent;
-    private Agent loggedInTestAgent;
+    private Agent testAgent_notLoggedIn;
+    private Agent testAgent_loggedIn;
     @Mock
     private Supervisor mockSupervisor;
     @Mock
     private MessagingSystem mockMessagingSystem;
 
+    // Main agent details
+    private final String AGENT_ID = "1234xy";
+    private final String AGENT_NAME = "abcdef";
+    private final String LOGIN_KEY = Utils.getNCharacters(10);
+    private final String SESSN_KEY = Utils.getNCharacters(50);
+
+    // For messaging
+    private final String TARGET_AGENT_ID = "5678ab";
+    private final String MESSAGE = "message";
+
     @Before
     public void setUp() {
-
-        testAgent = new Agent(CORRECT_AGENT_ID, "Gamri", mockSupervisor, mockMessagingSystem);
-        loggedInTestAgent = new LoggedInTestAgent(CORRECT_AGENT_ID, "Gamri",
-                mockSupervisor, mockMessagingSystem, Utils.getNRandomCharacters(50));
+        testAgent_notLoggedIn = new Agent(AGENT_ID, AGENT_NAME, mockSupervisor, mockMessagingSystem);
+        testAgent_loggedIn = new Agent(AGENT_ID, AGENT_NAME, mockSupervisor, mockMessagingSystem, SESSN_KEY);
     }
 
     @After
     public void tearDown() {
         mockSupervisor = null;
         mockMessagingSystem = null;
+        testAgent_notLoggedIn = null;
+        testAgent_loggedIn = null;
     }
 
     @Test
     public void testLoginSuccessfulReturnsTrue() {
-        when(mockSupervisor.getLoginKey(CORRECT_AGENT_ID)).thenReturn(LOGIN_KEY);
-        when(mockMessagingSystem.login(CORRECT_AGENT_ID, LOGIN_KEY)).thenReturn(Utils.getNRandomCharacters(50));
+        when(mockSupervisor.getLoginKey(AGENT_ID)).thenReturn(LOGIN_KEY);
+        when(mockMessagingSystem.login(AGENT_ID, LOGIN_KEY)).thenReturn(Utils.getNCharacters(50));
 
-        Assert.assertTrue(testAgent.login());
+        Assert.assertTrue(testAgent_notLoggedIn.login());
     }
 
     @Test
     public void testLoginNoLoginKeyReturnsFalse() {
         when(mockSupervisor.getLoginKey(Mockito.anyString())).thenReturn(null);
 
-        Assert.assertFalse(testAgent.login());
+        Assert.assertFalse(testAgent_notLoggedIn.login());
     }
 
     @Test
     public void testLoginNoSessionKeyReturnsFalse() {
-        when(mockSupervisor.getLoginKey(CORRECT_AGENT_ID)).thenReturn(LOGIN_KEY);
-        when(mockMessagingSystem.login(CORRECT_AGENT_ID, LOGIN_KEY)).thenReturn(null);
+        when(mockSupervisor.getLoginKey(AGENT_ID)).thenReturn(LOGIN_KEY);
+        when(mockMessagingSystem.login(AGENT_ID, LOGIN_KEY)).thenReturn(null);
 
-        Assert.assertFalse(testAgent.login());
+        Assert.assertFalse(testAgent_notLoggedIn.login());
     }
 
     @Test
     public void testSendMessageNotLoggedInFailure() {
         // by default agent is not logged in
 
-        Assert.assertFalse(testAgent.sendMessage("Agent P", "Hello"));
+        Assert.assertFalse(testAgent_notLoggedIn.sendMessage(TARGET_AGENT_ID, MESSAGE));
     }
 
     @Test
@@ -73,9 +81,9 @@ public class AgentTest {
         when(mockMessagingSystem.sendMessage(Mockito.anyString(),
                 Mockito.anyString(),
                 Mockito.anyString(),
-                Mockito.anyString())).thenReturn(MessagingSystemStatusCodes.GENERIC_ERROR.getValue());
+                Mockito.anyString())).thenReturn(StatusCodes.GENERIC_ERROR);
 
-        Assert.assertFalse(loggedInTestAgent.sendMessage("Agent P", "Hello"));
+        Assert.assertFalse(testAgent_loggedIn.sendMessage(TARGET_AGENT_ID, MESSAGE));
     }
 
     @Test
@@ -84,17 +92,8 @@ public class AgentTest {
                 Mockito.anyString(),
                 Mockito.anyString(),
                 Mockito.anyString())).thenReturn(
-                MessagingSystemStatusCodes.OK.getValue());
+                StatusCodes.OK);
 
-        Assert.assertTrue(loggedInTestAgent.sendMessage("Agent P", "Hello"));
-
-    }
-
-    private class LoggedInTestAgent extends Agent {
-        LoggedInTestAgent(String id, String name, Supervisor supervisor,
-                          MessagingSystem messagingSystem, String sessionKey) {
-            super(id, name, supervisor, messagingSystem);
-            this.sessionKey = sessionKey;
-        }
+        Assert.assertTrue(testAgent_loggedIn.sendMessage(TARGET_AGENT_ID, MESSAGE));
     }
 }
