@@ -7,12 +7,14 @@ import org.eclipse.jetty.servlet.ServletHolder;
 
 public class StartJettyHandler {
 
+    private static final int PORT_NUMBER = 8080;
+
     public static void startServer() {
 
         final Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                final Server server = new Server(8080);
+                final Server server = new Server(PORT_NUMBER);
                 try {
                     server.getConnectors()[0].getConnectionFactory(HttpConnectionFactory.class);
 
