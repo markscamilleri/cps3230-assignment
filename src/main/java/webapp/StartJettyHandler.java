@@ -4,6 +4,7 @@ import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import system.MessagingSystem;
 
 public class StartJettyHandler {
 
@@ -11,6 +12,7 @@ public class StartJettyHandler {
 
     public static void startServer() {
 
+        final MessagingSystem messagingSystem = new MessagingSystem();
         final Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -22,7 +24,7 @@ public class StartJettyHandler {
                     context.setContextPath("/");
                     server.setHandler(context);
 
-                    context.addServlet(new ServletHolder(new LoginServlet()),"/login/*");
+                    context.addServlet(new ServletHolder(new LoginServlet(messagingSystem)),"/login/*");
 
                     server.start();
                     server.join();
