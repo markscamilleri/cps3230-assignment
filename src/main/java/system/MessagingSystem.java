@@ -47,11 +47,7 @@ public class MessagingSystem {
         if (isValidRegister(loginKey)) {
 
             // Obtain (or create) agent info and set login key
-            AgentInfo info = agentInfos.get(agentId);
-            if (info == null) {
-                info = new AgentInfo(agentId);
-                agentInfos.put(agentId, info);
-            }
+            final AgentInfo info = agentInfos.computeIfAbsent(agentId, AgentInfo::new);
             info.loginKey = new TemporaryKey(loginKey, LOGIN_KEY_TIME_LIMIT);
             return true;
         } else {
