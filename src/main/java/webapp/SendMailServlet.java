@@ -28,7 +28,7 @@ public class SendMailServlet extends HttpServlet {
         response.setContentType("text/html");
 
         final Cookie idCookie = Utils.findCookie(request.getCookies(), CookieNames.ID.name());
-        final Cookie skCookie = Utils.findCookie(request.getCookies(), CookieNames.SKEY.name());
+        final Cookie skCookie = Utils.findCookie(request.getCookies(), CookieNames.SESSION_KEY.name());
 
         if (idCookie == null || skCookie == null) {
             response.sendRedirect("/login");
@@ -37,7 +37,7 @@ public class SendMailServlet extends HttpServlet {
             final String sessionKey = skCookie.getValue();
 
             String sendingMessageStatusText = "";
-            Cookie statusCookie = Utils.findCookie(request.getCookies(), CookieNames.MESSAGE_SENDING_STATUS.name());
+            final Cookie statusCookie = Utils.findCookie(request.getCookies(), CookieNames.MESSAGE_SENDING_STATUS.name());
             if (statusCookie != null) {
                 if (statusCookie.getValue().equals(StatusCodes.OK.name()))
                     sendingMessageStatusText = "Message Sent Successfully";
@@ -82,7 +82,7 @@ public class SendMailServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         final Cookie idCookie = Utils.findCookie(request.getCookies(), CookieNames.ID.name());
-        final Cookie skCookie = Utils.findCookie(request.getCookies(), CookieNames.SKEY.name());
+        final Cookie skCookie = Utils.findCookie(request.getCookies(), CookieNames.SESSION_KEY.name());
 
         if (idCookie == null || skCookie == null) {
             response.sendRedirect("/login");
@@ -93,7 +93,7 @@ public class SendMailServlet extends HttpServlet {
             final String destination = request.getParameter("destination");
             final String message = request.getParameter("messageBody");
 
-            StatusCodes status = messagingSystem.sendMessage(sessionKey, id, destination, message);
+            final StatusCodes status = messagingSystem.sendMessage(sessionKey, id, destination, message);
 
             switch (status) {
                 case SESSION_KEY_UNRECOGNIZED:

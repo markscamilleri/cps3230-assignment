@@ -44,7 +44,7 @@ public class LoginServlet extends HttpServlet {
         final Agent agent = new Agent(id, name, supervisor, messagingSystem);
         if (agent.login()) {
             response.addCookie(new Cookie(CookieNames.ID.name(), id));
-            response.addCookie(new Cookie(CookieNames.SKEY.name(), agent.getSessionKey()));
+            response.addCookie(new Cookie(CookieNames.SESSION_KEY.name(), agent.getSessionKey()));
             response.sendRedirect("/sendmail");
         } else {
             response.sendRedirect("/login");

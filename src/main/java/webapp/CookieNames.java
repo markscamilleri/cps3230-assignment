@@ -2,6 +2,6 @@ package webapp;
 
 public enum CookieNames {
     ID,
-    SKEY,
+    SESSION_KEY,
     MESSAGE_SENDING_STATUS
 }
