@@ -5,6 +5,7 @@ import util.Utils;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static system.StatusCodes.*;
 
@@ -165,8 +166,9 @@ public class MessagingSystem {
      * Checks length of login key and that it is unique.
      */
     private boolean isValidRegister(String loginKeyToCheck) {
+        final Stream<AgentInfo> infos = agentInfos.values().stream();
         return loginKeyToCheck.length() == LOGIN_KEY_LENGTH
-                && agentInfos.values().stream().noneMatch(v -> v.loginKey.equals(loginKeyToCheck));
+                && infos.noneMatch(v -> v.loginKey != null && v.loginKey.equals(loginKeyToCheck));
     }
 
     /**
