@@ -9,4 +9,6 @@ class AgentInfo {
     AgentInfo(String agentId) {
         this.mailbox = new Mailbox(agentId);
     }
+
+    // todo: add isRegistered and isLoggedIn?
 }
