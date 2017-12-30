@@ -7,7 +7,7 @@ import java.time.Instant;
  * It provides functionality for timing objects out
  */
 public abstract class Timeoutable {
-    private Instant timeout;
+    private final Instant timeout;
 
     protected Timeoutable(Instant timeout) {
         this.timeout = timeout;
