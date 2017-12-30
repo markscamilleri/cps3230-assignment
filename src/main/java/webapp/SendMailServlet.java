@@ -52,7 +52,7 @@ public class SendMailServlet extends HttpServlet {
                 else if (statusCookie.getValue().equals(StatusCodes.GENERIC_ERROR.name()))
                     sendingMessageStatusText = "An error occured when sending your message";
                     // these should not happen, since the idCookie or skCookie should be deleted.
-                else if (statusCookie.getValue().equals(StatusCodes.SESSION_KEY_UNRECOGNIZED) ||
+                else if (statusCookie.getValue().equals(StatusCodes.SESSION_KEY_UNRECOGNIZED.name()) ||
                         statusCookie.getValue().equals(StatusCodes.AGENT_NOT_LOGGED_IN.name()) ||
                         statusCookie.getValue().equals(StatusCodes.SESSION_KEY_INVALID_LENGTH.name()))
                     response.sendRedirect("/login");
