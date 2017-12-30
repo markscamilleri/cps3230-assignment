@@ -136,8 +136,8 @@ public class MessagingSystem {
      * @return true if the agent is logged in and has messages, false otherwise
      */
     public boolean agentHasMessages(String sessionKey, String agentId) {
-    
-        AgentInfo agentInfo = agentInfos.get(agentId);
+
+        final AgentInfo agentInfo = agentInfos.get(agentId);
         return agentInfo != null &&
                        agentInfo.sessionKey != null &&
                        agentInfo.sessionKey.equals(sessionKey) &&
@@ -151,8 +151,8 @@ public class MessagingSystem {
      *  messages, null otherwise
      */
     public Message getNextMessage(String sessionKey, String agentID) {
-        AgentInfo agentInfo = agentInfos.get(agentID);
-        
+
+        final AgentInfo agentInfo = agentInfos.get(agentID);
         if(agentInfo != null &&
                    agentInfo.sessionKey != null &&
                    agentInfo.sessionKey.equals(sessionKey)){
