@@ -5,18 +5,23 @@ package system;
  */
 public class Agent {
 
-    public final String id;
-    public final String name;
-    public final Supervisor supervisor;
-    public final MessagingSystem messagingSystem;
+    private final String id;
+    private final String name;
+    private final Supervisor supervisor;
+    private final MessagingSystem messagingSystem;
 
-    protected String sessionKey = null;
+    private String sessionKey = null;
 
-    public Agent(String id, String name, Supervisor supervisor, MessagingSystem messagingSystem) {
+    Agent(String id, String name, Supervisor supervisor, MessagingSystem messagingSystem) {
         this.id = id;
         this.name = name;
         this.supervisor = supervisor;
         this.messagingSystem = messagingSystem;
+    }
+
+    Agent(String id, String name, Supervisor supervisor, MessagingSystem messagingSystem, String sessionKey) {
+        this(id, name, supervisor, messagingSystem);
+        this.sessionKey = sessionKey;
     }
 
     /**
@@ -47,8 +52,8 @@ public class Agent {
         if (sessionKey == null) {
             return false;
         } else {
-            final String temp = messagingSystem.sendMessage(sessionKey, id, destinationAgentId, message);
-            return temp.equals(MessagingSystemStatusCodes.OK.getValue());
+            final StatusCodes temp = messagingSystem.sendMessage(sessionKey, id, destinationAgentId, message);
+            return temp == StatusCodes.OK;
         }
     }
 }

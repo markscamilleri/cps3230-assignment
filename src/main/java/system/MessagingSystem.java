@@ -1,40 +1,32 @@
 package system;
 
-import util.Timeoutable;
 import util.Utils;
 
-import java.time.Clock;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
-import static system.MessagingSystemStatusCodes.*;
+import static system.StatusCodes.*;
 
 public class MessagingSystem {
 
-    private static MessagingSystem INSTANCE = null;
+    final static Duration LOGIN_KEY_TIME_LIMIT = Duration.ofMinutes(1);
+    final static Duration SESSION_KEY_TIME_LIMIT = Duration.ofMinutes(10);
 
-    public final static Duration LOGIN_KEY_TIME_LIMIT = Duration.ofMinutes(1);
-    public final static Duration SESSION_KEY_TIME_LIMIT = Duration.ofMinutes(10);
+    final static int LOGIN_KEY_LENGTH = 10;
+    final static int SESSION_KEY_LENGTH = 50;
 
-    public final static int LOGIN_KEY_LENGTH = 10;
-    public final static int SESSION_KEY_LENGTH = 50;
+    final static int MAX_MESSAGE_LENGTH = 140;
+    final static String BLOCKED_WORDS[] = {"recipe", "ginger", "nuclear"};
 
-    public final static int MAX_MESSAGE_LENGTH = 140;
-    public final static String BLOCKED_WORDS[] = {"recipe", "ginger", "nuclear"};
+    private final Map<String, AgentInfo> agentInfos;
 
-    private Map<String, AgentInfo> agentInfos = new HashMap<>();
-
-    private MessagingSystem() {
+    public MessagingSystem() {
+        this(new HashMap<>());
     }
 
-    public static MessagingSystem getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new MessagingSystem();
-        }
-        return INSTANCE;
+    MessagingSystem(final Map<String, AgentInfo> agentInfos) {
+        this.agentInfos = agentInfos;
     }
 
     /**
@@ -80,6 +72,7 @@ public class MessagingSystem {
 
         final AgentInfo info = agentInfos.get(agentId);
         if (info != null && isValidLogin(info.loginKey, loginKey)) {
+            info.loginKey = null; // login key not needed anymore
             info.sessionKey = new TemporaryKey(Utils.getNRandomCharacters(SESSION_KEY_LENGTH), SESSION_KEY_TIME_LIMIT);
             return info.sessionKey.key;
         } else {
@@ -101,36 +94,39 @@ public class MessagingSystem {
      * @param message
      * @return "OK" if the message is sent, or an appropriate error if not.
      */
-    public String sendMessage(String sessionKey, String sourceAgentId, String targetAgentId, String message) {
+    public StatusCodes sendMessage(String sessionKey, String sourceAgentId, String targetAgentId, String message) {
         deleteExpiredKeys();
 
         final AgentInfo sourceAgentInfo = agentInfos.get(sourceAgentId);
         final AgentInfo targetAgentInfo = agentInfos.get(targetAgentId);
 
         if (sourceAgentInfo == null || targetAgentInfo == null) {
-            return AGENT_DOES_NOT_EXIST.getValue();
+            return AGENT_DOES_NOT_EXIST;
 
         } else if (sourceAgentInfo.sessionKey == null) {
-            return AGENT_NOT_LOGGED_IN.getValue();
+            return AGENT_NOT_LOGGED_IN;
+
+        } else if (sourceAgentInfo.sessionKey.key.length() != SESSION_KEY_LENGTH) {
+            return SESSION_KEY_INVALID_LENGTH; // todo: remove this check?
 
         } else if (!sourceAgentInfo.sessionKey.equals(sessionKey)) {
-            return SESSION_KEY_UNRECOGNIZED.getValue();
+            return SESSION_KEY_UNRECOGNIZED;
 
         } else if (message.length() > MAX_MESSAGE_LENGTH) {
-            return MESSAGE_LENGTH_EXCEEDED.getValue();
+            return MESSAGE_LENGTH_EXCEEDED;
 
         } else {
             for (final String word : BLOCKED_WORDS) {
                 if (message.contains(word)) {
-                    return MESSAGE_CONTAINS_BLOCKED_WORD.getValue();
+                    return MESSAGE_CONTAINS_BLOCKED_WORD;
                 }
             }
 
             final Message toSend = new Message(sourceAgentId, targetAgentId, message);
             if (targetAgentInfo.mailbox.addMessage(toSend)) {
-                return MessagingSystemStatusCodes.OK.getValue();
+                return StatusCodes.OK;
             } else {
-                return MessagingSystemStatusCodes.INVALID_MESSAGE.getValue();
+                return StatusCodes.FAILED_TO_ADD_TO_MAILBOX;
             }
         }
     }
@@ -153,56 +149,14 @@ public class MessagingSystem {
                 && !registeredLoginKey.isExpired();
     }
 
-    //@Override
-    protected int deleteExpiredKeys() {
-
-        int count = 0;
+    private void deleteExpiredKeys() {
         for (AgentInfo info : agentInfos.values()) {
             if (info.loginKey != null && info.loginKey.isExpired()) {
                 info.loginKey = null;
-                count++;
             }
             if (info.sessionKey != null && info.sessionKey.isExpired()) {
                 info.sessionKey = null;
-                count++;
             }
-        }
-        return count;
-    }
-
-    private class AgentInfo {
-
-        final String agentId;
-        final Mailbox mailbox;
-        TemporaryKey loginKey = null;
-        TemporaryKey sessionKey = null;
-
-        AgentInfo(String agentId) {
-            this.agentId = agentId;
-            this.mailbox = new Mailbox(agentId);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(agentId);
-        }
-    }
-
-    private class TemporaryKey extends Timeoutable {
-
-        public final String key;
-
-        public TemporaryKey(String key, Duration timeLimit) {
-            this(key, timeLimit, Clock.systemUTC());
-        }
-
-        public TemporaryKey(String key, Duration timeLimit, Clock clock) {
-            super(Instant.now(clock).plus(timeLimit));
-            this.key = key;
-        }
-
-        public boolean equals(String anotherKey) {
-            return this.key.equals(anotherKey);
         }
     }
 }
