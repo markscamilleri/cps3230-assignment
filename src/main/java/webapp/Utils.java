@@ -1,6 +1,7 @@
 package webapp;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 
 public class Utils {
 
@@ -22,5 +23,15 @@ public class Utils {
         }
 
         return null;
+    }
+
+    public static void deleteCookie(Cookie cookie, HttpServletResponse response) {
+        cookie.setValue(null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+    }
+
+    public static void deleteCookie(String cookieName, HttpServletResponse response) {
+        deleteCookie(new Cookie(cookieName, null), response);
     }
 }

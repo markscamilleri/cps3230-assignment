@@ -56,24 +56,26 @@ public class SendMailServlet extends HttpServlet {
                         statusCookie.getValue().equals(StatusCodes.AGENT_NOT_LOGGED_IN.name()) ||
                         statusCookie.getValue().equals(StatusCodes.SESSION_KEY_INVALID_LENGTH.name()))
                     response.sendRedirect("/login");
+
+                Utils.deleteCookie(statusCookie, response);
             }
 
             final boolean hasMessages = messagingSystem.agentHasMessages(sessionKey, id);
             final String mailboxMessage = hasMessages ? "You have new messages" : "You have no new messages";
 
             response.getWriter().println("" +
-                    "<h1>Mailbox</h1>\n" +
-                    "<h2>Hello Agent " + id + "</h2>\n" +
+                    "<h1>Mailbox</h1>" +
+                    "<h2>Hello Agent " + id + "</h2>" +
                     "<p class=\"notification\">" + sendingMessageStatusText + "</p>" +
-                    "    <div id=\"mailboxBlock\" class=\"inbox\">\n" +
-                    "    <p id=\"mailboxMessagae\">" + mailboxMessage + "</p>\n" +
-                    "    <button id=\"consumeMessage\" " + (hasMessages ? "" : "disabled") + "> Get Next Message </button>\n" +
-                    "</div><br>\n" +
+                    "    <div id=\"mailboxBlock\" class=\"inbox\">" +
+                    "    <p id=\"mailboxMessagae\">" + mailboxMessage + "</p>" +
+                    "    <a href=\"/readmessage\"><button id=\"consumeMessage\" " + (hasMessages ? "" : "disabled") + "> Get Next Message </button></a>" +
+                    "</div><br>" +
                     "<div id=\"composeFormBlock\" class=\"compose\">" +
                     "    <form id=\"composeForm\" method=\"POST\" action=\"/sendmail\"/>" +
-                    "    <input class=\"form-input\" type=\"text\" name=\"destination\" id=\"destination\" placeholder=\"To Agent ID:\" />" +
-                    "    <textarea class=\"form-input\" name=\"messageBody\" id=\"messageBody\" placeholder=\"Message Body (140 characters)\" rows=\"2\" cols=\"70\"></textarea>" +
-                    "    <button id=\"submit\" type=\"submit\">Submit</button>" +
+                    "    <input class=\"form-input\" type=\"text\" name=\"destination\" id=\"destination\" placeholder=\"To Agent ID:\" /><br>" +
+                    "    <textarea class=\"form-input\" name=\"messageBody\" id=\"messageBody\" placeholder=\"Message Body (140 characters)\" rows=\"2\" cols=\"70\"></textarea><br>" +
+                    "    <button id=\"submit\" type=\"submit\">Send message</button>" +
                     "</div>"
             );
         }
@@ -99,10 +101,8 @@ public class SendMailServlet extends HttpServlet {
                 case SESSION_KEY_UNRECOGNIZED:
                 case AGENT_NOT_LOGGED_IN:
                 case SESSION_KEY_INVALID_LENGTH:
-                    idCookie.setMaxAge(0);
-                    idCookie.setValue(null);
-                    skCookie.setMaxAge(0);
-                    skCookie.setValue(null);
+                    Utils.deleteCookie(idCookie, response);
+                    Utils.deleteCookie(skCookie, response);
                     break;
 
                 default:
