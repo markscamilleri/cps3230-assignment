@@ -2,10 +2,6 @@ package webapp;
 
 import javax.servlet.http.Cookie;
 
-/**
- * @author Mark Said Camilleri
- * @version 29/12/17.
- */
 public class Utils {
     
     /**
