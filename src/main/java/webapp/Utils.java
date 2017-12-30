@@ -9,9 +9,14 @@ public class Utils {
      *
      * @param cookies    The list of cookies to search
      * @param cookieName The cookie to look for
-     * @return The cookie requested, null if not found.
+     * @return The cookie requested, null if not found or if cookies was null
      */
     public static Cookie findCookie(Cookie[] cookies, String cookieName) {
+
+        if (cookies == null) {
+            return null;
+        }
+
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals(cookieName)) return cookie;
         }
