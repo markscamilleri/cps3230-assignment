@@ -43,15 +43,15 @@ public class ReadMessageServlet extends HttpServlet {
                         "    <b>Timestamp</b>: " + message.getTimestamp() + "<br>" +
                         "    <b>Message</b>: " + message.getMessage() + "<br>" +
                         "</p>" +
-                        "<a href=\"/readmessage\"><button id=\"consumeAnother\"> Consume another message </button></a><br>" +
-                        "<a href=\"/sendmail\"><button id=\"backToSendMail\"> Go back </button></a>"
+                        Utils.getHrefButton("/readmessage", "consumeAnother", "Consume another message", false) + "<br>" +
+                        Utils.getHrefButton("/sendmail", "backToMailbox", "Go back", false)
                 );
             } else {
                 response.getWriter().println("" +
                         "<h1>Latest Message</h1>" +
                         "<p>You have no new messages</p>" +
-                        "<a href=\"/readmessage\"><button id=\"consume\"> Retry </button></a><br>" +
-                        "<a href=\"/sendmail\"><button id=\"backToSendMail\"> Go back </button></a>"
+                        Utils.getHrefButton("/readmessage", "consume", "Try again", false) + "<br>" +
+                        Utils.getHrefButton("/sendmail", "backToMailbox", "Go back", false)
                 );
             }
         }

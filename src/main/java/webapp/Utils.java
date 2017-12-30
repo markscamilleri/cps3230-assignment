@@ -34,4 +34,24 @@ public class Utils {
     public static void deleteCookie(String cookieName, HttpServletResponse response) {
         deleteCookie(new Cookie(cookieName, null), response);
     }
+
+    public static String getHrefButton(String href, String id, String text, boolean disabled) {
+        return "<a href=\"" + href + "\"><button id=\"" + id + "\" " + (disabled ? "disabled" : " ") + "> " + text + " </button></a>";
+    }
+
+    public static String getSubmitButton(String id, String text) {
+        return "<button id=\"" + id + "\" type=\"submit\"> " + text + " </button>";
+    }
+
+    public static String getInputField(String id, String name, String placeholder, boolean required) {
+        return "<input id=\"" + id + "\" name=\"" + name + "\" class=\"form-input\" type=\"text\" placeholder=\"" + placeholder + "\" " + (required ? "required " : " ") + "/>";
+    }
+
+    public static String getPostForm(String id, String action) {
+        return "<form id=\"" + id + "\" method=\"POST\" action=\"" + action + "\"/>";
+    }
+
+    public static String getTextArea(String id, String name, String placeholder, int rows, int cols) {
+        return "<textarea id=\"" + id + "\" name=\"" + name + "\" class=\"form-input\" placeholder=\"" + placeholder + "\" rows=\"" + rows + "\" cols=\"" + cols + "\"></textarea>";
+    }
 }

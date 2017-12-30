@@ -27,11 +27,10 @@ public class LoginServlet extends HttpServlet {
         response.setContentType("text/html");
         response.getWriter().println("" +
                 "<h1>Login Screen</h1>" +
-                "<form method=\"POST\" action=\"login\">" +
-                "   <input id=\"id\" name=\"id\" type=\"text\" placeholder=\"Agent ID\" /><br>" +
-                "   <input id==\"name\" name=\"name\" type=\"text\" placeholder=\"Agent name\" /><br>" +
-                "   <input id=\"submit\" type=\"submit\" value=\"Login\" />" +
-                "</form>"
+                Utils.getPostForm("loginForm", "/login") +
+                Utils.getInputField("id", "id", "Agent ID", true) + "<br>" +
+                Utils.getInputField("name", "idname", "Agent name", true) + "<br>" +
+                Utils.getSubmitButton("submit", "Login")
         );
     }
 

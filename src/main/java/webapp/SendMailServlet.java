@@ -67,15 +67,15 @@ public class SendMailServlet extends HttpServlet {
                     "<h1>Mailbox</h1>" +
                     "<h2>Hello Agent " + id + "</h2>" +
                     "<p class=\"notification\">" + sendingMessageStatusText + "</p>" +
-                    "    <div id=\"mailboxBlock\" class=\"inbox\">" +
+                    "<div id=\"mailboxBlock\" class=\"inbox\">" +
                     "    <p id=\"mailboxMessagae\">" + mailboxMessage + "</p>" +
-                    "    <a href=\"/readmessage\"><button id=\"consumeMessage\" " + (hasMessages ? "" : "disabled") + "> Get Next Message </button></a>" +
+                    "    " + Utils.getHrefButton("/readmessage", "consumeMessage", "Get Next Message", !hasMessages) +
                     "</div><br>" +
                     "<div id=\"composeFormBlock\" class=\"compose\">" +
-                    "    <form id=\"composeForm\" method=\"POST\" action=\"/sendmail\"/>" +
-                    "    <input class=\"form-input\" type=\"text\" name=\"destination\" id=\"destination\" placeholder=\"To Agent ID:\" /><br>" +
-                    "    <textarea class=\"form-input\" name=\"messageBody\" id=\"messageBody\" placeholder=\"Message Body (140 characters)\" rows=\"2\" cols=\"70\"></textarea><br>" +
-                    "    <button id=\"submit\" type=\"submit\">Send message</button>" +
+                    "    " + Utils.getPostForm("composeForm", "/sendmail") +
+                    "    " + Utils.getInputField("destination", "destination", "To Agent ID:", true) + "<br>" +
+                    "    " + Utils.getTextArea("messageBody", "messageBody", "Message Body (140 characters)", 2, 70) + "<br>" +
+                    "    " + Utils.getSubmitButton("submit", "Send message") +
                     "</div>"
             );
         }
