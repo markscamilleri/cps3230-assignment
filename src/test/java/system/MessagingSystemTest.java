@@ -15,9 +15,11 @@ public class MessagingSystemTest {
     // Valid login keys (one per agent)
     private final String VALID_LKEY_1 = Utils.getNCharacters(LOGIN_KEY_LENGTH, "1");
     private final String VALID_LKEY_2 = Utils.getNCharacters(LOGIN_KEY_LENGTH, "2");
+
     // Valid session keys (one per agent)
     private final String VALID_SKEY_1 = Utils.getNCharacters(SESSION_KEY_LENGTH, "1");
     private final String VALID_SKEY_2 = Utils.getNCharacters(SESSION_KEY_LENGTH, "2");
+
     // Two agent IDs and valid message
     private final String AID_1 = "1234xy";
     private final String AID_2 = "5678ab";
