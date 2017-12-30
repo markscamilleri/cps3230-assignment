@@ -154,7 +154,7 @@ public class MessagingSystem {
     public Message getNextMessage(String sessionKey, String agentID) {
 
         final AgentInfo agentInfo = agentInfos.get(agentID);
-        if (agentInfo != null &&
+        if (agentInfo == null ||
                 agentInfo.sessionKey != null &&
                 agentInfo.sessionKey.equals(sessionKey)) {
             return null;
