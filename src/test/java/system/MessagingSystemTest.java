@@ -148,8 +148,10 @@ public class MessagingSystemTest {
         addAgent(agentInfos, 2, AddType.REGISTERED); // target doesn't have to be logged in
 
         for (String bw : BLOCKED_WORDS) {
-            final String msg = VALID_MSG + bw + VALID_MSG;
-            Assert.assertEquals(system.sendMessage(VALID_SKEY_1, AID_1, AID_2, msg), MESSAGE_CONTAINS_BLOCKED_WORD);
+            final String msg1 = VALID_MSG + bw.toLowerCase() + VALID_MSG; // message with lowercase blocked word
+            final String msg2 = VALID_MSG + bw.toUpperCase() + VALID_MSG; // message with uppercase blocked word
+            Assert.assertEquals(system.sendMessage(VALID_SKEY_1, AID_1, AID_2, msg1), MESSAGE_CONTAINS_BLOCKED_WORD);
+            Assert.assertEquals(system.sendMessage(VALID_SKEY_1, AID_1, AID_2, msg2), MESSAGE_CONTAINS_BLOCKED_WORD);
         }
     }
 

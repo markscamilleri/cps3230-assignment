@@ -118,7 +118,7 @@ public class MessagingSystem {
 
         } else {
             for (final String word : BLOCKED_WORDS) {
-                if (message.contains(word)) {
+                if (message.toLowerCase().contains(word)) {
                     return MESSAGE_CONTAINS_BLOCKED_WORD;
                 }
             }
