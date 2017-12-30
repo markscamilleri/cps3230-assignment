@@ -33,8 +33,8 @@ public class SendMailServlet extends HttpServlet {
     
         response.setContentType("text/html");
     
-        Cookie idCookie = Utils.findCookie(request.getCookies(), "id");
-        Cookie skCookie = Utils.findCookie(request.getCookies(), "skey");
+        Cookie idCookie = Utils.findCookie(request.getCookies(), CookieNames.ID.name());
+        Cookie skCookie = Utils.findCookie(request.getCookies(), CookieNames.SKEY.name());
     
         if (idCookie == null || skCookie == null) {
             response.sendRedirect("/login");
