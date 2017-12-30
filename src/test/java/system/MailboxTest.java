@@ -18,15 +18,13 @@ import static system.Mailbox.MAX_MESSAGES;
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class MailboxTest {
 
+    private final String OWNER_ID = "1234xy", SENDER_ID = "5678vw", MESSAGE = "message";
+    private final Instant TIMESTAMP = Instant.now(); // todo: should not use this
     private Mailbox testEmptyMailbox;
     private Mailbox testMailboxWith1Message;
     private Queue<Message> messageQueue;
-
     @Mock
     private Message mockMessage;
-
-    private final String OWNER_ID = "1234xy", SENDER_ID = "5678vw", MESSAGE = "message";
-    private final Instant TIMESTAMP = Instant.now(); // todo: should not use this
 
     @Before
     public void setUp() {
@@ -119,7 +117,7 @@ public class MailboxTest {
 
         when(mockMessage.getTimestamp()).thenReturn(Instant.EPOCH);
         when(mockMessage.getTimeout()).thenReturn(Instant.EPOCH.plus(Duration.ofMinutes(30)));
-        
+
         Assert.assertFalse(testEmptyMailbox.addMessage(mockMessage));
     }
 

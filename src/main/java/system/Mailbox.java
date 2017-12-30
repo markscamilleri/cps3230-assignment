@@ -9,7 +9,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * This class encapsulates the functionality of a mailbox that holds all container for a user.
  */
 public class Mailbox {
-    
+
     final static int MAX_MESSAGES = 25;
     final static Duration MESSAGE_TIME_LIMIT = Duration.ofMinutes(30);
 
@@ -19,7 +19,7 @@ public class Mailbox {
      * The id of the owner of the mailbox.
      */
     private final String ownerId;
-    
+
     Mailbox(String ownerId) {
         this(ownerId, new LinkedBlockingQueue<>(MAX_MESSAGES));
     }
@@ -28,7 +28,7 @@ public class Mailbox {
         this.ownerId = ownerId;
         this.messages = messages;
     }
-    
+
     /**
      * Returns the next message in the box on a FIFO basis.
      *
@@ -38,7 +38,7 @@ public class Mailbox {
         deleteExpiredMessages();
         return messages.poll();
     }
-    
+
     /**
      * Checks if there are any container in the mailbox.
      *
@@ -48,7 +48,7 @@ public class Mailbox {
         deleteExpiredMessages();
         return !messages.isEmpty();
     }
-    
+
     /**
      * Adds a message to the mailbox.
      *
@@ -62,10 +62,11 @@ public class Mailbox {
 
     /**
      * Checks if the message is valid
+     *
      * @param message the message to check
      * @return true if it is valid, false otherwise.
      */
-    private boolean isValidMessage(Message  message) {
+    private boolean isValidMessage(Message message) {
         return message.getTargetAgentId().equals(this.ownerId) &&
                 Instant.now().isBefore(message.getTimeout());
     }
@@ -79,7 +80,7 @@ public class Mailbox {
     private int deleteExpiredMessages() {
         int count = 0;
         for (Message msg : messages) {
-            if (msg.isExpired()){
+            if (msg.isExpired()) {
                 messages.remove(msg);
                 count++;
             }

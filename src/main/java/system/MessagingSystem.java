@@ -25,7 +25,7 @@ public class MessagingSystem {
     public MessagingSystem() {
         this(new HashMap<>());
     }
-    
+
     MessagingSystem(final Map<String, AgentInfo> agentInfos) {
         this.agentInfos = agentInfos;
     }
@@ -131,7 +131,7 @@ public class MessagingSystem {
             }
         }
     }
-    
+
     /**
      * @return true if the agent is logged in and has messages, false otherwise
      */
@@ -139,29 +139,30 @@ public class MessagingSystem {
 
         final AgentInfo agentInfo = agentInfos.get(agentId);
         return agentInfo != null &&
-                       agentInfo.sessionKey != null &&
-                       agentInfo.sessionKey.equals(sessionKey) &&
-                       agentInfo.mailbox.hasMessages();
-    
+                agentInfo.sessionKey != null &&
+                agentInfo.sessionKey.equals(sessionKey) &&
+                agentInfo.mailbox.hasMessages();
+
     }
-    
+
     /**
-     *  Consumes the next message from the agent's mailbox
-     *  @return the next message if the agent is logged in and has
-     *  messages, null otherwise
+     * Consumes the next message from the agent's mailbox
+     *
+     * @return the next message if the agent is logged in and has
+     * messages, null otherwise
      */
     public Message getNextMessage(String sessionKey, String agentID) {
 
         final AgentInfo agentInfo = agentInfos.get(agentID);
-        if(agentInfo != null &&
-                   agentInfo.sessionKey != null &&
-                   agentInfo.sessionKey.equals(sessionKey)){
+        if (agentInfo != null &&
+                agentInfo.sessionKey != null &&
+                agentInfo.sessionKey.equals(sessionKey)) {
             return null;
         } else {
             return agentInfo.mailbox.consumeNextMessage();
         }
     }
-    
+
     /**
      * Checks length of login key and that it is unique.
      */

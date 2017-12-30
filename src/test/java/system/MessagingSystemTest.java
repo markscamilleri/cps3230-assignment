@@ -12,21 +12,18 @@ import static system.StatusCodes.*;
 // todo: check bad session key length?
 public class MessagingSystemTest {
 
-    private MessagingSystem system;
-    private Map<String, AgentInfo> agentInfos;
-
     // Valid login keys (one per agent)
     private final String VALID_LKEY_1 = Utils.getNCharacters(LOGIN_KEY_LENGTH, "1");
     private final String VALID_LKEY_2 = Utils.getNCharacters(LOGIN_KEY_LENGTH, "2");
-
     // Valid session keys (one per agent)
     private final String VALID_SKEY_1 = Utils.getNCharacters(SESSION_KEY_LENGTH, "1");
     private final String VALID_SKEY_2 = Utils.getNCharacters(SESSION_KEY_LENGTH, "2");
-
     // Two agent IDs and valid message
     private final String AID_1 = "1234xy";
     private final String AID_2 = "5678ab";
     private final String VALID_MSG = "msg";
+    private MessagingSystem system;
+    private Map<String, AgentInfo> agentInfos;
 
     @Before
     public void setUp() {
@@ -162,12 +159,6 @@ public class MessagingSystemTest {
         Assert.assertEquals(system.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG), OK);
     }
 
-    private enum AddType {
-        UNREGISTERED,
-        REGISTERED,
-        LOGGEDIN
-    }
-
     private AgentInfo addAgent(final Map<String, AgentInfo> agentInfos, int agent, AddType type) {
 
         Assume.assumeTrue(agent == 1 || agent == 2);
@@ -186,5 +177,11 @@ public class MessagingSystemTest {
 
         agentInfos.put(agentId, agentInfo);
         return agentInfo;
+    }
+
+    private enum AddType {
+        UNREGISTERED,
+        REGISTERED,
+        LOGGEDIN
     }
 }

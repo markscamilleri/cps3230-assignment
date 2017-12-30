@@ -15,22 +15,20 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class AgentTest {
 
+    // Main agent details
+    private final String AGENT_ID = "1234xy";
+    private final String AGENT_NAME = "abcdef";
+    private final String LOGIN_KEY = Utils.getNCharacters(10);
+    private final String SESSN_KEY = Utils.getNCharacters(50);
+    // For messaging
+    private final String TARGET_AGENT_ID = "5678ab";
+    private final String MESSAGE = "message";
     private Agent testAgent_notLoggedIn;
     private Agent testAgent_loggedIn;
     @Mock
     private Supervisor mockSupervisor;
     @Mock
     private MessagingSystem mockMessagingSystem;
-
-    // Main agent details
-    private final String AGENT_ID = "1234xy";
-    private final String AGENT_NAME = "abcdef";
-    private final String LOGIN_KEY = Utils.getNCharacters(10);
-    private final String SESSN_KEY = Utils.getNCharacters(50);
-
-    // For messaging
-    private final String TARGET_AGENT_ID = "5678ab";
-    private final String MESSAGE = "message";
 
     @Before
     public void setUp() {

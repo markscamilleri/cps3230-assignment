@@ -8,7 +8,7 @@ import java.time.Instant;
  */
 public abstract class Timeoutable {
     private Instant timeout;
-    
+
     protected Timeoutable(Instant timeout) {
         this.timeout = timeout;
     }
