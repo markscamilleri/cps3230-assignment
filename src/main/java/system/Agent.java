@@ -20,9 +20,13 @@ public class Agent {
         this.messagingSystem = messagingSystem;
     }
 
-    public Agent(String id, String name, Supervisor supervisor, MessagingSystem messagingSystem, String loginKey, String sessionKey) {
+    public Agent(String id, String name, Supervisor supervisor, MessagingSystem messagingSystem, String loginKey) {
         this(id, name, supervisor, messagingSystem);
         this.loginKey = loginKey;
+    }
+
+    public Agent(String id, String name, Supervisor supervisor, MessagingSystem messagingSystem, String loginKey, String sessionKey) {
+        this(id, name, supervisor, messagingSystem, loginKey);
         this.sessionKey = sessionKey;
     }
 
