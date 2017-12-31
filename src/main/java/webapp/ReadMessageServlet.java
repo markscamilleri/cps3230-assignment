@@ -24,11 +24,11 @@ public class ReadMessageServlet extends HttpServlet {
 
         response.setContentType("text/html");
 
-        final Cookie idCookie = Utils.findCookie(request.getCookies(), CookieNames.ID.name());
+        final Cookie idCookie = Utils.findCookie(request.getCookies(), CookieNames.AGENT_ID.name());
         final Cookie skCookie = Utils.findCookie(request.getCookies(), CookieNames.SESSION_KEY.name());
 
         if (idCookie == null || skCookie == null) {
-            response.sendRedirect("/login");
+            response.sendRedirect("/register");
         } else {
             final String id = idCookie.getValue();
             final String sessionKey = skCookie.getValue();

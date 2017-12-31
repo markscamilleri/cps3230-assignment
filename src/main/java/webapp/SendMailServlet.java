@@ -27,11 +27,11 @@ public class SendMailServlet extends HttpServlet {
 
         response.setContentType("text/html");
 
-        final Cookie idCookie = Utils.findCookie(request.getCookies(), CookieNames.ID.name());
+        final Cookie idCookie = Utils.findCookie(request.getCookies(), CookieNames.AGENT_ID.name());
         final Cookie skCookie = Utils.findCookie(request.getCookies(), CookieNames.SESSION_KEY.name());
 
         if (idCookie == null || skCookie == null) {
-            response.sendRedirect("/login");
+            response.sendRedirect("/register");
         } else {
             final String id = idCookie.getValue();
             final String sessionKey = skCookie.getValue();
@@ -55,7 +55,7 @@ public class SendMailServlet extends HttpServlet {
                 else if (statusCookie.getValue().equals(StatusCodes.SESSION_KEY_UNRECOGNIZED.name()) ||
                         statusCookie.getValue().equals(StatusCodes.AGENT_NOT_LOGGED_IN.name()) ||
                         statusCookie.getValue().equals(StatusCodes.SESSION_KEY_INVALID_LENGTH.name()))
-                    response.sendRedirect("/login");
+                    response.sendRedirect("/register");
 
                 Utils.deleteCookie(statusCookie, response);
             }
@@ -83,11 +83,11 @@ public class SendMailServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        final Cookie idCookie = Utils.findCookie(request.getCookies(), CookieNames.ID.name());
+        final Cookie idCookie = Utils.findCookie(request.getCookies(), CookieNames.AGENT_ID.name());
         final Cookie skCookie = Utils.findCookie(request.getCookies(), CookieNames.SESSION_KEY.name());
 
         if (idCookie == null || skCookie == null) {
-            response.sendRedirect("/login");
+            response.sendRedirect("/register");
         } else {
             final String id = idCookie.getValue();
             final String sessionKey = skCookie.getValue();

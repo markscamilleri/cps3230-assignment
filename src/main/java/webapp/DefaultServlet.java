@@ -11,6 +11,6 @@ import java.io.IOException;
 public class DefaultServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.sendRedirect("/login");
+        response.sendRedirect("/register");
     }
 }
