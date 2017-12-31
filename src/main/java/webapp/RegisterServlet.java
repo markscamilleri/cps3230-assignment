@@ -39,6 +39,7 @@ public class RegisterServlet extends HttpServlet {
 
         final Supervisor supervisor = new SupervisorImpl(messagingSystem);
         final Agent agent = new Agent(id, supervisor, messagingSystem);
+
         if (agent.register()) {
             response.addCookie(new Cookie(CookieNames.AGENT_ID.name(), id));
             response.addCookie(new Cookie(CookieNames.LOGIN_KEY.name(), agent.getLoginKey()));
