@@ -17,7 +17,7 @@ public class SupervisorImpl implements Supervisor {
         if (agentId.startsWith("spy-")) {
             return null;
         } else {
-            final String loginKey = Utils.getNCharacters(LOGIN_KEY_LENGTH);
+            final String loginKey = Utils.getNRandomCharacters(LOGIN_KEY_LENGTH);
             messagingSystem.registerLoginKey(agentId, loginKey);
             return loginKey;
         }
