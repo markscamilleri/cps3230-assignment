@@ -110,7 +110,7 @@ public class MessagingSystem {
             return SESSION_KEY_UNRECOGNIZED;
 
         } else if (message.length() > MAX_MESSAGE_LENGTH) {
-            return MESSAGE_LENGTH_EXCEEDED;
+            return MESSAGE_LENGTH_EXCEEDED; // todo: send only valid prefix?
 
         } else {
             for (final String word : BLOCKED_WORDS) {

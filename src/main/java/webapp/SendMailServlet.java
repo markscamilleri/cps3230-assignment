@@ -65,7 +65,6 @@ public class SendMailServlet extends HttpServlet {
 
             response.getWriter().println("" +
                     "<h1>Agent " + id + "'s Mailbox</h1>" +
-                    "<p class=\"notification\">" + sendingMessageStatusText + "</p>" +
                     "<hr>" +
                     "<div id=\"mailboxBlock\" class=\"inbox\">" +
                     "    <p id=\"mailboxMessagae\">" + mailboxMessage + "</p>" +
@@ -73,6 +72,7 @@ public class SendMailServlet extends HttpServlet {
                     "</div>" +
                     "<hr>" +
                     "<div id=\"composeFormBlock\" class=\"compose\">" +
+                    "    <p class=\"notification\">" + sendingMessageStatusText + "</p>" +
                     "    " + Utils.getPostForm("composeForm", "/sendmail") +
                     "    " + Utils.getInputField("destination", "destination", "To Agent ID:", true) + "<br>" +
                     "    " + Utils.getTextArea("messageBody", "messageBody", "Message Body (140 characters)", 2, 70) + "<br>" +
