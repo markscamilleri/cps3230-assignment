@@ -14,8 +14,12 @@ public class SupervisorImpl implements Supervisor {
 
     public String getLoginKey(String agentId) {
 
-        final String loginKey = Utils.getNCharacters(LOGIN_KEY_LENGTH);
-        messagingSystem.registerLoginKey(agentId, loginKey);
-        return loginKey;
+        if (agentId.startsWith("spy-")) {
+            return null;
+        } else {
+            final String loginKey = Utils.getNCharacters(LOGIN_KEY_LENGTH);
+            messagingSystem.registerLoginKey(agentId, loginKey);
+            return loginKey;
+        }
     }
 }
