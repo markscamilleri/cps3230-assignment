@@ -64,13 +64,14 @@ public class SendMailServlet extends HttpServlet {
             final String mailboxMessage = hasMessages ? "You have new messages" : "You have no new messages";
 
             response.getWriter().println("" +
-                    "<h1>Mailbox</h1>" +
-                    "<h2>Hello Agent " + id + "</h2>" +
+                    "<h1>Agent " + id + "'s Mailbox</h1>" +
                     "<p class=\"notification\">" + sendingMessageStatusText + "</p>" +
+                    "<hr>" +
                     "<div id=\"mailboxBlock\" class=\"inbox\">" +
                     "    <p id=\"mailboxMessagae\">" + mailboxMessage + "</p>" +
                     "    " + Utils.getHrefButton("/readmessage", "consumeMessage", "Get Next Message", !hasMessages) +
-                    "</div><br>" +
+                    "</div>" +
+                    "<hr>" +
                     "<div id=\"composeFormBlock\" class=\"compose\">" +
                     "    " + Utils.getPostForm("composeForm", "/sendmail") +
                     "    " + Utils.getInputField("destination", "destination", "To Agent ID:", true) + "<br>" +
