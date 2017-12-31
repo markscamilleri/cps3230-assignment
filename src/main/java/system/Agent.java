@@ -10,6 +10,7 @@ public class Agent {
     private final Supervisor supervisor;
     private final MessagingSystem messagingSystem;
 
+    private String loginKey = null;
     private String sessionKey = null;
 
     public Agent(String id, String name, Supervisor supervisor, MessagingSystem messagingSystem) {
@@ -19,23 +20,28 @@ public class Agent {
         this.messagingSystem = messagingSystem;
     }
 
-    public Agent(String id, String name, Supervisor supervisor, MessagingSystem messagingSystem, String sessionKey) {
+    public Agent(String id, String name, Supervisor supervisor, MessagingSystem messagingSystem, String loginKey, String sessionKey) {
         this(id, name, supervisor, messagingSystem);
+        this.loginKey = loginKey;
         this.sessionKey = sessionKey;
     }
 
     /**
-     * Initiates contact with a supervisor to get a login key and subsequently logs into the system.
+     * Initiates contact with the supervisor to get a login key
+     *
+     * @return true if login key successfully obtained, false otherwise
+     */
+    public boolean register() {
+        loginKey = supervisor.getLoginKey(id);
+        return loginKey != null;
+    }
+
+    /**
+     * Logs into the system using the previously obtained login key
      *
      * @return true if login successful, false otherwise.
      */
     public boolean login() {
-
-        final String loginKey = supervisor.getLoginKey(id);
-        if (loginKey == null) {
-            return false;
-        }
-
         sessionKey = messagingSystem.login(id, loginKey);
         return sessionKey != null;
     }
@@ -58,7 +64,14 @@ public class Agent {
     }
 
     /**
-     * @return the session key the agent has
+     * @return the login key that the agent has
+     */
+    public String getLoginKey() {
+        return loginKey;
+    }
+
+    /**
+     * @return the session key that the agent has
      */
     public String getSessionKey() {
         return sessionKey;
