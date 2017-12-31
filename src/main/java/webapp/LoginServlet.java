@@ -54,7 +54,7 @@ public class LoginServlet extends HttpServlet {
             response.sendRedirect("/register");
         } else {
             final Supervisor supervisor = new SupervisorImpl(messagingSystem);
-            final Agent agent = new Agent(idCookie.getValue(), "blankName", supervisor, messagingSystem, lkey);
+            final Agent agent = new Agent(idCookie.getValue(), supervisor, messagingSystem, lkey);
 
             if (agent.login()) {
                 Utils.deleteCookie(lkeyCookie, response);

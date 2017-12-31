@@ -6,27 +6,25 @@ package system;
 public class Agent {
 
     private final String id;
-    private final String name;
     private final Supervisor supervisor;
     private final MessagingSystem messagingSystem;
 
     private String loginKey = null;
     private String sessionKey = null;
 
-    public Agent(String id, String name, Supervisor supervisor, MessagingSystem messagingSystem) {
+    public Agent(String id, Supervisor supervisor, MessagingSystem messagingSystem) {
         this.id = id;
-        this.name = name;
         this.supervisor = supervisor;
         this.messagingSystem = messagingSystem;
     }
 
-    public Agent(String id, String name, Supervisor supervisor, MessagingSystem messagingSystem, String loginKey) {
-        this(id, name, supervisor, messagingSystem);
+    public Agent(String id, Supervisor supervisor, MessagingSystem messagingSystem, String loginKey) {
+        this(id, supervisor, messagingSystem);
         this.loginKey = loginKey;
     }
 
-    public Agent(String id, String name, Supervisor supervisor, MessagingSystem messagingSystem, String loginKey, String sessionKey) {
-        this(id, name, supervisor, messagingSystem, loginKey);
+    public Agent(String id, Supervisor supervisor, MessagingSystem messagingSystem, String loginKey, String sessionKey) {
+        this(id, supervisor, messagingSystem, loginKey);
         this.sessionKey = sessionKey;
     }
 

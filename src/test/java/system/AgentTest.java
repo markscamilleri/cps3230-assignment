@@ -14,7 +14,6 @@ public class AgentTest {
 
     // Main agent details
     private final String AGENT_ID = "1234xy";
-    private final String AGENT_NAME = "abcdef";
     private final String LOGIN_KEY = Utils.getNCharacters(10);
     private final String SESSN_KEY = Utils.getNCharacters(50);
 
@@ -33,9 +32,9 @@ public class AgentTest {
 
     @Before
     public void setUp() {
-        testAgent_default = new Agent(AGENT_ID, AGENT_NAME, mockSupervisor, mockMessagingSystem);
-        testAgent_registered = new Agent(AGENT_ID, AGENT_NAME, mockSupervisor, mockMessagingSystem, LOGIN_KEY, null);
-        testAgent_loggedIn = new Agent(AGENT_ID, AGENT_NAME, mockSupervisor, mockMessagingSystem, null, SESSN_KEY);
+        testAgent_default = new Agent(AGENT_ID, mockSupervisor, mockMessagingSystem);
+        testAgent_registered = new Agent(AGENT_ID, mockSupervisor, mockMessagingSystem, LOGIN_KEY, null);
+        testAgent_loggedIn = new Agent(AGENT_ID, mockSupervisor, mockMessagingSystem, null, SESSN_KEY);
     }
 
     @After
