@@ -23,6 +23,7 @@ public class MailboxTest {
     private Mailbox testEmptyMailbox;
     private Mailbox testMailboxWith1Message;
     private Queue<Message> messageQueue;
+
     @Mock
     private Message mockMessage;
 
