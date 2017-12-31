@@ -24,49 +24,50 @@ public class MessagingSystemTest {
     private final String AID_1 = "1234xy";
     private final String AID_2 = "5678ab";
     private final String VALID_MSG = "msg";
-    private MessagingSystem system;
+    private MessagingSystem testSystem;
     private Map<String, AgentInfo> agentInfos;
 
     @Before
     public void setUp() {
         agentInfos = new HashMap<>();
-        system = new MessagingSystem(agentInfos);
+        testSystem = new MessagingSystem(agentInfos);
     }
 
     @After
     public void tearDown() {
         agentInfos = null;
-        system = null;
+        testSystem = null;
     }
 
     @Test
     public void registerFailsIfLoginKeyIncorrectLength() {
-        Assert.assertFalse(system.registerLoginKey(AID_1, Utils.getNCharacters(LOGIN_KEY_LENGTH + 1)));
-        Assert.assertFalse(system.registerLoginKey(AID_1, Utils.getNCharacters(LOGIN_KEY_LENGTH - 1)));
+        Assert.assertFalse(testSystem.registerLoginKey(AID_1, Utils.getNCharacters(LOGIN_KEY_LENGTH + 1)));
+        Assert.assertFalse(testSystem.registerLoginKey(AID_1, Utils.getNCharacters(LOGIN_KEY_LENGTH - 1)));
     }
 
     @Test
     public void registerFailsIfLoginKeyNotUnique() {
         addAgent(agentInfos, 1, AddType.REGISTERED);
 
-        Assert.assertFalse(system.registerLoginKey(AID_2, VALID_LKEY_1));
+        Assert.assertFalse(testSystem.registerLoginKey(AID_2, VALID_LKEY_1));
     }
 
     @Test
     public void registerSucceedsIfLoginKeyValid() {
-        Assert.assertTrue(system.registerLoginKey(AID_1, VALID_LKEY_1));
+        Assert.assertTrue(testSystem.registerLoginKey(AID_1, VALID_LKEY_1));
     }
 
     @Test
     public void loginFailsIfAgentDoesNotExist() {
-        Assert.assertEquals(null, system.login(AID_1, VALID_LKEY_1));
+        Assert.assertEquals(null, testSystem.login(AID_1, VALID_LKEY_1));
     }
 
     @Test
-    public void loginFailsIfAgentDidNotRegister() {
+    public void loginFailsIfAgentExistsButDidNotRegister() {
         addAgent(agentInfos, 1, AddType.UNREGISTERED);
 
-        Assert.assertEquals(null, system.login(AID_1, VALID_LKEY_1));
+        Assert.assertEquals(null, testSystem.login(AID_1, VALID_LKEY_1)); // given a valid login key before registering
+        Assert.assertEquals(null, testSystem.login(AID_1, null)); // when agent.login() called before registering
     }
 
     @Test // todo
@@ -74,21 +75,21 @@ public class MessagingSystemTest {
         addAgent(agentInfos, 1, AddType.REGISTERED);
 
         // 1 minute passes...
-        // Assert.assertEquals(null, system.login(AID_1, VALID_LKEY_1));
+        // Assert.assertEquals(null, testSystem.login(AID_1, VALID_LKEY_1));
     }
 
     @Test
     public void loginFailsIfLoginKeyDoesNotMatch() {
         addAgent(agentInfos, 1, AddType.REGISTERED);
 
-        Assert.assertEquals(null, system.login(AID_1, VALID_LKEY_2));
+        Assert.assertEquals(null, testSystem.login(AID_1, VALID_LKEY_2));
     }
 
     @Test
     public void loginReturnsValidSessionKeyIfLoginKeyValid() {
         addAgent(agentInfos, 1, AddType.REGISTERED);
 
-        final String sessionKey = system.login(AID_1, VALID_LKEY_1);
+        final String sessionKey = testSystem.login(AID_1, VALID_LKEY_1);
         Assert.assertNotEquals(null, sessionKey);
         Assert.assertTrue(sessionKey.length() == SESSION_KEY_LENGTH);
     }
@@ -97,14 +98,14 @@ public class MessagingSystemTest {
     public void sendMessageFailsIfSourceAgentDoesNotExist() {
         addAgent(agentInfos, 2, AddType.REGISTERED); // only target agent exists
 
-        Assert.assertEquals(system.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG), AGENT_DOES_NOT_EXIST);
+        Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG), AGENT_DOES_NOT_EXIST);
     }
 
     @Test
     public void sendMessageFailsIfTargetAgentDoesNotExist() {
         addAgent(agentInfos, 1, AddType.REGISTERED); // only source agent exists
 
-        Assert.assertEquals(system.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG), AGENT_DOES_NOT_EXIST);
+        Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG), AGENT_DOES_NOT_EXIST);
     }
 
     @Test
@@ -113,7 +114,7 @@ public class MessagingSystemTest {
         addAgent(agentInfos, 2, AddType.REGISTERED); // target doesn't have to be logged in
 
 
-        Assert.assertEquals(system.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG), AGENT_NOT_LOGGED_IN);
+        Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG), AGENT_NOT_LOGGED_IN);
     }
 
     @Test // todo
@@ -122,7 +123,7 @@ public class MessagingSystemTest {
         addAgent(agentInfos, 2, AddType.REGISTERED); // target doesn't have to be logged in
 
         // 10 minutes pass...
-        // Assert.assertEquals(system.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG), StatusCodes.AGENT_NOT_LOGGED_IN);
+        // Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG), StatusCodes.AGENT_NOT_LOGGED_IN);
     }
 
     @Test
@@ -130,7 +131,7 @@ public class MessagingSystemTest {
         addAgent(agentInfos, 1, AddType.LOGGEDIN);   // source must be logged in
         addAgent(agentInfos, 2, AddType.REGISTERED); // target doesn't have to be logged in
 
-        Assert.assertEquals(system.sendMessage(VALID_SKEY_2, AID_1, AID_2, VALID_MSG), SESSION_KEY_UNRECOGNIZED);
+        Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_2, AID_1, AID_2, VALID_MSG), SESSION_KEY_UNRECOGNIZED);
     }
 
     @Test
@@ -139,7 +140,7 @@ public class MessagingSystemTest {
         addAgent(agentInfos, 2, AddType.REGISTERED); // target doesn't have to be logged in
 
         final String LONG_MESSAGE = Utils.getNCharacters(MAX_MESSAGE_LENGTH + 1);
-        Assert.assertEquals(system.sendMessage(VALID_SKEY_1, AID_1, AID_2, LONG_MESSAGE), MESSAGE_LENGTH_EXCEEDED);
+        Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, LONG_MESSAGE), MESSAGE_LENGTH_EXCEEDED);
     }
 
     @Test
@@ -150,8 +151,8 @@ public class MessagingSystemTest {
         for (String bw : BLOCKED_WORDS) {
             final String msg1 = VALID_MSG + bw.toLowerCase() + VALID_MSG; // message with lowercase blocked word
             final String msg2 = VALID_MSG + bw.toUpperCase() + VALID_MSG; // message with uppercase blocked word
-            Assert.assertEquals(system.sendMessage(VALID_SKEY_1, AID_1, AID_2, msg1), MESSAGE_CONTAINS_BLOCKED_WORD);
-            Assert.assertEquals(system.sendMessage(VALID_SKEY_1, AID_1, AID_2, msg2), MESSAGE_CONTAINS_BLOCKED_WORD);
+            Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, msg1), MESSAGE_CONTAINS_BLOCKED_WORD);
+            Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, msg2), MESSAGE_CONTAINS_BLOCKED_WORD);
         }
     }
 
@@ -160,7 +161,7 @@ public class MessagingSystemTest {
         addAgent(agentInfos, 1, AddType.LOGGEDIN);   // source must be logged in
         addAgent(agentInfos, 2, AddType.REGISTERED); // target doesn't have to be logged in
 
-        Assert.assertEquals(system.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG), OK);
+        Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG), OK);
     }
 
     private AgentInfo addAgent(final Map<String, AgentInfo> agentInfos, int agent, AddType type) {

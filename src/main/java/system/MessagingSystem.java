@@ -174,6 +174,7 @@ public class MessagingSystem {
      */
     private boolean isValidLogin(TemporaryKey registeredLoginKey, String loginKeyToCheck) {
         return registeredLoginKey != null
+                && loginKeyToCheck != null
                 && registeredLoginKey.equals(loginKeyToCheck)
                 && !registeredLoginKey.isExpired();
     }
