@@ -46,8 +46,8 @@ public class Utils {
 
     public static String getInputField(String id, String name, String placeholder, boolean required) {
         return "<input id=\"" + id + "\" name=\"" + name +
-                "\" class=\"form-input\" type=\"text\" placeholder=\"" +
-                placeholder + "\" " + (required ? "required " : " ") + "/>";
+                "\" type=\"text\" placeholder=\"" + placeholder +
+                "\" " + (required ? "required " : " ") + "/>";
     }
 
     public static String getPostForm(String id, String action) {
@@ -56,7 +56,7 @@ public class Utils {
 
     public static String getTextArea(String id, String name, String placeholder, int rows, int cols) {
         return "<textarea id=\"" + id + "\" name=\"" + name +
-                "\" class=\"form-input\" placeholder=\"" + placeholder +
-                "\" rows=\"" + rows + "\" cols=\"" + cols + "\"></textarea>";
+                "\" placeholder=\"" + placeholder + "\" rows=\"" +
+                rows + "\" cols=\"" + cols + "\"></textarea>";
     }
 }
