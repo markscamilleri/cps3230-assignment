@@ -1,0 +1,101 @@
+package util;
+
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+
+/**
+ * @author Mark Said Camilleri
+ * @version 02/01/18.
+ */
+public class TemporaryObjectTest {
+    
+    private final String TEMP_STRING = "Temporary String";
+    private final Duration TIMEOUT = Duration.ofMinutes(5);
+    
+    private final Instant START_TIME = Instant.EPOCH;
+    
+    // starts a 5 minute step clock 1 second after EPOCH,
+    private final Clock TEST_STEP_CLOCK = new StepClock(START_TIME.plusSeconds(1), TIMEOUT);
+    
+    private TemporaryObject<String> testTempObject;
+    
+    @Before
+    public void setUp() throws Exception {
+        testTempObject = new TemporaryObject<String>(TEMP_STRING, START_TIME.plus(TIMEOUT), TEST_STEP_CLOCK){};
+    }
+    
+    @After
+    public void tearDown() throws Exception {
+        testTempObject = null;
+    }
+    
+    @Test
+    public void isExpired_falseTimeLimitNotPassed() {
+        Assert.assertFalse(testTempObject.isExpired());
+    }
+    
+    @Test
+    public void isExpired_trueTimeLimitPassed() {
+        // First Call returns 1 second after Instant.EPOCH
+        Instant.now(TEST_STEP_CLOCK);
+        
+        Assert.assertTrue(testTempObject.isExpired());
+    }
+    
+    @Test
+    public void getTimeout_shouldReturnTimeout() {
+        Assert.assertEquals(Instant.EPOCH.plus(TIMEOUT), testTempObject.getTimeout());
+    }
+    
+    @Test
+    public void getTempObject_beforeTimeoutShouldReturnTempObject() {
+        Assert.assertEquals(TEMP_STRING, testTempObject.getTempObject());
+    }
+    
+    @Test
+    public void getTempObject_afterTimeoutShouldReturnNull() {
+        // First Call returns 1 second after Instant.EPOCH
+        Instant.now(TEST_STEP_CLOCK);
+    
+        Assert.assertNull(testTempObject.getTempObject());
+    }
+    
+    private class StepClock extends Clock {
+        private int stepMultiplier = 0;
+        private final Instant baseTime;
+        private final Duration step;
+    
+        StepClock(Instant baseTime, Duration step){
+            this.baseTime = baseTime;
+            this.step = step;
+        }
+    
+        @Override
+        public long millis() {
+            return super.millis();
+        }
+    
+        @Override
+        public ZoneId getZone() {
+            return ZoneId.of("UTC");
+        }
+    
+        @Override
+        //Ignored
+        public Clock withZone(ZoneId zoneId) {
+            return this;
+        }
+    
+        @Override
+        public Instant instant() {
+            return baseTime.plus(step.multipliedBy(stepMultiplier++));
+        }
+    }
+}
