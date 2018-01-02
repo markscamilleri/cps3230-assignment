@@ -14,8 +14,8 @@ public class MessagingSystem {
     final static Duration LOGIN_KEY_TIME_LIMIT = Duration.ofMinutes(1);
     final static Duration SESSION_KEY_TIME_LIMIT = Duration.ofMinutes(10);
 
-    final static int LOGIN_KEY_LENGTH = 10;
-    final static int SESSION_KEY_LENGTH = 50;
+    public final static int LOGIN_KEY_LENGTH = 10;
+    public final static int SESSION_KEY_LENGTH = 50;
 
     final static int MAX_MESSAGE_LENGTH = 140;
     final static String BLOCKED_WORDS[] = {"recipe", "ginger", "nuclear"};
