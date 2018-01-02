@@ -97,8 +97,8 @@ public class MessagingSystem {
 
         if (sourceAgentInfo == null || targetAgentInfo == null) {
             return AGENT_DOES_NOT_EXIST;
-
         } else if (sourceAgentInfo.sessionKey.isExpired()) {
+
             return AGENT_NOT_LOGGED_IN;
 
         } else if (sourceAgentInfo.sessionKey.getKey().length() != SESSION_KEY_LENGTH) {

@@ -53,12 +53,18 @@ public class MessagingSystemTest {
 
         when(mockLoginKey1.getKey()).thenReturn(VALID_LKEY_1);
         when(mockSessnKey1.getKey()).thenReturn(VALID_SKEY_1);
+        when(mockLoginKey2.getKey()).thenReturn(VALID_LKEY_2);
+        when(mockSessnKey2.getKey()).thenReturn(VALID_SKEY_2);
 
         when(mockLoginKey1.isExpired()).thenReturn(false);
         when(mockSessnKey1.isExpired()).thenReturn(false);
+        when(mockLoginKey2.isExpired()).thenReturn(false);
+        when(mockSessnKey2.isExpired()).thenReturn(false);
 
         when(mockLoginKey1.equals(VALID_LKEY_1)).thenReturn(true);
         when(mockSessnKey1.equals(VALID_SKEY_1)).thenReturn(true);
+        when(mockLoginKey2.equals(VALID_LKEY_2)).thenReturn(true);
+        when(mockSessnKey2.equals(VALID_SKEY_2)).thenReturn(true);
     }
 
     @After
@@ -105,7 +111,7 @@ public class MessagingSystemTest {
         Assert.assertEquals(null, testSystem.login(AID_1, null)); // when agent.login() called before registering
     }
 
-    @Test // todo
+    @Test
     public void login_nullIfLoginKeyExpired() {
         // To ensure that the next step will be over the login key time limit
         //Clock testClock = new StepClock(Instant.EPOCH, LOGIN_KEY_TIME_LIMIT.plusSeconds(1));
@@ -156,7 +162,7 @@ public class MessagingSystemTest {
         Assert.assertEquals(AGENT_NOT_LOGGED_IN, testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG));
     }
 
-    @Test // todo
+    @Test
     public void sendMessage_failsIfSessionKeyExpired() {
         // To ensure that the next step will be over the login key time limit
         //Clock agent1clock = new StepClock(Instant.EPOCH, SESSION_KEY_TIME_LIMIT.plusSeconds(1));
@@ -187,18 +193,21 @@ public class MessagingSystemTest {
         Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, LONG_MESSAGE), MESSAGE_LENGTH_EXCEEDED);
     }
 
-    /*@Test
-    public void sendMessage_failsIfMessageContainsBlockedWords() {
-        addAgent(agentInfos, 1, AddType.LOGGEDIN, defaultFixedClock);   // source must be logged in
-        addAgent(agentInfos, 2, AddType.REGISTERED, defaultFixedClock); // target doesn't have to be logged in
+    @Test
+    public void sendMessage_okIfContainsBlockedWordsButTheyAreRemoved() {
+        addAgent(agentInfos, 1, AddType.LOGGEDIN);   // source must be logged in
+        addAgent(agentInfos, 2, AddType.REGISTERED); // target doesn't have to be logged in
 
         for (String bw : BLOCKED_WORDS) {
-            final String msg1 = VALID_MSG + bw.toLowerCase() + VALID_MSG; // message with lowercase blocked word
-            final String msg2 = VALID_MSG + bw.toUpperCase() + VALID_MSG; // message with uppercase blocked word
-            Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, msg1), MESSAGE_CONTAINS_BLOCKED_WORD);
-            Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, msg2), MESSAGE_CONTAINS_BLOCKED_WORD);
+
+            final String altCapBW = alternateCapitalization(bw);
+            final String before = VALID_MSG + altCapBW + " " + altCapBW + VALID_MSG;
+            final String after = before.replaceAll(altCapBW + "\\s?", "");
+
+            Assert.assertEquals(OK, testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, before));
+            Assert.assertEquals(after, agentInfos.get(AID_2).mailbox.consumeNextMessage().getMessage());
         }
-    }*/
+    }
 
     @Test
     public void sendMessage_okIfAllValid() {
@@ -269,5 +278,17 @@ public class MessagingSystemTest {
         UNREGISTERED,
         REGISTERED,
         LOGGEDIN
+    }
+
+    private String alternateCapitalization(String string) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        boolean alternator = true;
+        for (char ch : string.toCharArray()) {
+            stringBuilder.append(alternator ? Character.toUpperCase(ch) : Character.toLowerCase(ch));
+            alternator = !alternator;
+        }
+
+        return stringBuilder.toString();
     }
 }
