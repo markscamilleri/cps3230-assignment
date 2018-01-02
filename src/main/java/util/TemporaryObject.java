@@ -2,16 +2,20 @@ package util;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.util.Objects;
 
 /**
  * An object that would timeout must extend this class.
  * It provides functionality for timing objects out
  */
-public abstract class Timeoutable {
+public abstract class TemporaryObject<T> {
+
+    private T tempObject;
     private Instant timeout;
     private Clock clock;
-    
-    protected Timeoutable(Instant timeout, Clock clock){
+
+    protected TemporaryObject(T tempObject, Instant timeout, Clock clock) {
+        this.tempObject = tempObject;
         this.timeout = timeout;
         this.clock = clock;
     }
@@ -21,6 +25,11 @@ public abstract class Timeoutable {
     }
 
     public boolean isExpired() {
-        return Instant.now(clock).isAfter(timeout);
+        return Instant.now(clock).compareTo(timeout) >= 0;
+    }
+
+    public T getTempObject() {
+        tempObject = isExpired() ? null : tempObject;
+        return tempObject;
     }
 }

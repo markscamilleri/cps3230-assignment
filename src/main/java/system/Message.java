@@ -1,15 +1,14 @@
 package system;
 
-import util.Timeoutable;
+import util.TemporaryObject;
 
 import java.time.Clock;
 import java.time.Instant;
 
-public class Message extends Timeoutable {
+public class Message extends TemporaryObject<String> {
 
     private final String sourceAgentId;
     private final String targetAgentId;
-    private final String message;
     private final Instant timestamp;
 
     /**
@@ -32,10 +31,9 @@ public class Message extends Timeoutable {
      * @param clock         Clock to use for setting the timestamp
      */
     Message(String sourceAgentId, String targetAgentId, String message, Clock clock) {
-        super(Instant.now(clock).plus(Mailbox.MESSAGE_TIME_LIMIT), clock);
+        super(message, Instant.now(clock).plus(Mailbox.MESSAGE_TIME_LIMIT), clock);
         this.sourceAgentId = sourceAgentId;
         this.targetAgentId = targetAgentId;
-        this.message = message;
         this.timestamp = getTimeout().minus(Mailbox.MESSAGE_TIME_LIMIT); //To keep the same timestamp
     }
 
@@ -47,11 +45,11 @@ public class Message extends Timeoutable {
         return targetAgentId;
     }
 
-    public String getMessage() {
-        return message;
-    }
-
     public Instant getTimestamp() {
         return timestamp;
+    }
+
+    public String getMessage() {
+        return getTempObject();
     }
 }
