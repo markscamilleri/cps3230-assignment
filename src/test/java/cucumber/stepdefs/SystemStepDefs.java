@@ -11,7 +11,6 @@ import org.junit.Assume;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import webapp.StartJettyHandler;
 
 import static system.MessagingSystem.LOGIN_KEY_LENGTH;
 import static webapp.StartJettyHandler.PORT_NUMBER;
@@ -21,6 +20,7 @@ public class SystemStepDefs {
     private WebDriver driver;
     private final static String baseUrl = "localhost:" + PORT_NUMBER;
     private final static String AGENT_ID = "1234xy";
+    private final static String OTHER_AGENT_ID = "4567ab";
 
     @Before
     public void setUp() {
@@ -137,7 +137,11 @@ public class SystemStepDefs {
 
     @When("^I attempt to send the message Hello there to another agent$")
     public void i_attempt_to_send_the_message_Hello_there_to_another_agent() {
-        // Write code here that turns the phrase above into concrete actions
+        driver.findElement(By.id("destination")).click();
+        driver.findElement(By.id("destination")).sendKeys(OTHER_AGENT_ID);
+        driver.findElement(By.id("messageBody")).click();
+        driver.findElement(By.id("messageBody")).sendKeys("Hello there");
+        driver.findElement(By.id("submit")).click();
         throw new PendingException();
     }
 
@@ -149,7 +153,11 @@ public class SystemStepDefs {
 
     @When("^I attempt to send the message Send recipe now to another agent$")
     public void i_attempt_to_send_the_message_Send_recipe_now_to_another_agent() {
-        // Write code here that turns the phrase above into concrete actions
+        driver.findElement(By.id("destination")).click();
+        driver.findElement(By.id("destination")).sendKeys(OTHER_AGENT_ID);
+        driver.findElement(By.id("messageBody")).click();
+        driver.findElement(By.id("messageBody")).sendKeys("Send recipe now");
+        driver.findElement(By.id("submit")).click();
         throw new PendingException();
     }
 
@@ -161,7 +169,11 @@ public class SystemStepDefs {
 
     @When("^I attempt to send the message Nuclear recipe is ready to another agent$")
     public void i_attempt_to_send_the_message_Nuclear_recipe_is_ready_to_another_agent() {
-        // Write code here that turns the phrase above into concrete actions
+        driver.findElement(By.id("destination")).click();
+        driver.findElement(By.id("destination")).sendKeys(OTHER_AGENT_ID);
+        driver.findElement(By.id("messageBody")).click();
+        driver.findElement(By.id("messageBody")).sendKeys("Nuclear recipe");
+        driver.findElement(By.id("submit")).click();
         throw new PendingException();
     }
 
@@ -173,7 +185,11 @@ public class SystemStepDefs {
 
     @When("^I attempt to send the message GinGer nuclear RECipE\\. to another agent$")
     public void i_attempt_to_send_the_message_GinGer_nuclear_RECipE_to_another_agent() {
-        // Write code here that turns the phrase above into concrete actions
+        driver.findElement(By.id("destination")).click();
+        driver.findElement(By.id("destination")).sendKeys(OTHER_AGENT_ID);
+        driver.findElement(By.id("messageBody")).click();
+        driver.findElement(By.id("messageBody")).sendKeys("GinGer nuclear RECipE.");
+        driver.findElement(By.id("submit")).click();
         throw new PendingException();
     }
 
@@ -185,6 +201,7 @@ public class SystemStepDefs {
 
     @When("^I click on “Log out”$")
     public void i_click_on_Log_out() {
+        // Write code here that turns the phrase above into concrete actions
         // Write code here that turns the phrase above into concrete actions
         throw new PendingException();
     }
