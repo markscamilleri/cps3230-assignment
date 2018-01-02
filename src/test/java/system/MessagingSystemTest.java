@@ -34,7 +34,6 @@ public class MessagingSystemTest {
     
     // default clock used for testing
     private Clock defaultFixedClock  = Clock.fixed(Instant.EPOCH, ZoneId.of("UTC")); // Fixed Clock for independent testing
-    private Clock defaultSystemClock = Clock.systemUTC();
     
     @Before
     public void setUp() {
