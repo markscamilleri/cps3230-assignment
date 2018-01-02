@@ -97,7 +97,6 @@ public class SystemStepDefs {
 
     @When("^I attempt to send (\\d+) messages$")
     public void i_attempt_to_send_messages(int arg1) {
-
         for (int i = 0; i < arg1; i++) {
             driver.findElement(By.id("destination")).click();
             driver.findElement(By.id("destination")).sendKeys(AGENT_ID);
@@ -136,7 +135,6 @@ public class SystemStepDefs {
 
     @When("^I attempt to send the message Hello there to another agent$")
     public void i_attempt_to_send_the_message_Hello_there_to_another_agent() {
-
         driver.findElement(By.id("destination")).click();
         driver.findElement(By.id("destination")).sendKeys(OTHER_AGENT_ID);
         driver.findElement(By.id("messageBody")).click();
@@ -152,7 +150,6 @@ public class SystemStepDefs {
 
     @When("^I attempt to send the message Send recipe now to another agent$")
     public void i_attempt_to_send_the_message_Send_recipe_now_to_another_agent() {
-
         driver.findElement(By.id("destination")).click();
         driver.findElement(By.id("destination")).sendKeys(OTHER_AGENT_ID);
         driver.findElement(By.id("messageBody")).click();
@@ -168,7 +165,6 @@ public class SystemStepDefs {
 
     @When("^I attempt to send the message Nuclear recipe is ready to another agent$")
     public void i_attempt_to_send_the_message_Nuclear_recipe_is_ready_to_another_agent() {
-
         driver.findElement(By.id("destination")).click();
         driver.findElement(By.id("destination")).sendKeys(OTHER_AGENT_ID);
         driver.findElement(By.id("messageBody")).click();
@@ -184,7 +180,6 @@ public class SystemStepDefs {
 
     @When("^I attempt to send the message GinGer nuclear RECipE\\. to another agent$")
     public void i_attempt_to_send_the_message_GinGer_nuclear_RECipE_to_another_agent() {
-
         driver.findElement(By.id("destination")).click();
         driver.findElement(By.id("destination")).sendKeys(OTHER_AGENT_ID);
         driver.findElement(By.id("messageBody")).click();
