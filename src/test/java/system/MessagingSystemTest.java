@@ -31,8 +31,6 @@ public class MessagingSystemTest {
     private final String AID_1 = "1234xy";
     private final String AID_2 = "5678ab";
     private final String VALID_MSG = "msg";
-    private MessagingSystem testSystem;
-    private Map<String, AgentInfo> agentInfos;
     
     // Testing Clock
     private Clock clock;
@@ -41,7 +39,6 @@ public class MessagingSystemTest {
     @Before
     public void setUp() {
         agentInfos = new HashMap<>();
-        testSystem = new MessagingSystem(agentInfos);
         clock = Clock.tick(Clock.fixed(Instant.EPOCH, ZoneId.of("UTC")),Duration.ofMinutes(30));
         system = new MessagingSystem(agentInfos);
     }
@@ -206,12 +203,6 @@ public class MessagingSystemTest {
         return agentInfo;
     }
 
-    private enum AddType {
-        UNREGISTERED,
-        REGISTERED,
-        LOGGEDIN
-    }
-    
     private class StepClock extends Clock {
         private final int stepMultiplier = 0;
         private final Instant baseTime;
