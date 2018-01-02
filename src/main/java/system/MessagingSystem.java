@@ -9,6 +9,8 @@ import java.util.stream.Stream;
 
 import static system.StatusCodes.*;
 
+// todo: add logout functionality
+
 public class MessagingSystem {
 
     final static Duration LOGIN_KEY_TIME_LIMIT = Duration.ofMinutes(1);
