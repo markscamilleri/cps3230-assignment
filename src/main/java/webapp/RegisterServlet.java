@@ -29,14 +29,14 @@ public class RegisterServlet extends HttpServlet {
                 "<h1>Register Screen</h1>" +
                 "<hr>" +
                 Utils.getPostForm("registerForm", "/register") +
-                Utils.getInputField("id", "id", "Agent ID", true) + "<br>" +
+                Utils.getInputField("idInput", "Agent ID", true) + "<br>" +
                 Utils.getSubmitButton("submit", "Register")
         );
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        final String id = request.getParameter("id");
+        final String id = request.getParameter("idInput");
 
         final Supervisor supervisor = new SupervisorImpl(messagingSystem);
         final Agent agent = new Agent(id, supervisor, messagingSystem);

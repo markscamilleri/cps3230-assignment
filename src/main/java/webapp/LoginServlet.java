@@ -25,9 +25,9 @@ public class LoginServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         final Cookie idCookie = Utils.findCookie(request.getCookies(), CookieNames.AGENT_ID.name());
-        final Cookie lkeyCookie = Utils.findCookie(request.getCookies(), CookieNames.LOGIN_KEY.name());
+        final Cookie lKeyCookie = Utils.findCookie(request.getCookies(), CookieNames.LOGIN_KEY.name());
 
-        if (idCookie == null || lkeyCookie == null) {
+        if (idCookie == null || lKeyCookie == null) {
             response.sendRedirect("/register");
         } else {
             response.setContentType("text/html");
@@ -36,10 +36,10 @@ public class LoginServlet extends HttpServlet {
                     "<hr>" +
                     Utils.getPostForm("loginForm", "/login") +
                     "<p>" +
-                    "    <b>Agent ID</b>: " + idCookie.getValue() + "<br>" +
-                    "    <b>Login key</b>: " + lkeyCookie.getValue() + "<br>" +
+                    "    <b>Agent ID</b>:  " + Utils.getSpan("id", idCookie.getValue()) + "<br>" +
+                    "    <b>Login key</b>: " + Utils.getSpan("lKey", lKeyCookie.getValue()) + "<br>" +
                     "</p>" +
-                    Utils.getInputField("lkey", "lkey", "Confirm login key", true) + "<br>" +
+                    Utils.getInputField("lKeyInput", "Confirm login key", true) + "<br>" +
                     Utils.getSubmitButton("submit", "Login")
             );
         }
@@ -48,17 +48,17 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         final Cookie idCookie = Utils.findCookie(request.getCookies(), CookieNames.AGENT_ID.name());
-        final Cookie lkeyCookie = Utils.findCookie(request.getCookies(), CookieNames.LOGIN_KEY.name());
-        final String lkey = request.getParameter("lkey");
+        final Cookie lKeyCookie = Utils.findCookie(request.getCookies(), CookieNames.LOGIN_KEY.name());
+        final String lKey = request.getParameter("lKeyInput");
 
-        if (idCookie == null || lkeyCookie == null) {
+        if (idCookie == null || lKeyCookie == null) {
             response.sendRedirect("/register");
         } else {
             final Supervisor supervisor = new SupervisorImpl(messagingSystem);
-            final Agent agent = new Agent(idCookie.getValue(), supervisor, messagingSystem, lkey);
+            final Agent agent = new Agent(idCookie.getValue(), supervisor, messagingSystem, lKey);
 
             if (agent.login()) {
-                Utils.deleteCookie(lkeyCookie, response);
+                Utils.deleteCookie(lKeyCookie, response);
                 response.addCookie(new Cookie(CookieNames.SESSION_KEY.name(), agent.getSessionKey()));
                 response.sendRedirect("/sendmail");
             } else {

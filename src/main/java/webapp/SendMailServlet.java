@@ -72,10 +72,10 @@ public class SendMailServlet extends HttpServlet {
                     "</div>" +
                     "<hr>" +
                     "<div id=\"composeFormBlock\" class=\"compose\">" +
-                    "    <p class=\"notification\">" + sendingMessageStatusText + "</p>" +
+                    "    <p class=\"notification\">" + Utils.getSpan("notif", sendingMessageStatusText) + "</p>" +
                     "    " + Utils.getPostForm("composeForm", "/sendmail") +
-                    "    " + Utils.getInputField("destination", "destination", "To Agent ID:", true) + "<br>" +
-                    "    " + Utils.getTextArea("messageBody", "messageBody", "Message Body (140 characters)", 2, 70) + "<br>" +
+                    "    " + Utils.getInputField("destination", "To Agent ID:", true) + "<br>" +
+                    "    " + Utils.getTextArea("messageBody", "Message Body (140 characters)", 2, 70) + "<br>" +
                     "    " + Utils.getSubmitButton("submit", "Send message") +
                     "</div>"
             );

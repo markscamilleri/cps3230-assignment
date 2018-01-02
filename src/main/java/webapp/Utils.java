@@ -35,17 +35,17 @@ public class Utils {
         deleteCookie(new Cookie(cookieName, null), response);
     }
 
-    public static String getHrefButton(String href, String id, String text, boolean disabled) {
+    public static String getHrefButton(String href, String id, String content, boolean disabled) {
         return "<a href=\"" + href + "\"><button id=\"" + id + "\" " +
-                (disabled ? "disabled" : " ") + "> " + text + " </button></a>";
+                (disabled ? "disabled" : " ") + "> " + content + " </button></a>";
     }
 
-    public static String getSubmitButton(String id, String text) {
-        return "<button id=\"" + id + "\" type=\"submit\"> " + text + " </button>";
+    public static String getSubmitButton(String id, String content) {
+        return "<button id=\"" + id + "\" type=\"submit\"> " + content + " </button>";
     }
 
-    public static String getInputField(String id, String name, String placeholder, boolean required) {
-        return "<input id=\"" + id + "\" name=\"" + name +
+    public static String getInputField(String idAndName, String placeholder, boolean required) {
+        return "<input id=\"" + idAndName + "\" name=\"" + idAndName +
                 "\" type=\"text\" placeholder=\"" + placeholder +
                 "\" " + (required ? "required " : " ") + "/>";
     }
@@ -54,9 +54,13 @@ public class Utils {
         return "<form id=\"" + id + "\" method=\"POST\" action=\"" + action + "\"/>";
     }
 
-    public static String getTextArea(String id, String name, String placeholder, int rows, int cols) {
-        return "<textarea id=\"" + id + "\" name=\"" + name +
+    public static String getTextArea(String idAndName, String placeholder, int rows, int cols) {
+        return "<textarea id=\"" + idAndName + "\" name=\"" + idAndName +
                 "\" placeholder=\"" + placeholder + "\" rows=\"" +
                 rows + "\" cols=\"" + cols + "\"></textarea>";
+    }
+
+    public static String getSpan(String id, String content) {
+        return "<span id=\"" + id + "\">" + content + "</span>";
     }
 }

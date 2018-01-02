@@ -39,10 +39,10 @@ public class ReadMessageServlet extends HttpServlet {
                         "<h1>Latest Message</h1>" +
                         "<hr>" +
                         "<p>" +
-                        "    <b>From</b>: Agent " + message.getSourceAgentId() + "<br>" +
-                        "    <b>To</b>: Agent " + message.getTargetAgentId() + "<br>" +
-                        "    <b>Timestamp</b>: " + message.getTimestamp() + "<br>" +
-                        "    <b>Message</b>: " + message.getMessage() + "<br>" +
+                        "    <b>From</b>: Agent " + Utils.getSpan("from", message.getSourceAgentId()) + "<br>" +
+                        "    <b>To</b>: Agent " + Utils.getSpan("to", message.getTargetAgentId()) + "<br>" +
+                        "    <b>Timestamp</b>: " + Utils.getSpan("timestamp", "" + message.getTimestamp()) + "<br>" +
+                        "    <b>Message</b>: " + Utils.getSpan("message", message.getMessage()) + "<br>" +
                         "</p>" +
                         Utils.getHrefButton("/readmessage", "consumeAnother", "Consume another message", false) + "<br>" +
                         Utils.getHrefButton("/sendmail", "backToMailbox", "Go back", false)
