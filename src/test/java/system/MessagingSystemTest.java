@@ -38,9 +38,6 @@ public class MessagingSystemTest {
     @Mock
     private TemporaryKey mockSessnKey2;
 
-    // default clock used for testing
-    //private Clock defaultFixedClock  = Clock.fixed(Instant.EPOCH, ZoneId.of("UTC")); // Fixed Clock for independent testing
-
     private MessagingSystem testSystem;
     private Map<String, AgentInfo> agentInfos;
 
@@ -111,8 +108,6 @@ public class MessagingSystemTest {
 
     @Test
     public void login_nullIfLoginKeyExpired() {
-        // To ensure that the next step will be over the login key time limit
-        //Clock testClock = new StepClock(Instant.EPOCH, LOGIN_KEY_TIME_LIMIT.plusSeconds(1));
         when(mockLoginKey1.getKey()).thenReturn(null);
         when(mockLoginKey1.isExpired()).thenReturn(true);
         when(mockLoginKey1.equals(VALID_LKEY_1)).thenReturn(false);
@@ -162,8 +157,6 @@ public class MessagingSystemTest {
 
     @Test
     public void sendMessage_failsIfSessionKeyExpired() {
-        // To ensure that the next step will be over the login key time limit
-        //Clock agent1clock = new StepClock(Instant.EPOCH, SESSION_KEY_TIME_LIMIT.plusSeconds(1));
         when(mockSessnKey1.getKey()).thenReturn(null);
         when(mockSessnKey1.isExpired()).thenReturn(true);
         when(mockSessnKey1.equals(VALID_SKEY_1)).thenReturn(false);
@@ -306,38 +299,6 @@ public class MessagingSystemTest {
 
         agentInfos.put(agentId, agentInfo);
     }
-
-    /*private class StepClock extends Clock {
-        private int stepMultiplier = 0;
-        private final Instant baseTime;
-        private final Duration step;
-        
-        StepClock(Instant baseTime, Duration step){
-            this.baseTime = baseTime;
-            this.step = step;
-        }
-        
-        @Override
-        public long millis() {
-            return super.millis();
-        }
-        
-        @Override
-        public ZoneId getZone() {
-            return ZoneId.of("UTC");
-        }
-        
-        @Override
-        //Ignored
-        public Clock withZone(ZoneId zoneId) {
-            return this;
-        }
-        
-        @Override
-        public Instant instant() {
-            return baseTime.plus(step.multipliedBy(stepMultiplier++));
-        }
-    }*/
 
     private enum AddType {
         UNREGISTERED,
