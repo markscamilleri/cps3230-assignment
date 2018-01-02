@@ -13,7 +13,6 @@ public class MessageTest {
 
     private final String src = "src", trg = "trg", msg = "msg";
     private final Clock fixedClock = Clock.fixed(Instant.EPOCH, ZoneId.of("UTC"));
-    private final Instant expectedTimestamp = fixedClock.instant().plus(Mailbox.MESSAGE_TIME_LIMIT);
     private Message message;
 
     @Before
