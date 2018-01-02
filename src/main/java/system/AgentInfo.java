@@ -1,7 +1,5 @@
 package system;
 
-import java.util.Objects;
-
 class AgentInfo {
 
     final Mailbox mailbox;
@@ -11,4 +9,6 @@ class AgentInfo {
     AgentInfo(String agentId) {
         this.mailbox = new Mailbox(agentId);
     }
+
+    // todo: add isRegistered and isLoggedIn?
 }

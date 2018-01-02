@@ -5,16 +5,19 @@ import util.Utils;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static system.StatusCodes.*;
+
+// todo: add logout functionality
 
 public class MessagingSystem {
 
     final static Duration LOGIN_KEY_TIME_LIMIT = Duration.ofMinutes(1);
     final static Duration SESSION_KEY_TIME_LIMIT = Duration.ofMinutes(10);
 
-    final static int LOGIN_KEY_LENGTH = 10;
-    final static int SESSION_KEY_LENGTH = 50;
+    public final static int LOGIN_KEY_LENGTH = 10;
+    public final static int SESSION_KEY_LENGTH = 50;
 
     final static int MAX_MESSAGE_LENGTH = 140;
     final static String BLOCKED_WORDS[] = {"recipe", "ginger", "nuclear"};
@@ -46,11 +49,7 @@ public class MessagingSystem {
         if (isValidRegister(loginKey)) {
 
             // Obtain (or create) agent info and set login key
-            AgentInfo info = agentInfos.get(agentId);
-            if (info == null) {
-                info = new AgentInfo(agentId);
-                agentInfos.put(agentId, info);
-            }
+            final AgentInfo info = agentInfos.computeIfAbsent(agentId, AgentInfo::new);
             info.loginKey = new TemporaryKey(loginKey, LOGIN_KEY_TIME_LIMIT);
             return true;
         } else {
@@ -113,7 +112,7 @@ public class MessagingSystem {
             return SESSION_KEY_UNRECOGNIZED;
 
         } else if (message.length() > MAX_MESSAGE_LENGTH) {
-            return MESSAGE_LENGTH_EXCEEDED;
+            return MESSAGE_LENGTH_EXCEEDED; // todo: send only valid prefix?
 
         } else {
             // Remove blocked words
@@ -131,11 +130,43 @@ public class MessagingSystem {
     }
 
     /**
+     * @return true if the agent is logged in and has messages, false otherwise
+     */
+    public boolean agentHasMessages(String sessionKey, String agentId) {
+
+        final AgentInfo agentInfo = agentInfos.get(agentId);
+        return agentInfo != null &&
+                agentInfo.sessionKey != null &&
+                agentInfo.sessionKey.equals(sessionKey) &&
+                agentInfo.mailbox.hasMessages();
+
+    }
+
+    /**
+     * Consumes the next message from the agent's mailbox
+     *
+     * @return the next message if the agent is logged in and has
+     * messages, null otherwise
+     */
+    public Message getNextMessage(String sessionKey, String agentID) {
+
+        final AgentInfo agentInfo = agentInfos.get(agentID);
+        if (agentInfo != null &&
+                agentInfo.sessionKey != null &&
+                agentInfo.sessionKey.equals(sessionKey)) {
+            return agentInfo.mailbox.consumeNextMessage();
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Checks length of login key and that it is unique.
      */
     private boolean isValidRegister(String loginKeyToCheck) {
+        final Stream<AgentInfo> infos = agentInfos.values().stream();
         return loginKeyToCheck.length() == LOGIN_KEY_LENGTH
-                && agentInfos.values().stream().noneMatch(v -> v.loginKey.equals(loginKeyToCheck));
+                && infos.noneMatch(v -> v.loginKey != null && v.loginKey.equals(loginKeyToCheck));
     }
 
     /**
@@ -144,6 +175,7 @@ public class MessagingSystem {
      */
     private boolean isValidLogin(TemporaryKey registeredLoginKey, String loginKeyToCheck) {
         return registeredLoginKey != null
+                && loginKeyToCheck != null
                 && registeredLoginKey.equals(loginKeyToCheck)
                 && !registeredLoginKey.isExpired();
     }

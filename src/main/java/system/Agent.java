@@ -6,36 +6,44 @@ package system;
 public class Agent {
 
     private final String id;
-    private final String name;
     private final Supervisor supervisor;
     private final MessagingSystem messagingSystem;
 
+    private String loginKey = null;
     private String sessionKey = null;
 
-    Agent(String id, String name, Supervisor supervisor, MessagingSystem messagingSystem) {
+    public Agent(String id, Supervisor supervisor, MessagingSystem messagingSystem) {
         this.id = id;
-        this.name = name;
         this.supervisor = supervisor;
         this.messagingSystem = messagingSystem;
     }
 
-    Agent(String id, String name, Supervisor supervisor, MessagingSystem messagingSystem, String sessionKey) {
-        this(id, name, supervisor, messagingSystem);
+    public Agent(String id, Supervisor supervisor, MessagingSystem messagingSystem, String loginKey) {
+        this(id, supervisor, messagingSystem);
+        this.loginKey = loginKey;
+    }
+
+    public Agent(String id, Supervisor supervisor, MessagingSystem messagingSystem, String loginKey, String sessionKey) {
+        this(id, supervisor, messagingSystem, loginKey);
         this.sessionKey = sessionKey;
     }
 
     /**
-     * Initiates contact with a supervisor to get a login key and subsequently logs into the system.
+     * Initiates contact with the supervisor to get a login key
+     *
+     * @return true if login key successfully obtained, false otherwise
+     */
+    public boolean register() {
+        loginKey = supervisor.getLoginKey(id);
+        return loginKey != null;
+    }
+
+    /**
+     * Logs into the system using the previously obtained login key
      *
      * @return true if login successful, false otherwise.
      */
     public boolean login() {
-
-        final String loginKey = supervisor.getLoginKey(id);
-        if (loginKey == null) {
-            return false;
-        }
-
         sessionKey = messagingSystem.login(id, loginKey);
         return sessionKey != null;
     }
@@ -55,5 +63,19 @@ public class Agent {
             final StatusCodes temp = messagingSystem.sendMessage(sessionKey, id, destinationAgentId, message);
             return temp == StatusCodes.OK;
         }
+    }
+
+    /**
+     * @return the login key that the agent has
+     */
+    public String getLoginKey() {
+        return loginKey;
+    }
+
+    /**
+     * @return the session key that the agent has
+     */
+    public String getSessionKey() {
+        return sessionKey;
     }
 }

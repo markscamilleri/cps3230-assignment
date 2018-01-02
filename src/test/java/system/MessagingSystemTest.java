@@ -16,9 +16,6 @@ import static system.StatusCodes.*;
 // todo: check bad session key length?
 public class MessagingSystemTest {
 
-    private MessagingSystem system;
-    private Map<String, AgentInfo> agentInfos;
-
     // Valid login keys (one per agent)
     private final String VALID_LKEY_1 = Utils.getNCharacters(LOGIN_KEY_LENGTH, "1");
     private final String VALID_LKEY_2 = Utils.getNCharacters(LOGIN_KEY_LENGTH, "2");
@@ -34,71 +31,82 @@ public class MessagingSystemTest {
     
     // default clock used for testing
     private Clock defaultFixedClock  = Clock.fixed(Instant.EPOCH, ZoneId.of("UTC")); // Fixed Clock for independent testing
-    
+
+    private MessagingSystem testSystem;
+    private Map<String, AgentInfo> agentInfos;
+
     @Before
     public void setUp() {
         agentInfos = new HashMap<>();
-        system = new MessagingSystem(agentInfos);
+        testSystem = new MessagingSystem(agentInfos);
     }
 
     @After
     public void tearDown() {
         agentInfos = null;
-        system = null;
+        testSystem = null;
     }
 
     @Test
     public void registerFailsIfLoginKeyIncorrectLength() {
-        Assert.assertFalse(system.registerLoginKey(AID_1, Utils.getNCharacters(LOGIN_KEY_LENGTH + 1)));
-        Assert.assertFalse(system.registerLoginKey(AID_1, Utils.getNCharacters(LOGIN_KEY_LENGTH - 1)));
+        Assert.assertFalse(testSystem.registerLoginKey(AID_1, Utils.getNCharacters(LOGIN_KEY_LENGTH + 1)));
+        Assert.assertFalse(testSystem.registerLoginKey(AID_1, Utils.getNCharacters(LOGIN_KEY_LENGTH - 1)));
     }
 
     @Test
     public void registerFailsIfLoginKeyNotUnique() {
         addAgent(agentInfos, 1, AddType.REGISTERED, defaultFixedClock);
 
-        Assert.assertFalse(system.registerLoginKey(AID_2, VALID_LKEY_1));
+        Assert.assertFalse(testSystem.registerLoginKey(AID_2, VALID_LKEY_1));
     }
 
     @Test
     public void registerSucceedsIfLoginKeyValid() {
-        Assert.assertTrue(system.registerLoginKey(AID_1, VALID_LKEY_1));
+        Assert.assertTrue(testSystem.registerLoginKey(AID_1, VALID_LKEY_1));
     }
 
     @Test
     public void loginFailsIfAgentDoesNotExist() {
-        Assert.assertNull(system.login(AID_1, VALID_LKEY_1));
+        Assert.assertNull(testSystem.login(AID_1, VALID_LKEY_1));
     }
 
     @Test
     public void loginFailsIfAgentDidNotRegister() {
         addAgent(agentInfos, 1, AddType.UNREGISTERED, defaultFixedClock);
 
-        Assert.assertNull(system.login(AID_1, VALID_LKEY_1));
+        Assert.assertNull(testSystem.login(AID_1, VALID_LKEY_1));
+    }
+
+    @Test
+    public void loginFailsIfAgentExistsButDidNotRegister() {
+        addAgent(agentInfos, 1, AddType.UNREGISTERED, defaultFixedClock);
+
+        Assert.assertEquals(null, testSystem.login(AID_1, VALID_LKEY_1)); // given a valid login key before registering
+        Assert.assertEquals(null, testSystem.login(AID_1, null)); // when agent.login() called before registering
     }
 
     @Test // todo
     public void loginFailsIfLoginKeyExpired() {
         // To ensure that the next step will be over the login key time limit
         Clock testClock = new StepClock(Instant.EPOCH, LOGIN_KEY_TIME_LIMIT.plusSeconds(1));
-        
+
         addAgent(agentInfos, 1, AddType.REGISTERED, testClock);
         
-        Assert.assertNull(system.login(AID_1, VALID_LKEY_1));
+        Assert.assertNull(testSystem.login(AID_1, VALID_LKEY_1));
     }
 
     @Test
     public void loginFailsIfLoginKeyDoesNotMatch() {
         addAgent(agentInfos, 1, AddType.REGISTERED, defaultFixedClock);
 
-        Assert.assertNull(system.login(AID_1, VALID_LKEY_2));
+        Assert.assertNull(testSystem.login(AID_1, VALID_LKEY_2));
     }
 
     @Test
     public void loginReturnsValidSessionKeyIfLoginKeyValid() {
         addAgent(agentInfos, 1, AddType.REGISTERED, defaultFixedClock);
 
-        final String sessionKey = system.login(AID_1, VALID_LKEY_1);
+        final String sessionKey = testSystem.login(AID_1, VALID_LKEY_1);
         Assert.assertNotNull(sessionKey);
         Assert.assertTrue(sessionKey.length() == SESSION_KEY_LENGTH);
     }
@@ -107,14 +115,14 @@ public class MessagingSystemTest {
     public void sendMessageFailsIfSourceAgentDoesNotExist() {
         addAgent(agentInfos, 2, AddType.REGISTERED, defaultFixedClock); // only target agent exists
 
-        Assert.assertEquals(system.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG), AGENT_DOES_NOT_EXIST);
+        Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG), AGENT_DOES_NOT_EXIST);
     }
 
     @Test
     public void sendMessageFailsIfTargetAgentDoesNotExist() {
         addAgent(agentInfos, 1, AddType.REGISTERED, defaultFixedClock); // only source agent exists
 
-        Assert.assertEquals(system.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG), AGENT_DOES_NOT_EXIST);
+        Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG), AGENT_DOES_NOT_EXIST);
     }
 
     @Test
@@ -122,8 +130,7 @@ public class MessagingSystemTest {
         addAgent(agentInfos, 1, AddType.REGISTERED, defaultFixedClock); // source did not login
         addAgent(agentInfos, 2, AddType.REGISTERED, defaultFixedClock); // target doesn't have to be logged in
 
-
-        Assert.assertEquals(AGENT_NOT_LOGGED_IN, system.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG));
+        Assert.assertEquals(AGENT_NOT_LOGGED_IN, testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG));
     }
 
     @Test // todo
@@ -134,7 +141,7 @@ public class MessagingSystemTest {
         addAgent(agentInfos, 1, AddType.LOGGEDIN, agent1clock);   // source must be logged in
         addAgent(agentInfos, 2, AddType.REGISTERED, defaultFixedClock); // target doesn't have to be logged in
         
-        Assert.assertEquals(StatusCodes.AGENT_NOT_LOGGED_IN, system.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG));
+        Assert.assertEquals(StatusCodes.AGENT_NOT_LOGGED_IN, testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG));
     }
 
     @Test
@@ -142,7 +149,7 @@ public class MessagingSystemTest {
         addAgent(agentInfos, 1, AddType.LOGGEDIN, defaultFixedClock);   // source must be logged in
         addAgent(agentInfos, 2, AddType.REGISTERED, defaultFixedClock); // target doesn't have to be logged in
 
-        Assert.assertEquals(system.sendMessage(VALID_SKEY_2, AID_1, AID_2, VALID_MSG), SESSION_KEY_UNRECOGNIZED);
+        Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_2, AID_1, AID_2, VALID_MSG), SESSION_KEY_UNRECOGNIZED);
     }
 
     @Test
@@ -151,32 +158,28 @@ public class MessagingSystemTest {
         addAgent(agentInfos, 2, AddType.REGISTERED, defaultFixedClock); // target doesn't have to be logged in
 
         final String LONG_MESSAGE = Utils.getNCharacters(MAX_MESSAGE_LENGTH + 1);
-        Assert.assertEquals(system.sendMessage(VALID_SKEY_1, AID_1, AID_2, LONG_MESSAGE), MESSAGE_LENGTH_EXCEEDED);
+        Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, LONG_MESSAGE), MESSAGE_LENGTH_EXCEEDED);
     }
 
-    @Test
+    /*@Test
     public void sendMessageFailsIfMessageContainsBlockedWords() {
         addAgent(agentInfos, 1, AddType.LOGGEDIN, defaultFixedClock);   // source must be logged in
         addAgent(agentInfos, 2, AddType.REGISTERED, defaultFixedClock); // target doesn't have to be logged in
 
         for (String bw : BLOCKED_WORDS) {
-            final String msg = VALID_MSG + bw + VALID_MSG;
-            Assert.assertEquals(system.sendMessage(VALID_SKEY_1, AID_1, AID_2, msg), MESSAGE_CONTAINS_BLOCKED_WORD);
+            final String msg1 = VALID_MSG + bw.toLowerCase() + VALID_MSG; // message with lowercase blocked word
+            final String msg2 = VALID_MSG + bw.toUpperCase() + VALID_MSG; // message with uppercase blocked word
+            Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, msg1), MESSAGE_CONTAINS_BLOCKED_WORD);
+            Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, msg2), MESSAGE_CONTAINS_BLOCKED_WORD);
         }
-    }
+    }*/
 
     @Test
     public void sendMessageReturnsOkIfAllValid() {
         addAgent(agentInfos, 1, AddType.LOGGEDIN, defaultFixedClock);   // source must be logged in
         addAgent(agentInfos, 2, AddType.REGISTERED, defaultFixedClock); // target doesn't have to be logged in
 
-        Assert.assertEquals(system.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG), OK);
-    }
-
-    private enum AddType {
-        UNREGISTERED,
-        REGISTERED,
-        LOGGEDIN
+        Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG), OK);
     }
     
     private AgentInfo addAgent(final Map<String, AgentInfo> agentInfos, int agent, AddType type, Clock clock) {
@@ -235,5 +238,10 @@ public class MessagingSystemTest {
             return baseTime.plus(step.multipliedBy(stepMultiplier++));
         }
     }
-    
+
+    private enum AddType {
+        UNREGISTERED,
+        REGISTERED,
+        LOGGEDIN
+    }
 }
