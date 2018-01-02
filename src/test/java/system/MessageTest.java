@@ -27,11 +27,22 @@ public class MessageTest {
     }
 
     @Test
-    public void constructor_setsFieldsCorrectly() {
-
+    public void getSourceAgentId_returnsSourceAgentId() {
         Assert.assertEquals(src, message.getSourceAgentId());
+    }
+
+    @Test
+    public void getTargetAgentId_returnsTargetAgentId() {
         Assert.assertEquals(trg, message.getTargetAgentId());
+    }
+
+    @Test
+    public void getMessage_returnsMessage() {
         Assert.assertEquals(msg, message.getMessage());
+    }
+
+    @Test
+    public void getTimestamp_returnsTimestamp() {
         Assert.assertEquals(expectedTimestamp, message.getTimeout());
     }
 }

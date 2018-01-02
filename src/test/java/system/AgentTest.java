@@ -24,6 +24,7 @@ public class AgentTest {
     private Agent testAgent_default;
     private Agent testAgent_registered;
     private Agent testAgent_loggedIn;
+    private Agent testAgent_bothKeys;
 
     @Mock
     private Supervisor mockSupervisor;
@@ -35,6 +36,7 @@ public class AgentTest {
         testAgent_default = new Agent(AGENT_ID, mockSupervisor, mockMessagingSystem);
         testAgent_registered = new Agent(AGENT_ID, mockSupervisor, mockMessagingSystem, LOGIN_KEY, null);
         testAgent_loggedIn = new Agent(AGENT_ID, mockSupervisor, mockMessagingSystem, null, SESSN_KEY);
+        testAgent_bothKeys = new Agent(AGENT_ID, mockSupervisor, mockMessagingSystem, LOGIN_KEY, SESSN_KEY);
     }
 
     @After
@@ -100,5 +102,15 @@ public class AgentTest {
                 StatusCodes.OK);
 
         Assert.assertTrue(testAgent_loggedIn.sendMessage(TARGET_AGENT_ID, MESSAGE));
+    }
+
+    @Test
+    public void getLoginKey_returnsLoginKey() {
+        Assert.assertEquals(LOGIN_KEY, testAgent_bothKeys.getLoginKey());
+    }
+
+    @Test
+    public void getSessionKey_returnsSessionKey() {
+        Assert.assertEquals(SESSN_KEY, testAgent_bothKeys.getSessionKey());
     }
 }
