@@ -74,7 +74,7 @@ public class MessagingSystem {
         if (info != null && isValidLogin(info.loginKey, loginKey)) {
             info.loginKey = null; // login key not needed anymore
             info.sessionKey = new TemporaryKey(Utils.getNRandomCharacters(SESSION_KEY_LENGTH), SESSION_KEY_TIME_LIMIT);
-            return info.sessionKey.key;
+            return info.sessionKey.getKey();
         } else {
             return null;
         }
@@ -106,7 +106,7 @@ public class MessagingSystem {
         } else if (sourceAgentInfo.sessionKey == null) {
             return AGENT_NOT_LOGGED_IN;
 
-        } else if (sourceAgentInfo.sessionKey.key.length() != SESSION_KEY_LENGTH) {
+        } else if (sourceAgentInfo.sessionKey.getKey().length() != SESSION_KEY_LENGTH) {
             return SESSION_KEY_INVALID_LENGTH; // todo: remove this check?
 
         } else if (!sourceAgentInfo.sessionKey.equals(sessionKey)) {

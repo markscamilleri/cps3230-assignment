@@ -1,5 +1,6 @@
 package util;
 
+import java.time.Clock;
 import java.time.Instant;
 
 /**
@@ -8,9 +9,11 @@ import java.time.Instant;
  */
 public abstract class Timeoutable {
     private Instant timeout;
+    protected Clock clock;
     
-    protected Timeoutable(Instant timeout) {
+    protected Timeoutable(Instant timeout, Clock clock){
         this.timeout = timeout;
+        this.clock = clock;
     }
 
     public Instant getTimeout() {
@@ -18,6 +21,6 @@ public abstract class Timeoutable {
     }
 
     public boolean isExpired() {
-        return Instant.now().isAfter(timeout);
+        return Instant.now(clock).isAfter(timeout);
     }
 }
