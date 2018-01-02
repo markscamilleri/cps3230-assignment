@@ -37,6 +37,7 @@ public class ReadMessageServlet extends HttpServlet {
                 final Message message = messagingSystem.getNextMessage(sessionKey, id);
                 response.getWriter().println("" +
                         "<h1>Latest Message</h1>" +
+                        "<hr>" +
                         "<p>" +
                         "    <b>From</b>: Agent " + message.getSourceAgentId() + "<br>" +
                         "    <b>To</b>: Agent " + message.getTargetAgentId() + "<br>" +

@@ -27,6 +27,7 @@ public class RegisterServlet extends HttpServlet {
         response.setContentType("text/html");
         response.getWriter().println("" +
                 "<h1>Register Screen</h1>" +
+                "<hr>" +
                 Utils.getPostForm("registerForm", "/register") +
                 Utils.getInputField("id", "id", "Agent ID", true) + "<br>" +
                 Utils.getSubmitButton("submit", "Register")

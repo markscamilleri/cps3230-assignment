@@ -33,6 +33,7 @@ public class LoginServlet extends HttpServlet {
             response.setContentType("text/html");
             response.getWriter().println("" +
                     "<h1>Login Screen</h1>" +
+                    "<hr>" +
                     Utils.getPostForm("loginForm", "/login") +
                     "<p>" +
                     "    <b>Agent ID</b>: " + idCookie.getValue() + "<br>" +
