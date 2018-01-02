@@ -36,6 +36,11 @@ public class MessageTest {
     }
 
     @Test
+    public void getTimestamp_returnsTimestamp() {
+        Assert.assertEquals(Instant.now(fixedClock), message.getTimestamp());
+    }
+
+    @Test
     public void getMessage_returnsMessage() {
         Assert.assertEquals(msg, message.getMessage());
     }
