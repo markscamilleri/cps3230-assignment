@@ -19,9 +19,6 @@ public class SupervisorImplTest {
     private final String VALID_AGENT_ID = "1234xy";
     private final String INVALID_AGENT_ID = "spy-" + VALID_AGENT_ID;
 
-    // Messaging system session key return
-    private final String SESSN_KEY = Utils.getNCharacters(50);
-
     private SupervisorImpl testSupervisor;
 
     @Mock
@@ -39,14 +36,14 @@ public class SupervisorImplTest {
     }
 
     @Test
-    public void getLoginKeySuccessfulIfAgentIdValid() {
+    public void getLoginKey_loginKeyIfAgentIdValid() {
         when(mockMessagingSystem.registerLoginKey(Mockito.eq(VALID_AGENT_ID), Mockito.anyString())).thenReturn(true);
 
         Assert.assertNotEquals(null, testSupervisor.getLoginKey(VALID_AGENT_ID));
     }
 
     @Test
-    public void getLoginKeyFailsIfAgentIdStartsWithSpy() {
+    public void getLoginKey_nullIfAgentIdStartsWithSpy() {
         Assert.assertEquals(null, testSupervisor.getLoginKey(INVALID_AGENT_ID));
     }
 }

@@ -27,7 +27,7 @@ public class MessageTest {
     }
 
     @Test
-    public void constructorSetsFieldsCorrectly() {
+    public void constructor_setsFieldsCorrectly() {
 
         Assert.assertEquals(src, message.getSourceAgentId());
         Assert.assertEquals(trg, message.getTargetAgentId());

@@ -52,41 +52,41 @@ public class MailboxTest {
     }
 
     @Test
-    public void consumeNextMessageSuccessfulIfMailboxHasMessage() {
+    public void consumeNextMessage_notNullIfMailboxHasMessage() {
         Assert.assertNotEquals(null, testMailboxWith1Message.consumeNextMessage());
     }
 
     @Test
-    public void consumeNextMessageUnsuccessfulIfMailboxIsEmpty() {
+    public void consumeNextMessage_nullIfMailboxIsEmpty() {
         Assert.assertEquals(null, testEmptyMailbox.consumeNextMessage());
     }
 
     @Test // todo
-    public void consumeNextMessageUnsuccessfulIfTimeLimitExceeded() {
+    public void consumeNextMessage_unsuccessfulIfTimeLimitExceeded() {
         //Assume.assumeTrue(testEmptyMailbox.addMessage(mockMessage));
         // ...30 minutes pass...
         //Assert.assertEquals(null, testEmptyMailbox.consumeNextMessage());
     }
 
     @Test
-    public void hasMessagesTrueIfMailboxHasMessages() {
+    public void hasMessages_trueIfMailboxHasMessages() {
         Assert.assertTrue(testMailboxWith1Message.hasMessages());
     }
 
     @Test
-    public void hasMessagesFalseIfMailboxIsEmpty() {
+    public void hasMessages_falseIfMailboxIsEmpty() {
         Assert.assertFalse(testEmptyMailbox.hasMessages());
     }
 
     @Test // todo
-    public void hasMessagesFalseIfTimeLimitExceeded() {
+    public void hasMessages_falseIfTimeLimitExceeded() {
         //Assume.assumeTrue(testEmptyMailbox.addMessage(mockMessage));
         // ...30 minutes pass...
         //Assert.assertFalse(testEmptyMailbox.hasMessages());
     }
 
     @Test
-    public void addMessageSuccessfulBelowLimit() {
+    public void addMessage_trueBelowLimit() {
 
         for (int i = 0; i < MAX_MESSAGES; i++) {
             Assert.assertTrue(testEmptyMailbox.addMessage(mockMessage));
@@ -94,7 +94,7 @@ public class MailboxTest {
     }
 
     @Test // todo
-    public void addMessageSucessfulIfMessagesExpire() {
+    public void addMessage_trueIfMessagesExpire() {
 
         for (int i = 0; i < MAX_MESSAGES; i++) {
             Assume.assumeTrue(testEmptyMailbox.addMessage(mockMessage));
@@ -105,7 +105,7 @@ public class MailboxTest {
     }
 
     @Test
-    public void addMessageUnsuccessfulIfMailboxFull() {
+    public void addMessage_falseIfMailboxFull() {
 
         for (int i = 0; i < MAX_MESSAGES; i++) {
             Assume.assumeTrue(testEmptyMailbox.addMessage(mockMessage));
@@ -114,7 +114,7 @@ public class MailboxTest {
     }
 
     @Test
-    public void addMessageUnsuccessfulIfMessageTimestampIsTooLongAgo() {
+    public void addMessage_falseIfMessageTimestampIsTooLongAgo() {
 
         when(mockMessage.getTimestamp()).thenReturn(Instant.EPOCH);
         when(mockMessage.getTimeout()).thenReturn(Instant.EPOCH.plus(Duration.ofMinutes(30)));
@@ -123,7 +123,7 @@ public class MailboxTest {
     }
 
     @Test
-    public void addMessageUnsuccessfulIfOwnerIsNotMessageTarget() {
+    public void addMessage_falseIfOwnerIsNotMessageTarget() {
         when(mockMessage.getTargetAgentId()).thenReturn("AnotherID");
 
         Assert.assertFalse(testEmptyMailbox.addMessage(mockMessage));

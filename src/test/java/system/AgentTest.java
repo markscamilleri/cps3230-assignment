@@ -47,42 +47,42 @@ public class AgentTest {
     }
 
     @Test
-    public void testRegisterSuccessfulReturnsTrue() {
+    public void register_trueIfSuccessful() {
         when(mockSupervisor.getLoginKey(AGENT_ID)).thenReturn(LOGIN_KEY);
 
         Assert.assertTrue(testAgent_default.register());
     }
 
     @Test
-    public void testRegisterNoLoginKeyReturnsFalse() {
+    public void register_falseIfNoLoginKeyFromSupervisor() {
         when(mockSupervisor.getLoginKey(Mockito.anyString())).thenReturn(null);
 
         Assert.assertFalse(testAgent_default.register());
     }
 
     @Test
-    public void testLoginSuccessfulReturnsTrue() {
+    public void login_trueIfSuccessful() {
         when(mockMessagingSystem.login(AGENT_ID, LOGIN_KEY)).thenReturn(Utils.getNCharacters(50));
 
         Assert.assertTrue(testAgent_registered.login());
     }
 
     @Test
-    public void testLoginNoSessionKeyReturnsFalse() {
+    public void login_falseIfNoLoginKeyFromSupervisor() {
         when(mockMessagingSystem.login(AGENT_ID, LOGIN_KEY)).thenReturn(null);
 
         Assert.assertFalse(testAgent_registered.login());
     }
 
     @Test
-    public void testSendMessageNotLoggedInFailure() {
+    public void sendMessage_falseIfNotLoggedIn() {
         // by default agent is not logged in
 
         Assert.assertFalse(testAgent_default.sendMessage(TARGET_AGENT_ID, MESSAGE));
     }
 
     @Test
-    public void testSendMessageMessagingSystemErrorFailure() {
+    public void sendMessage_falseIfMessagingSystemFailure() {
         when(mockMessagingSystem.sendMessage(Mockito.anyString(),
                 Mockito.anyString(),
                 Mockito.anyString(),
@@ -92,7 +92,7 @@ public class AgentTest {
     }
 
     @Test
-    public void testSendMessageSuccess() {
+    public void sendMessage_trueIfSuccessful() {
         when(mockMessagingSystem.sendMessage(Mockito.anyString(),
                 Mockito.anyString(),
                 Mockito.anyString(),

@@ -86,7 +86,7 @@ public class MessagingSystemTest {
     }
 
     @Test // todo
-    public void loginFailsIfLoginKeyExpired() {
+    public void login_nullIfLoginKeyExpired() {
         // To ensure that the next step will be over the login key time limit
         Clock testClock = new StepClock(Instant.EPOCH, LOGIN_KEY_TIME_LIMIT.plusSeconds(1));
 
@@ -96,14 +96,14 @@ public class MessagingSystemTest {
     }
 
     @Test
-    public void loginFailsIfLoginKeyDoesNotMatch() {
+    public void login_nullIfLoginKeyDoesNotMatch() {
         addAgent(agentInfos, 1, AddType.REGISTERED, defaultFixedClock);
 
         Assert.assertNull(testSystem.login(AID_1, VALID_LKEY_2));
     }
 
     @Test
-    public void loginReturnsValidSessionKeyIfLoginKeyValid() {
+    public void login_validSessionKeyIfLoginKeyValid() {
         addAgent(agentInfos, 1, AddType.REGISTERED, defaultFixedClock);
 
         final String sessionKey = testSystem.login(AID_1, VALID_LKEY_1);
@@ -112,21 +112,21 @@ public class MessagingSystemTest {
     }
 
     @Test
-    public void sendMessageFailsIfSourceAgentDoesNotExist() {
+    public void sendMessage_failsIfSourceAgentDoesNotExist() {
         addAgent(agentInfos, 2, AddType.REGISTERED, defaultFixedClock); // only target agent exists
 
         Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG), AGENT_DOES_NOT_EXIST);
     }
 
     @Test
-    public void sendMessageFailsIfTargetAgentDoesNotExist() {
+    public void sendMessage_failsIfTargetAgentDoesNotExist() {
         addAgent(agentInfos, 1, AddType.REGISTERED, defaultFixedClock); // only source agent exists
 
         Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG), AGENT_DOES_NOT_EXIST);
     }
 
     @Test
-    public void sendMessageFailsIfSourceAgentDidNotLogin() {
+    public void sendMessage_failsIfSourceAgentDidNotLogin() {
         addAgent(agentInfos, 1, AddType.REGISTERED, defaultFixedClock); // source did not login
         addAgent(agentInfos, 2, AddType.REGISTERED, defaultFixedClock); // target doesn't have to be logged in
 
@@ -134,7 +134,7 @@ public class MessagingSystemTest {
     }
 
     @Test // todo
-    public void sendMessageFailsIfSessionKeyExpired() {
+    public void sendMessage_failsIfSessionKeyExpired() {
         // To ensure that the next step will be over the login key time limit
         Clock agent1clock = new StepClock(Instant.EPOCH, SESSION_KEY_TIME_LIMIT.plusSeconds(1));
         
@@ -145,7 +145,7 @@ public class MessagingSystemTest {
     }
 
     @Test
-    public void sendMessageFailsIfSessionKeyDoesNotMatch() {
+    public void sendMessage_failsIfSessionKeyDoesNotMatch() {
         addAgent(agentInfos, 1, AddType.LOGGEDIN, defaultFixedClock);   // source must be logged in
         addAgent(agentInfos, 2, AddType.REGISTERED, defaultFixedClock); // target doesn't have to be logged in
 
@@ -153,7 +153,7 @@ public class MessagingSystemTest {
     }
 
     @Test
-    public void sendMessageFailsIfMessageLengthExceeded() {
+    public void sendMessage_failsIfMessageLengthExceeded() {
         addAgent(agentInfos, 1, AddType.LOGGEDIN, defaultFixedClock);   // source must be logged in
         addAgent(agentInfos, 2, AddType.REGISTERED, defaultFixedClock); // target doesn't have to be logged in
 
@@ -162,7 +162,7 @@ public class MessagingSystemTest {
     }
 
     /*@Test
-    public void sendMessageFailsIfMessageContainsBlockedWords() {
+    public void sendMessage_failsIfMessageContainsBlockedWords() {
         addAgent(agentInfos, 1, AddType.LOGGEDIN, defaultFixedClock);   // source must be logged in
         addAgent(agentInfos, 2, AddType.REGISTERED, defaultFixedClock); // target doesn't have to be logged in
 
@@ -175,7 +175,7 @@ public class MessagingSystemTest {
     }*/
 
     @Test
-    public void sendMessageReturnsOkIfAllValid() {
+    public void sendMessage_okIfAllValid() {
         addAgent(agentInfos, 1, AddType.LOGGEDIN, defaultFixedClock);   // source must be logged in
         addAgent(agentInfos, 2, AddType.REGISTERED, defaultFixedClock); // target doesn't have to be logged in
 
