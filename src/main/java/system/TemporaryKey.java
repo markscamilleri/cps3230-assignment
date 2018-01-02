@@ -16,7 +16,7 @@ class TemporaryKey extends Timeoutable {
     }
 
     TemporaryKey(String key, Duration timeLimit, Clock clock) {
-        super(Instant.now(clock).plus(timeLimit));
+        super(Instant.now(clock).plus(timeLimit), clock);
     
         this.key = isExpired()? null : key;
     }
