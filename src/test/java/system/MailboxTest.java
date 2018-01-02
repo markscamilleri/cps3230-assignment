@@ -53,19 +53,19 @@ public class MailboxTest {
 
     @Test
     public void consumeNextMessage_notNullIfMailboxHasMessage() {
-        Assert.assertNotEquals(null, testMailboxWith1Message.consumeNextMessage());
+        Assert.assertNotNull(testMailboxWith1Message.consumeNextMessage());
     }
 
     @Test
     public void consumeNextMessage_nullIfMailboxIsEmpty() {
-        Assert.assertEquals(null, testEmptyMailbox.consumeNextMessage());
+        Assert.assertNull(testEmptyMailbox.consumeNextMessage());
     }
 
     @Test
     public void consumeNextMessage_unsuccessfulIfTimeLimitExceeded() {
         when(mockMessage1.isExpired()).thenReturn(true);
 
-        Assert.assertEquals(null, testMailboxWith1Message.consumeNextMessage());
+        Assert.assertNull(testMailboxWith1Message.consumeNextMessage());
     }
 
     @Test
