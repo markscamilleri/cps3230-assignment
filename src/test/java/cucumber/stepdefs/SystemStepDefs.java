@@ -72,9 +72,8 @@ public class SystemStepDefs {
     }
 
     @When("^I wait for (\\d+) seconds$")
-    public void i_wait_for_seconds(int arg1) {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+    public void i_wait_for_seconds(int arg1) throws InterruptedException {
+        Thread.sleep(arg1 * 1000);
     }
 
     @Then("^I should not be allowed to log in$")
@@ -124,7 +123,7 @@ public class SystemStepDefs {
     }
 
     @Then("^the system will inform me that I have exceeded my quota$")
-    public void the_system_will_inform_me_that_I_have_exceeded_my_quota() {
+    public void the_system_will_inform_me_that_I_have_exceeded_my_quota() { // todo: "exceeded your quota"
         final String notificationText = driver.findElement(By.id("notif")).getText();
         Assert.assertTrue(notificationText.equals("Failed to add the message to the destination mailbox"));
     }
@@ -137,12 +136,12 @@ public class SystemStepDefs {
 
     @When("^I attempt to send the message Hello there to another agent$")
     public void i_attempt_to_send_the_message_Hello_there_to_another_agent() {
+
         driver.findElement(By.id("destination")).click();
         driver.findElement(By.id("destination")).sendKeys(OTHER_AGENT_ID);
         driver.findElement(By.id("messageBody")).click();
         driver.findElement(By.id("messageBody")).sendKeys("Hello there");
         driver.findElement(By.id("submit")).click();
-        throw new PendingException();
     }
 
     @Then("^the other agent should receive the message Hello there$")
@@ -153,12 +152,12 @@ public class SystemStepDefs {
 
     @When("^I attempt to send the message Send recipe now to another agent$")
     public void i_attempt_to_send_the_message_Send_recipe_now_to_another_agent() {
+
         driver.findElement(By.id("destination")).click();
         driver.findElement(By.id("destination")).sendKeys(OTHER_AGENT_ID);
         driver.findElement(By.id("messageBody")).click();
         driver.findElement(By.id("messageBody")).sendKeys("Send recipe now");
         driver.findElement(By.id("submit")).click();
-        throw new PendingException();
     }
 
     @Then("^the other agent should receive the message Send now$")
@@ -169,12 +168,12 @@ public class SystemStepDefs {
 
     @When("^I attempt to send the message Nuclear recipe is ready to another agent$")
     public void i_attempt_to_send_the_message_Nuclear_recipe_is_ready_to_another_agent() {
+
         driver.findElement(By.id("destination")).click();
         driver.findElement(By.id("destination")).sendKeys(OTHER_AGENT_ID);
         driver.findElement(By.id("messageBody")).click();
         driver.findElement(By.id("messageBody")).sendKeys("Nuclear recipe");
         driver.findElement(By.id("submit")).click();
-        throw new PendingException();
     }
 
     @Then("^the other agent should receive the message ready$")
@@ -185,12 +184,12 @@ public class SystemStepDefs {
 
     @When("^I attempt to send the message GinGer nuclear RECipE\\. to another agent$")
     public void i_attempt_to_send_the_message_GinGer_nuclear_RECipE_to_another_agent() {
+
         driver.findElement(By.id("destination")).click();
         driver.findElement(By.id("destination")).sendKeys(OTHER_AGENT_ID);
         driver.findElement(By.id("messageBody")).click();
         driver.findElement(By.id("messageBody")).sendKeys("GinGer nuclear RECipE.");
         driver.findElement(By.id("submit")).click();
-        throw new PendingException();
     }
 
     @Then("^the other agent should receive the message \\.$")
