@@ -13,8 +13,6 @@ import static org.mockito.Mockito.when;
 import static system.MessagingSystem.*;
 import static system.StatusCodes.*;
 
-// todo: check bad session key length?
-
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class MessagingSystemTest {
 

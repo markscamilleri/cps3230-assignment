@@ -101,9 +101,6 @@ public class MessagingSystem {
         } else if (sourceAgentInfo.sessionKey.isExpired()) {
             return AGENT_NOT_LOGGED_IN;
 
-        } else if (sourceAgentInfo.sessionKey.getKey().length() != SESSION_KEY_LENGTH) {
-            return SESSION_KEY_INVALID_LENGTH; // todo: remove this check?
-
         } else if (!sourceAgentInfo.sessionKey.equals(sessionKey)) {
             return SESSION_KEY_UNRECOGNIZED;
 
