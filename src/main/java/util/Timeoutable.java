@@ -9,7 +9,7 @@ import java.time.Instant;
  */
 public abstract class Timeoutable {
     private Instant timeout;
-    protected Clock clock;
+    private Clock clock;
     
     protected Timeoutable(Instant timeout, Clock clock){
         this.timeout = timeout;
