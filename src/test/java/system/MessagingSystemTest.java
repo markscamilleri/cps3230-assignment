@@ -269,11 +269,12 @@ public class MessagingSystemTest {
     }
 
     @Test
-    public void getNextMessage_trueIfAgentHasMessages() {
+    public void getNextMessage_returnsFirstMessageInTheMailboxIfAgentHasMessages() {
         addAgent(agentInfos, 1, AddType.LOGGEDIN);
-        agentInfos.get(AID_1).mailbox.addMessage(new Message(AID_2, AID_1, "msg"));
+        agentInfos.get(AID_1).mailbox.addMessage(new Message(AID_2, AID_1, "msg1"));
+        agentInfos.get(AID_1).mailbox.addMessage(new Message(AID_2, AID_1, "msg2"));
 
-        Assert.assertEquals("msg", testSystem.getNextMessage(VALID_SKEY_1, AID_1).getMessage());
+        Assert.assertEquals("msg1", testSystem.getNextMessage(VALID_SKEY_1, AID_1).getMessage());
     }
 
     private void addAgent(final Map<String, AgentInfo> agentInfos, int agent, AddType type) {
