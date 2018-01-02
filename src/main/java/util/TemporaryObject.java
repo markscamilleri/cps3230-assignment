@@ -20,7 +20,7 @@ public abstract class TemporaryObject<T> {
         this.clock = clock;
     }
 
-    public Instant getTimeout() {
+    protected Instant getTimeout() {
         return timeout;
     }
 
@@ -28,7 +28,7 @@ public abstract class TemporaryObject<T> {
         return Instant.now(clock).compareTo(timeout) >= 0;
     }
 
-    public T getTempObject() {
+    protected T getTempObject() {
         tempObject = isExpired() ? null : tempObject;
         return tempObject;
     }

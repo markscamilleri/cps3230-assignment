@@ -9,7 +9,6 @@ public class Message extends TemporaryObject<String> {
 
     private final String sourceAgentId;
     private final String targetAgentId;
-    private final Instant timestamp;
 
     /**
      * Creates a new message
@@ -34,7 +33,6 @@ public class Message extends TemporaryObject<String> {
         super(message, Instant.now(clock).plus(Mailbox.MESSAGE_TIME_LIMIT), clock);
         this.sourceAgentId = sourceAgentId;
         this.targetAgentId = targetAgentId;
-        this.timestamp = getTimeout().minus(Mailbox.MESSAGE_TIME_LIMIT); //To keep the same timestamp
     }
 
     public String getSourceAgentId() {
@@ -46,7 +44,7 @@ public class Message extends TemporaryObject<String> {
     }
 
     public Instant getTimestamp() {
-        return timestamp;
+        return getTimeout().minus(Mailbox.MESSAGE_TIME_LIMIT); // only used for displaying the timestamp
     }
 
     public String getMessage() {

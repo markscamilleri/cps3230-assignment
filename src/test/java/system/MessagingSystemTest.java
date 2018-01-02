@@ -1,19 +1,21 @@
 package system;
 
 import org.junit.*;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import util.Utils;
 
-import java.time.Clock;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.mockito.Mockito.when;
 import static system.MessagingSystem.*;
 import static system.StatusCodes.*;
 
 // todo: check bad session key length?
+
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class MessagingSystemTest {
 
     // Valid login keys (one per agent)
@@ -28,9 +30,18 @@ public class MessagingSystemTest {
     private final String AID_1 = "1234xy";
     private final String AID_2 = "5678ab";
     private final String VALID_MSG = "msg";
-    
+
+    @Mock
+    private TemporaryKey mockLoginKey1;
+    @Mock
+    private TemporaryKey mockLoginKey2;
+    @Mock
+    private TemporaryKey mockSessnKey1;
+    @Mock
+    private TemporaryKey mockSessnKey2;
+
     // default clock used for testing
-    private Clock defaultFixedClock  = Clock.fixed(Instant.EPOCH, ZoneId.of("UTC")); // Fixed Clock for independent testing
+    //private Clock defaultFixedClock  = Clock.fixed(Instant.EPOCH, ZoneId.of("UTC")); // Fixed Clock for independent testing
 
     private MessagingSystem testSystem;
     private Map<String, AgentInfo> agentInfos;
@@ -39,6 +50,15 @@ public class MessagingSystemTest {
     public void setUp() {
         agentInfos = new HashMap<>();
         testSystem = new MessagingSystem(agentInfos);
+
+        when(mockLoginKey1.getKey()).thenReturn(VALID_LKEY_1);
+        when(mockSessnKey1.getKey()).thenReturn(VALID_SKEY_1);
+
+        when(mockLoginKey1.isExpired()).thenReturn(false);
+        when(mockSessnKey1.isExpired()).thenReturn(false);
+
+        when(mockLoginKey1.equals(VALID_LKEY_1)).thenReturn(true);
+        when(mockSessnKey1.equals(VALID_SKEY_1)).thenReturn(true);
     }
 
     @After
@@ -55,7 +75,7 @@ public class MessagingSystemTest {
 
     @Test
     public void registerFailsIfLoginKeyNotUnique() {
-        addAgent(agentInfos, 1, AddType.REGISTERED, defaultFixedClock);
+        addAgent(agentInfos, 1, AddType.REGISTERED);
 
         Assert.assertFalse(testSystem.registerLoginKey(AID_2, VALID_LKEY_1));
     }
@@ -72,14 +92,14 @@ public class MessagingSystemTest {
 
     @Test
     public void loginFailsIfAgentDidNotRegister() {
-        addAgent(agentInfos, 1, AddType.UNREGISTERED, defaultFixedClock);
+        addAgent(agentInfos, 1, AddType.UNREGISTERED);
 
         Assert.assertNull(testSystem.login(AID_1, VALID_LKEY_1));
     }
 
     @Test
     public void loginFailsIfAgentExistsButDidNotRegister() {
-        addAgent(agentInfos, 1, AddType.UNREGISTERED, defaultFixedClock);
+        addAgent(agentInfos, 1, AddType.UNREGISTERED);
 
         Assert.assertEquals(null, testSystem.login(AID_1, VALID_LKEY_1)); // given a valid login key before registering
         Assert.assertEquals(null, testSystem.login(AID_1, null)); // when agent.login() called before registering
@@ -88,23 +108,26 @@ public class MessagingSystemTest {
     @Test // todo
     public void login_nullIfLoginKeyExpired() {
         // To ensure that the next step will be over the login key time limit
-        Clock testClock = new StepClock(Instant.EPOCH, LOGIN_KEY_TIME_LIMIT.plusSeconds(1));
+        //Clock testClock = new StepClock(Instant.EPOCH, LOGIN_KEY_TIME_LIMIT.plusSeconds(1));
+        when(mockLoginKey1.getKey()).thenReturn(null);
+        when(mockLoginKey1.isExpired()).thenReturn(true);
+        when(mockLoginKey1.equals(VALID_LKEY_1)).thenReturn(false);
 
-        addAgent(agentInfos, 1, AddType.REGISTERED, testClock);
-        
+        addAgent(agentInfos, 1, AddType.REGISTERED);
+
         Assert.assertNull(testSystem.login(AID_1, VALID_LKEY_1));
     }
 
     @Test
     public void login_nullIfLoginKeyDoesNotMatch() {
-        addAgent(agentInfos, 1, AddType.REGISTERED, defaultFixedClock);
+        addAgent(agentInfos, 1, AddType.REGISTERED);
 
         Assert.assertNull(testSystem.login(AID_1, VALID_LKEY_2));
     }
 
     @Test
     public void login_validSessionKeyIfLoginKeyValid() {
-        addAgent(agentInfos, 1, AddType.REGISTERED, defaultFixedClock);
+        addAgent(agentInfos, 1, AddType.REGISTERED);
 
         final String sessionKey = testSystem.login(AID_1, VALID_LKEY_1);
         Assert.assertNotNull(sessionKey);
@@ -113,22 +136,22 @@ public class MessagingSystemTest {
 
     @Test
     public void sendMessage_failsIfSourceAgentDoesNotExist() {
-        addAgent(agentInfos, 2, AddType.REGISTERED, defaultFixedClock); // only target agent exists
+        addAgent(agentInfos, 2, AddType.REGISTERED); // only target agent exists
 
         Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG), AGENT_DOES_NOT_EXIST);
     }
 
     @Test
     public void sendMessage_failsIfTargetAgentDoesNotExist() {
-        addAgent(agentInfos, 1, AddType.REGISTERED, defaultFixedClock); // only source agent exists
+        addAgent(agentInfos, 1, AddType.REGISTERED); // only source agent exists
 
         Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG), AGENT_DOES_NOT_EXIST);
     }
 
     @Test
     public void sendMessage_failsIfSourceAgentDidNotLogin() {
-        addAgent(agentInfos, 1, AddType.REGISTERED, defaultFixedClock); // source did not login
-        addAgent(agentInfos, 2, AddType.REGISTERED, defaultFixedClock); // target doesn't have to be logged in
+        addAgent(agentInfos, 1, AddType.REGISTERED); // source did not login
+        addAgent(agentInfos, 2, AddType.REGISTERED); // target doesn't have to be logged in
 
         Assert.assertEquals(AGENT_NOT_LOGGED_IN, testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG));
     }
@@ -136,26 +159,29 @@ public class MessagingSystemTest {
     @Test // todo
     public void sendMessage_failsIfSessionKeyExpired() {
         // To ensure that the next step will be over the login key time limit
-        Clock agent1clock = new StepClock(Instant.EPOCH, SESSION_KEY_TIME_LIMIT.plusSeconds(1));
-        
-        addAgent(agentInfos, 1, AddType.LOGGEDIN, agent1clock);   // source must be logged in
-        addAgent(agentInfos, 2, AddType.REGISTERED, defaultFixedClock); // target doesn't have to be logged in
-        
+        //Clock agent1clock = new StepClock(Instant.EPOCH, SESSION_KEY_TIME_LIMIT.plusSeconds(1));
+        when(mockSessnKey1.getKey()).thenReturn(null);
+        when(mockSessnKey1.isExpired()).thenReturn(true);
+        when(mockSessnKey1.equals(VALID_SKEY_1)).thenReturn(false);
+
+        addAgent(agentInfos, 1, AddType.LOGGEDIN);   // source must be logged in
+        addAgent(agentInfos, 2, AddType.REGISTERED); // target doesn't have to be logged in
+
         Assert.assertEquals(StatusCodes.AGENT_NOT_LOGGED_IN, testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG));
     }
 
     @Test
     public void sendMessage_failsIfSessionKeyDoesNotMatch() {
-        addAgent(agentInfos, 1, AddType.LOGGEDIN, defaultFixedClock);   // source must be logged in
-        addAgent(agentInfos, 2, AddType.REGISTERED, defaultFixedClock); // target doesn't have to be logged in
+        addAgent(agentInfos, 1, AddType.LOGGEDIN);   // source must be logged in
+        addAgent(agentInfos, 2, AddType.REGISTERED); // target doesn't have to be logged in
 
         Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_2, AID_1, AID_2, VALID_MSG), SESSION_KEY_UNRECOGNIZED);
     }
 
     @Test
     public void sendMessage_failsIfMessageLengthExceeded() {
-        addAgent(agentInfos, 1, AddType.LOGGEDIN, defaultFixedClock);   // source must be logged in
-        addAgent(agentInfos, 2, AddType.REGISTERED, defaultFixedClock); // target doesn't have to be logged in
+        addAgent(agentInfos, 1, AddType.LOGGEDIN);   // source must be logged in
+        addAgent(agentInfos, 2, AddType.REGISTERED); // target doesn't have to be logged in
 
         final String LONG_MESSAGE = Utils.getNCharacters(MAX_MESSAGE_LENGTH + 1);
         Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, LONG_MESSAGE), MESSAGE_LENGTH_EXCEEDED);
@@ -176,27 +202,27 @@ public class MessagingSystemTest {
 
     @Test
     public void sendMessage_okIfAllValid() {
-        addAgent(agentInfos, 1, AddType.LOGGEDIN, defaultFixedClock);   // source must be logged in
-        addAgent(agentInfos, 2, AddType.REGISTERED, defaultFixedClock); // target doesn't have to be logged in
+        addAgent(agentInfos, 1, AddType.LOGGEDIN);   // source must be logged in
+        addAgent(agentInfos, 2, AddType.REGISTERED); // target doesn't have to be logged in
 
         Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG), OK);
     }
-    
-    private AgentInfo addAgent(final Map<String, AgentInfo> agentInfos, int agent, AddType type, Clock clock) {
+
+    private AgentInfo addAgent(final Map<String, AgentInfo> agentInfos, int agent, AddType type) {
 
         Assume.assumeTrue(agent == 1 || agent == 2);
 
         final String agentId = (agent == 1 ? AID_1 : AID_2);
-        final String loginKey = (agent == 1 ? VALID_LKEY_1 : VALID_LKEY_2);
-        final String sessnKey = (agent == 1 ? VALID_SKEY_1 : VALID_SKEY_2);
+        final TemporaryKey loginKey = (agent == 1 ? mockLoginKey1 : mockLoginKey2);
+        final TemporaryKey sessnKey = (agent == 1 ? mockSessnKey1 : mockSessnKey2);
         final AgentInfo agentInfo = new AgentInfo(agentId);
-        
+
         switch (type) {
             case REGISTERED:
-                agentInfo.loginKey = new TemporaryKey(loginKey, LOGIN_KEY_TIME_LIMIT, clock);
+                agentInfo.loginKey = loginKey;
                 break;
             case LOGGEDIN:
-                agentInfo.sessionKey = new TemporaryKey(sessnKey, SESSION_KEY_TIME_LIMIT, clock);
+                agentInfo.sessionKey = sessnKey;
                 break;
             default:
                 break;
@@ -207,7 +233,7 @@ public class MessagingSystemTest {
         return agentInfo;
     }
 
-    private class StepClock extends Clock {
+    /*private class StepClock extends Clock {
         private int stepMultiplier = 0;
         private final Instant baseTime;
         private final Duration step;
@@ -237,7 +263,7 @@ public class MessagingSystemTest {
         public Instant instant() {
             return baseTime.plus(step.multipliedBy(stepMultiplier++));
         }
-    }
+    }*/
 
     private enum AddType {
         UNREGISTERED,

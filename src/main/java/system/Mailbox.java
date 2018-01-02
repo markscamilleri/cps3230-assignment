@@ -59,17 +59,8 @@ public class Mailbox {
      */
     public synchronized boolean addMessage(Message message) {
         messages.removeIf(TemporaryObject::isExpired);
-        return isValidMessage(message) && messages.offer(message);
-    }
-
-    /**
-     * Checks if the message is valid
-     *
-     * @param message the message to check
-     * @return true if it is valid, false otherwise.
-     */
-    private boolean isValidMessage(Message message) {
-        return message.getTargetAgentId().equals(this.ownerId) &&
-                Instant.now().isBefore(message.getTimeout());
+        return message.getTargetAgentId().equals(this.ownerId)
+                && !message.isExpired()
+                && messages.offer(message);
     }
 }

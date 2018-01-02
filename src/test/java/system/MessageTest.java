@@ -40,9 +40,4 @@ public class MessageTest {
     public void getMessage_returnsMessage() {
         Assert.assertEquals(msg, message.getMessage());
     }
-
-    @Test
-    public void getTimestamp_returnsTimestamp() {
-        Assert.assertEquals(expectedTimestamp, message.getTimeout());
-    }
 }
