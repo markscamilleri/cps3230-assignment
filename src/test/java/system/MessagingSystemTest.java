@@ -74,37 +74,37 @@ public class MessagingSystemTest {
     }
 
     @Test
-    public void registerFailsIfLoginKeyIncorrectLength() {
+    public void register_falseIfLoginKeyIncorrectLength() {
         Assert.assertFalse(testSystem.registerLoginKey(AID_1, Utils.getNCharacters(LOGIN_KEY_LENGTH + 1)));
         Assert.assertFalse(testSystem.registerLoginKey(AID_1, Utils.getNCharacters(LOGIN_KEY_LENGTH - 1)));
     }
 
     @Test
-    public void registerFailsIfLoginKeyNotUnique() {
+    public void register_falseIfLoginKeyNotUnique() {
         addAgent(agentInfos, 1, AddType.REGISTERED);
 
         Assert.assertFalse(testSystem.registerLoginKey(AID_2, VALID_LKEY_1));
     }
 
     @Test
-    public void registerSucceedsIfLoginKeyValid() {
+    public void register_trueIfLoginKeyValid() {
         Assert.assertTrue(testSystem.registerLoginKey(AID_1, VALID_LKEY_1));
     }
 
     @Test
-    public void loginFailsIfAgentDoesNotExist() {
+    public void login_nullIfAgentDoesNotExist() {
         Assert.assertNull(testSystem.login(AID_1, VALID_LKEY_1));
     }
 
     @Test
-    public void loginFailsIfAgentDidNotRegister() {
+    public void login_nullIfAgentDidNotRegister() {
         addAgent(agentInfos, 1, AddType.UNREGISTERED);
 
         Assert.assertNull(testSystem.login(AID_1, VALID_LKEY_1));
     }
 
     @Test
-    public void loginFailsIfAgentExistsButDidNotRegister() {
+    public void login_nullIfAgentExistsButDidNotRegister() {
         addAgent(agentInfos, 1, AddType.UNREGISTERED);
 
         Assert.assertEquals(null, testSystem.login(AID_1, VALID_LKEY_1)); // given a valid login key before registering
@@ -217,7 +217,75 @@ public class MessagingSystemTest {
         Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG), OK);
     }
 
-    private AgentInfo addAgent(final Map<String, AgentInfo> agentInfos, int agent, AddType type) {
+    @Test
+    public void agentHasMessages_falseIfAgentDoesNotExist() {
+        Assert.assertFalse(testSystem.agentHasMessages(VALID_SKEY_1, AID_1));
+    }
+
+    @Test
+    public void agentHasMessages_falseIfAgentNotLoggedIn() {
+        addAgent(agentInfos, 1, AddType.REGISTERED);
+
+        Assert.assertFalse(testSystem.agentHasMessages(VALID_LKEY_1, AID_1));
+    }
+
+    @Test
+    public void agentHasMessages_falseIfSessionKeyDoesNotMatch() {
+        addAgent(agentInfos, 1, AddType.LOGGEDIN);
+
+        Assert.assertFalse(testSystem.agentHasMessages(VALID_SKEY_2, AID_1));
+    }
+
+    @Test
+    public void agentHasMessages_falseIfAgentDoesNotHaveMessages() {
+        addAgent(agentInfos, 1, AddType.LOGGEDIN);
+
+        Assert.assertFalse(testSystem.agentHasMessages(VALID_SKEY_1, AID_1));
+    }
+
+    @Test
+    public void agentHasMessages_trueIfAgentHasMessages() {
+        addAgent(agentInfos, 1, AddType.LOGGEDIN);
+        agentInfos.get(AID_1).mailbox.addMessage(new Message(AID_2, AID_1, "msg"));
+
+        Assert.assertTrue(testSystem.agentHasMessages(VALID_SKEY_1, AID_1));
+    }
+
+    @Test
+    public void getNextMessage_nullIfAgentDoesNotExist() {
+        Assert.assertNull(testSystem.getNextMessage(VALID_SKEY_1, AID_1));
+    }
+
+    @Test
+    public void getNextMessage_nullIfAgentNotLoggedIn() {
+        addAgent(agentInfos, 1, AddType.REGISTERED);
+
+        Assert.assertNull(testSystem.getNextMessage(VALID_LKEY_1, AID_1));
+    }
+
+    @Test
+    public void getNextMessage_nullIfSessionKeyDoesNotMatch() {
+        addAgent(agentInfos, 1, AddType.LOGGEDIN);
+
+        Assert.assertNull(testSystem.getNextMessage(VALID_SKEY_2, AID_1));
+    }
+
+    @Test
+    public void getNextMessage_nullIfAgentDoesNotHaveMessages() {
+        addAgent(agentInfos, 1, AddType.LOGGEDIN);
+
+        Assert.assertNull(testSystem.getNextMessage(VALID_SKEY_1, AID_1));
+    }
+
+    @Test
+    public void getNextMessage_trueIfAgentHasMessages() {
+        addAgent(agentInfos, 1, AddType.LOGGEDIN);
+        agentInfos.get(AID_1).mailbox.addMessage(new Message(AID_2, AID_1, "msg"));
+
+        Assert.assertEquals("msg", testSystem.getNextMessage(VALID_SKEY_1, AID_1).getMessage());
+    }
+
+    private void addAgent(final Map<String, AgentInfo> agentInfos, int agent, AddType type) {
 
         Assume.assumeTrue(agent == 1 || agent == 2);
 
@@ -239,7 +307,6 @@ public class MessagingSystemTest {
         // Note: if AddType.UNREGISTERED, nothing is done
 
         agentInfos.put(agentId, agentInfo);
-        return agentInfo;
     }
 
     /*private class StepClock extends Clock {
