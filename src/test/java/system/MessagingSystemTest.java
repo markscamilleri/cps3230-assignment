@@ -3,6 +3,10 @@ package system;
 import org.junit.*;
 import util.Utils;
 
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,10 +31,18 @@ public class MessagingSystemTest {
     private final String AID_1 = "1234xy";
     private final String AID_2 = "5678ab";
     private final String VALID_MSG = "msg";
-
+    private MessagingSystem testSystem;
+    private Map<String, AgentInfo> agentInfos;
+    
+    // Testing Clock
+    private Clock clock;
+    
+    
     @Before
     public void setUp() {
         agentInfos = new HashMap<>();
+        testSystem = new MessagingSystem(agentInfos);
+        clock = Clock.tick(Clock.fixed(Instant.EPOCH, ZoneId.of("UTC")),Duration.ofMinutes(30));
         system = new MessagingSystem(agentInfos);
     }
 
@@ -73,7 +85,8 @@ public class MessagingSystemTest {
     @Test // todo
     public void loginFailsIfLoginKeyExpired() {
         addAgent(agentInfos, 1, AddType.REGISTERED);
-
+        
+        
         // 1 minute passes...
         // Assert.assertEquals(null, system.login(AID_1, VALID_LKEY_1));
     }
@@ -117,7 +130,7 @@ public class MessagingSystemTest {
         Assert.assertEquals(system.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG), AGENT_NOT_LOGGED_IN);
     }
 
-    @Test // todo
+    @Ignore // todo
     public void sendMessageFailsIfSessionKeyExpired() {
         addAgent(agentInfos, 1, AddType.LOGGEDIN);   // source must be logged in
         addAgent(agentInfos, 2, AddType.REGISTERED); // target doesn't have to be logged in
@@ -176,15 +189,59 @@ public class MessagingSystemTest {
         final String loginKey = (agent == 1 ? VALID_LKEY_1 : VALID_LKEY_2);
         final String sessnKey = (agent == 1 ? VALID_SKEY_1 : VALID_SKEY_2);
         final AgentInfo agentInfo = new AgentInfo(agentId);
-
-        if (type == AddType.REGISTERED) { // registered; not logged in
-            agentInfo.loginKey = new TemporaryKey(loginKey, LOGIN_KEY_TIME_LIMIT);
-        } else if (type == AddType.LOGGEDIN) { // logged in
-            agentInfo.sessionKey = new TemporaryKey(sessnKey, SESSION_KEY_TIME_LIMIT);
+        
+        switch (type) {
+            case REGISTERED:
+                agentInfo.loginKey = new TemporaryKey(loginKey, LOGIN_KEY_TIME_LIMIT);
+                break;
+            case LOGGEDIN:
+                agentInfo.sessionKey = new TemporaryKey(sessnKey, SESSION_KEY_TIME_LIMIT);
+                break;
+            default:
+                break;
         }
         // Note: if AddType.UNREGISTERED, nothing is done
 
         agentInfos.put(agentId, agentInfo);
         return agentInfo;
     }
+
+    private enum AddType {
+        UNREGISTERED,
+        REGISTERED,
+        LOGGEDIN
+    }
+    
+    private class StepClock extends Clock {
+        private final int stepMultiplier = 0;
+        private final Instant baseTime;
+        private final Duration step;
+        
+        protected StepClock(Instant baseTime, Duration step){
+            this.baseTime = baseTime;
+            this.step = step;
+        }
+        
+        @Override
+        public long millis() {
+            return super.millis();
+        }
+        
+        @Override
+        public ZoneId getZone() {
+            return ZoneId.of("UTC");
+        }
+        
+        @Override
+        //Ignored
+        public Clock withZone(ZoneId zoneId) {
+            return this;
+        }
+        
+        @Override
+        public Instant instant() {
+            return baseTime.plus(step.multipliedBy(stepMultiplier));
+        }
+    }
+    
 }
