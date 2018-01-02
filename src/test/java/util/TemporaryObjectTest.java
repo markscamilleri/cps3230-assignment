@@ -10,10 +10,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 
-/**
- * @author Mark Said Camilleri
- * @version 02/01/18.
- */
 public class TemporaryObjectTest {
     
     private final String TEMP_STRING = "Temporary String";
