@@ -13,7 +13,6 @@ public class MessageTest {
 
     private final String src = "src", trg = "trg", msg = "msg";
     private final Clock fixedClock = Clock.fixed(Instant.EPOCH, ZoneId.of("UTC"));
-    private final Instant expectedTimestamp = fixedClock.instant().plus(Mailbox.MESSAGE_TIME_LIMIT);
     private Message message;
 
     @Before
@@ -37,12 +36,12 @@ public class MessageTest {
     }
 
     @Test
-    public void getMessage_returnsMessage() {
-        Assert.assertEquals(msg, message.getMessage());
+    public void getTimestamp_returnsTimestamp() {
+        Assert.assertEquals(Instant.now(fixedClock), message.getTimestamp());
     }
 
     @Test
-    public void getTimestamp_returnsTimestamp() {
-        Assert.assertEquals(expectedTimestamp, message.getTimeout());
+    public void getMessage_returnsMessage() {
+        Assert.assertEquals(msg, message.getMessage());
     }
 }

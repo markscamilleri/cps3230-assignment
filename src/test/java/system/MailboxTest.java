@@ -40,8 +40,6 @@ public class MailboxTest {
         when(mockMessage.getSourceAgentId()).thenReturn(SENDER_ID);
         when(mockMessage.getTargetAgentId()).thenReturn(OWNER_ID);
         when(mockMessage.getMessage()).thenReturn(MESSAGE);
-        when(mockMessage.getTimestamp()).thenReturn(TIMESTAMP);
-        when(mockMessage.getTimeout()).thenReturn(TIMESTAMP.plus(Duration.ofMinutes(30)));
     }
 
     @After
@@ -115,9 +113,7 @@ public class MailboxTest {
 
     @Test
     public void addMessage_falseIfMessageTimestampIsTooLongAgo() {
-
-        when(mockMessage.getTimestamp()).thenReturn(Instant.EPOCH);
-        when(mockMessage.getTimeout()).thenReturn(Instant.EPOCH.plus(Duration.ofMinutes(30)));
+        when(mockMessage.isExpired()).thenReturn(true);
 
         Assert.assertFalse(testEmptyMailbox.addMessage(mockMessage));
     }

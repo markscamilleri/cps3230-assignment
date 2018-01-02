@@ -1,35 +1,26 @@
 package system;
 
-import util.Timeoutable;
+import util.TemporaryObject;
 
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 
-class TemporaryKey extends Timeoutable {
-
-    // Null when timed out
-    private String key;
+class TemporaryKey extends TemporaryObject<String> {
 
     TemporaryKey(String key, Duration timeLimit) {
         this(key, timeLimit, Clock.systemUTC());
     }
 
     TemporaryKey(String key, Duration timeLimit, Clock clock) {
-        super(Instant.now(clock).plus(timeLimit), clock);
-    
-        this.key = isExpired()? null : key;
+        super(key, Instant.now(clock).plus(timeLimit), clock);
     }
-    
+
     public String getKey() {
-        key = isExpired()? null : key;
-    
-        return key;
+        return getTempObject();
     }
-    
+
     public boolean equals(String anotherKey) {
-        key = isExpired()? null : key;
-        
-        return this.key.equals(anotherKey);
+        return !isExpired() && getTempObject().equals(anotherKey);
     }
 }
