@@ -116,10 +116,9 @@ public class MessagingSystem {
             return MESSAGE_LENGTH_EXCEEDED;
 
         } else {
+            // Remove blocked words
             for (final String word : BLOCKED_WORDS) {
-                if (message.contains(word)) {
-                    return MESSAGE_CONTAINS_BLOCKED_WORD;
-                }
+                message = message.replaceAll("(?i)" + word + "\\s?", "");
             }
 
             final Message toSend = new Message(sourceAgentId, targetAgentId, message);
