@@ -8,7 +8,7 @@ import system.MessagingSystem;
 
 public class StartJettyHandler {
 
-    private static final int PORT_NUMBER = 8080;
+    public static final int PORT_NUMBER = 8080;
 
     public static void main(String[] args) {
 
