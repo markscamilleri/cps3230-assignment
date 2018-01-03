@@ -64,6 +64,8 @@ public class SendMailServlet extends HttpServlet {
             response.getWriter().println("" +
                     "<h1>Agent " + id + "'s Mailbox</h1>" +
                     "<hr>" +
+                    Utils.getHrefButton("/logout", "logout", "Logout", false) +
+                    "<hr>" +
                     "<div id=\"mailboxBlock\" class=\"inbox\">" +
                     "    <p id=\"mailboxMessagae\">" + mailboxMessage + "</p>" +
                     "    " + Utils.getHrefButton("/readmessage", "consumeMessage", "Get Next Message", !hasMessages) +
