@@ -2,7 +2,6 @@ package util;
 
 import java.time.Clock;
 import java.time.Instant;
-import java.util.Objects;
 
 /**
  * An object that would timeout must extend this class.

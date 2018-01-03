@@ -39,23 +39,25 @@ public class SendMailServlet extends HttpServlet {
             String sendingMessageStatusText = "";
             final Cookie statusCookie = Utils.findCookie(request.getCookies(), CookieNames.MESSAGE_SENDING_STATUS.name());
             if (statusCookie != null) {
-                if (statusCookie.getValue().equals(StatusCodes.OK.name()))
-                    sendingMessageStatusText = "Message Sent Successfully";
-                else if (statusCookie.getValue().equals(StatusCodes.AGENT_DOES_NOT_EXIST.name()))
-                    sendingMessageStatusText = "That agent does not exist";
-                else if (statusCookie.getValue().equals(StatusCodes.MESSAGE_LENGTH_EXCEEDED.name()))
-                    sendingMessageStatusText = "Message was longer than 140 characters. Only the first 140 were sent.";
-                else if (statusCookie.getValue().equals(StatusCodes.FAILED_TO_ADD_TO_MAILBOX.name()))
-                    sendingMessageStatusText = "Failed to add the message to the destination mailbox";
-                else if (statusCookie.getValue().equals(StatusCodes.GENERIC_ERROR.name()))
-                    sendingMessageStatusText = "An error occured when sending your message";
-                    // these should not happen, since the idCookie or skCookie should be deleted.
-                else if (statusCookie.getValue().equals(StatusCodes.SESSION_KEY_UNRECOGNIZED.name()) ||
-                        statusCookie.getValue().equals(StatusCodes.AGENT_NOT_LOGGED_IN.name()) ||
-                        statusCookie.getValue().equals(StatusCodes.SESSION_KEY_INVALID_LENGTH.name()))
-                    response.sendRedirect("/register");
 
+                // Get cookie value and delete the cookie
+                final String statusValue = statusCookie.getValue();
                 Utils.deleteCookie(statusCookie, response);
+
+                // Set the status message
+                if (statusValue.equals(StatusCodes.OK.name())) {
+                    sendingMessageStatusText = "Message Sent Successfully";
+                } else if (statusValue.equals(StatusCodes.AGENT_DOES_NOT_EXIST.name())) {
+                    sendingMessageStatusText = "That agent does not exist";
+                } else if (statusValue.equals(StatusCodes.MESSAGE_LENGTH_EXCEEDED.name())) {
+                    sendingMessageStatusText = "Message was longer than 140 characters. Only the first 140 were sent.";
+                } else if (statusValue.equals(StatusCodes.FAILED_TO_ADD_TO_MAILBOX.name())) {
+                    sendingMessageStatusText = "Failed to add the message to the destination mailbox";
+                } else {
+                    /*In the case of SESSION_KEY_UNRECOGNIZED, AGENT_NOT_LOGGED_IN, and
+                    SESSION_KEY_INVALID_LENGTH, the user should have been logged out.*/
+                    System.err.println("Unexpected statusCookie \"" + statusValue + "\" in SendMailServlet.");
+                }
             }
 
             final boolean hasMessages = messagingSystem.agentHasMessages(sessionKey, id);

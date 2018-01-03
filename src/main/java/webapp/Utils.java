@@ -17,11 +17,9 @@ public class Utils {
         if (cookies == null) {
             return null;
         }
-
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals(cookieName)) return cookie;
         }
-
         return null;
     }
 

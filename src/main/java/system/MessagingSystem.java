@@ -9,18 +9,16 @@ import java.util.stream.Stream;
 
 import static system.StatusCodes.*;
 
-// todo: add logout functionality
-
 public class MessagingSystem {
 
-    final static Duration LOGIN_KEY_TIME_LIMIT = Duration.ofMinutes(1);
-    final static Duration SESSION_KEY_TIME_LIMIT = Duration.ofMinutes(10);
+    public final static Duration LOGIN_KEY_TIME_LIMIT = Duration.ofMinutes(1);
+    public final static Duration SESSION_KEY_TIME_LIMIT = Duration.ofMinutes(10);
 
     public final static int LOGIN_KEY_LENGTH = 10;
     public final static int SESSION_KEY_LENGTH = 50;
 
-    final static int MAX_MESSAGE_LENGTH = 140;
-    final static String BLOCKED_WORDS[] = {"recipe", "ginger", "nuclear"};
+    public final static int MAX_MESSAGE_LENGTH = 140;
+    public final static String BLOCKED_WORDS[] = {"recipe", "ginger", "nuclear"};
 
     private final Map<String, AgentInfo> agentInfos;
 
@@ -116,7 +114,7 @@ public class MessagingSystem {
             return SESSION_KEY_UNRECOGNIZED;
 
         } else if (message.length() > MAX_MESSAGE_LENGTH) {
-            return MESSAGE_LENGTH_EXCEEDED; // todo: send only valid prefix?
+            return MESSAGE_LENGTH_EXCEEDED;
 
         } else {
             // Remove blocked words
