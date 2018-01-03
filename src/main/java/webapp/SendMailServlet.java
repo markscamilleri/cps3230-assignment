@@ -50,7 +50,7 @@ public class SendMailServlet extends HttpServlet {
                 } else if (statusValue.equals(StatusCodes.AGENT_DOES_NOT_EXIST.name())) {
                     sendingMessageStatusText = "That agent does not exist";
                 } else if (statusValue.equals(StatusCodes.MESSAGE_LENGTH_EXCEEDED.name())) {
-                    sendingMessageStatusText = "Message was longer than 140 characters. Only the first 140 were sent.";
+                    sendingMessageStatusText = "The message was not sent as it is longer than 140 characters";
                 } else if (statusValue.equals(StatusCodes.FAILED_TO_ADD_TO_MAILBOX.name())) {
                     sendingMessageStatusText = "Failed to add the message to the destination mailbox";
                 } else {
