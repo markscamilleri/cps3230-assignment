@@ -134,6 +134,33 @@ public class MessagingSystemTest {
     }
 
     @Test
+    public void logout_falseIfAgentDoesNotExist() {
+        Assert.assertFalse(testSystem.logout(AID_1));
+    }
+
+    @Test
+    public void logout_trueIfAgentExistsButNotLoggedIn() {
+        addAgent(agentInfos, 1, AddType.REGISTERED);
+
+        Assert.assertTrue(testSystem.logout(AID_1));
+    }
+
+    @Test
+    public void logout_trueIfAgentLoggedIn() {
+        addAgent(agentInfos, 1, AddType.LOGGEDIN);
+
+        Assert.assertTrue(testSystem.logout(AID_1));
+    }
+
+    @Test
+    public void logout_setsAgentSessionKeyToExpiredKey() {
+        addAgent(agentInfos, 1, AddType.LOGGEDIN);
+
+        Assume.assumeTrue(testSystem.logout(AID_1));
+        Assert.assertTrue(agentInfos.get(AID_1).sessionKey.isExpired());
+    }
+
+    @Test
     public void sendMessage_failsIfSourceAgentDoesNotExist() {
         addAgent(agentInfos, 2, AddType.REGISTERED); // only target agent exists
 
