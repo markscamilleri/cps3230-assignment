@@ -10,7 +10,7 @@ import java.io.IOException;
 @WebServlet("/")
 public class DefaultServlet extends HttpServlet {
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.sendRedirect("/register");
     }
 }

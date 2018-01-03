@@ -19,7 +19,7 @@ public class LogoutServlet extends HttpServlet {
         this.messagingSystem = messagingSystem;
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         final Cookie idCookie = Utils.findCookie(request.getCookies(), CookieNames.AGENT_ID.name());
         final Cookie sKeyCookie = Utils.findCookie(request.getCookies(), CookieNames.SESSION_KEY.name());
@@ -29,7 +29,7 @@ public class LogoutServlet extends HttpServlet {
             Utils.deleteCookie(idCookie, response);
             Utils.deleteCookie(sKeyCookie, response);
         }
-        
+
         response.sendRedirect("/register");
     }
 }

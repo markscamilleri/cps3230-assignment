@@ -23,7 +23,7 @@ public class SendMailServlet extends HttpServlet {
         this.messagingSystem = messagingSystem;
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         response.setContentType("text/html");
 
@@ -84,7 +84,7 @@ public class SendMailServlet extends HttpServlet {
         }
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         final Cookie idCookie = Utils.findCookie(request.getCookies(), CookieNames.AGENT_ID.name());
         final Cookie skCookie = Utils.findCookie(request.getCookies(), CookieNames.SESSION_KEY.name());

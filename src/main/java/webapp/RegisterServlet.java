@@ -22,7 +22,7 @@ public class RegisterServlet extends HttpServlet {
         this.messagingSystem = messagingSystem;
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         response.setContentType("text/html");
         response.getWriter().println("" +
@@ -34,7 +34,7 @@ public class RegisterServlet extends HttpServlet {
         );
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         final String id = request.getParameter("idInput");
 
