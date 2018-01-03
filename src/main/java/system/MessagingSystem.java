@@ -76,6 +76,17 @@ public class MessagingSystem {
         }
     }
 
+    public boolean logout(String agentId) {
+
+        final AgentInfo info = agentInfos.get(agentId);
+        if (info != null) {
+            info.sessionKey = new TemporaryKey("", Duration.ZERO);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     /**
      * Sends a message from the sourceAgent to the targetAgent.
      * Creates a message object and stores it in the target agent's mailbox.
