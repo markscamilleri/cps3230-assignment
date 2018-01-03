@@ -26,9 +26,11 @@ public class Utils {
     }
 
     public static void deleteCookie(Cookie cookie, HttpServletResponse response) {
-        cookie.setValue(null);
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
+        if (cookie != null) {
+            cookie.setValue(null);
+            cookie.setMaxAge(0);
+            response.addCookie(cookie);
+        }
     }
 
     public static void deleteCookie(String cookieName, HttpServletResponse response) {
