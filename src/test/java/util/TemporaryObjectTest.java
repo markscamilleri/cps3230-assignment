@@ -74,11 +74,6 @@ public class TemporaryObjectTest {
         }
 
         @Override
-        public long millis() {
-            return super.millis();
-        }
-
-        @Override
         public ZoneId getZone() {
             return ZoneId.of("UTC");
         }
