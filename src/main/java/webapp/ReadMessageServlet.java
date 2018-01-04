@@ -20,7 +20,7 @@ public class ReadMessageServlet extends HttpServlet {
         this.messagingSystem = messagingSystem;
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         response.setContentType("text/html");
 

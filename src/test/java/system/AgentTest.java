@@ -13,18 +13,17 @@ import static org.mockito.Mockito.when;
 public class AgentTest {
 
     // Main agent details
-    private final String AGENT_ID = "1234xy";
-    private final String LOGIN_KEY = Utils.getNCharacters(10);
-    private final String SESSN_KEY = Utils.getNCharacters(50);
+    private static final String AGENT_ID = "1234xy";
+    private static final String LOGIN_KEY = Utils.getNCharacters(10);
+    private static final String SESSN_KEY = Utils.getNCharacters(50);
 
     // For messaging
-    private final String TARGET_AGENT_ID = "5678ab";
-    private final String MESSAGE = "message";
+    private static final String TARGET_AGENT_ID = "5678ab";
+    private static final String MESSAGE = "message";
 
     private Agent testAgent_default;
     private Agent testAgent_registered;
     private Agent testAgent_loggedIn;
-    private Agent testAgent_bothKeys;
 
     @Mock
     private Supervisor mockSupervisor;
@@ -35,8 +34,7 @@ public class AgentTest {
     public void setUp() {
         testAgent_default = new Agent(AGENT_ID, mockSupervisor, mockMessagingSystem);
         testAgent_registered = new Agent(AGENT_ID, mockSupervisor, mockMessagingSystem, LOGIN_KEY, null);
-        testAgent_loggedIn = new Agent(AGENT_ID, mockSupervisor, mockMessagingSystem, null, SESSN_KEY);
-        testAgent_bothKeys = new Agent(AGENT_ID, mockSupervisor, mockMessagingSystem, LOGIN_KEY, SESSN_KEY);
+        testAgent_loggedIn = new Agent(AGENT_ID, mockSupervisor, mockMessagingSystem, LOGIN_KEY, SESSN_KEY);
     }
 
     @After
@@ -98,19 +96,18 @@ public class AgentTest {
         when(mockMessagingSystem.sendMessage(Mockito.anyString(),
                 Mockito.anyString(),
                 Mockito.anyString(),
-                Mockito.anyString())).thenReturn(
-                StatusCodes.OK);
+                Mockito.anyString())).thenReturn(StatusCodes.OK);
 
         Assert.assertTrue(testAgent_loggedIn.sendMessage(TARGET_AGENT_ID, MESSAGE));
     }
 
     @Test
     public void getLoginKey_returnsLoginKey() {
-        Assert.assertEquals(LOGIN_KEY, testAgent_bothKeys.getLoginKey());
+        Assert.assertEquals(LOGIN_KEY, testAgent_loggedIn.getLoginKey());
     }
 
     @Test
     public void getSessionKey_returnsSessionKey() {
-        Assert.assertEquals(SESSN_KEY, testAgent_bothKeys.getSessionKey());
+        Assert.assertEquals(SESSN_KEY, testAgent_loggedIn.getSessionKey());
     }
 }

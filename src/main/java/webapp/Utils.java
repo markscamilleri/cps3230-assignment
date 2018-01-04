@@ -17,18 +17,18 @@ public class Utils {
         if (cookies == null) {
             return null;
         }
-
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals(cookieName)) return cookie;
         }
-
         return null;
     }
 
     public static void deleteCookie(Cookie cookie, HttpServletResponse response) {
-        cookie.setValue(null);
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
+        if (cookie != null) {
+            cookie.setValue(null);
+            cookie.setMaxAge(0);
+            response.addCookie(cookie);
+        }
     }
 
     public static void deleteCookie(String cookieName, HttpServletResponse response) {

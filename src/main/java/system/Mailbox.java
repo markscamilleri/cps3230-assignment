@@ -1,7 +1,8 @@
 package system;
 
+import util.TemporaryObject;
+
 import java.time.Duration;
-import java.time.Instant;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -35,7 +36,7 @@ public class Mailbox {
      * @return A message or null if the mailbox is empty.
      */
     public synchronized Message consumeNextMessage() {
-        deleteExpiredMessages();
+        messages.removeIf(TemporaryObject::isExpired);
         return messages.poll();
     }
 
@@ -45,7 +46,7 @@ public class Mailbox {
      * @return true if there is at least one message in the mailbox.
      */
     public synchronized boolean hasMessages() {
-        deleteExpiredMessages();
+        messages.removeIf(TemporaryObject::isExpired);
         return !messages.isEmpty();
     }
 
@@ -56,37 +57,9 @@ public class Mailbox {
      * @return true if successful, false otherwise.
      */
     public synchronized boolean addMessage(Message message) {
-        deleteExpiredMessages();
-        return isValidMessage(message) && messages.offer(message);
-    }
-
-    /**
-     * Checks if the message is valid
-     *
-     * @param message the message to check
-     * @return true if it is valid, false otherwise.
-     */
-    private boolean isValidMessage(Message message) {
-        return message.getTargetAgentId().equals(this.ownerId) &&
-                Instant.now().isBefore(message.getTimeout());
-    }
-
-    /**
-     * Checks if there are any objects that timed out.
-     * This must be called before any operation on messages
-     *
-     * @return the number of objects that timed out.
-     */
-    private int deleteExpiredMessages() {
-        int count = 0;
-        for (Message msg : messages) {
-            if (msg.isExpired()) {
-                messages.remove(msg);
-                count++;
-            }
-        }
-
-        return count;
-
+        messages.removeIf(TemporaryObject::isExpired);
+        return message.getTargetAgentId().equals(this.ownerId)
+                && !message.isExpired()
+                && messages.offer(message);
     }
 }

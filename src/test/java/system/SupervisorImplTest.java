@@ -8,7 +8,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import util.Utils;
 
 import static org.mockito.Mockito.when;
 
@@ -16,8 +15,8 @@ import static org.mockito.Mockito.when;
 public class SupervisorImplTest {
 
     // Agent details
-    private final String VALID_AGENT_ID = "1234xy";
-    private final String INVALID_AGENT_ID = "spy-" + VALID_AGENT_ID;
+    private static final String VALID_AGENT_ID = "1234xy";
+    private static final String INVALID_AGENT_ID = "spy-" + VALID_AGENT_ID;
 
     private SupervisorImpl testSupervisor;
 
