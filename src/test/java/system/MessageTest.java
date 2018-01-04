@@ -11,37 +11,38 @@ import java.time.ZoneId;
 
 public class MessageTest {
 
-    private final String src = "src", trg = "trg", msg = "msg";
-    private final Clock fixedClock = Clock.fixed(Instant.EPOCH, ZoneId.of("UTC"));
-    private Message message;
+    private static final String src = "src", trg = "trg", msg = "msg";
+    private static final Clock fixedClock = Clock.fixed(Instant.EPOCH, ZoneId.of("UTC"));
+
+    private Message testMessage;
 
     @Before
     public void setUp() {
-        message = new Message(src, trg, msg, fixedClock);
+        testMessage = new Message(src, trg, msg, fixedClock);
     }
 
     @After
     public void tearDown() {
-        message = null;
+        testMessage = null;
     }
 
     @Test
     public void getSourceAgentId_returnsSourceAgentId() {
-        Assert.assertEquals(src, message.getSourceAgentId());
+        Assert.assertEquals(src, testMessage.getSourceAgentId());
     }
 
     @Test
     public void getTargetAgentId_returnsTargetAgentId() {
-        Assert.assertEquals(trg, message.getTargetAgentId());
+        Assert.assertEquals(trg, testMessage.getTargetAgentId());
     }
 
     @Test
     public void getTimestamp_returnsTimestamp() {
-        Assert.assertEquals(Instant.now(fixedClock), message.getTimestamp());
+        Assert.assertEquals(Instant.now(fixedClock), testMessage.getTimestamp());
     }
 
     @Test
     public void getMessage_returnsMessage() {
-        Assert.assertEquals(msg, message.getMessage());
+        Assert.assertEquals(msg, testMessage.getMessage());
     }
 }

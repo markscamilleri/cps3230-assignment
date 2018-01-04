@@ -10,24 +10,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.mockito.Mockito.when;
-import static system.MessagingSystem.*;
-import static system.StatusCodes.*;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class MessagingSystemTest {
 
+    private static final int LOGIN_KEY_LENGTH = 10;
+    private static final int SESSION_KEY_LENGTH = 50;
+    private static final int MAX_MESSAGE_LENGTH = 140;
+
     // Valid login keys (one per agent)
-    private final String VALID_LKEY_1 = Utils.getNCharacters(LOGIN_KEY_LENGTH, "1");
-    private final String VALID_LKEY_2 = Utils.getNCharacters(LOGIN_KEY_LENGTH, "2");
+    private static final String VALID_LKEY_1 = Utils.getNCharacters(LOGIN_KEY_LENGTH, "1");
+    private static final String VALID_LKEY_2 = Utils.getNCharacters(LOGIN_KEY_LENGTH, "2");
 
     // Valid session keys (one per agent)
-    private final String VALID_SKEY_1 = Utils.getNCharacters(SESSION_KEY_LENGTH, "1");
-    private final String VALID_SKEY_2 = Utils.getNCharacters(SESSION_KEY_LENGTH, "2");
+    private static final String VALID_SKEY_1 = Utils.getNCharacters(SESSION_KEY_LENGTH, "1");
+    private static final String VALID_SKEY_2 = Utils.getNCharacters(SESSION_KEY_LENGTH, "2");
 
     // Two agent IDs and valid message
-    private final String AID_1 = "1234xy";
-    private final String AID_2 = "5678ab";
-    private final String VALID_MSG = "msg";
+    private static final String AID_1 = "1234xy";
+    private static final String AID_2 = "5678ab";
+    private static final String VALID_MSG = "msg";
 
     @Mock
     private TemporaryKey mockLoginKey1;
@@ -102,8 +104,8 @@ public class MessagingSystemTest {
     public void login_nullIfAgentExistsButDidNotRegister() {
         addAgent(agentInfos, 1, AddType.UNREGISTERED);
 
-        Assert.assertEquals(null, testSystem.login(AID_1, VALID_LKEY_1)); // given a valid login key before registering
-        Assert.assertEquals(null, testSystem.login(AID_1, null)); // when agent.login() called before registering
+        Assert.assertNull(testSystem.login(AID_1, VALID_LKEY_1)); // given a valid login key before registering
+        Assert.assertNull(testSystem.login(AID_1, null)); // when agent.login() called before registering
     }
 
     @Test
@@ -164,14 +166,14 @@ public class MessagingSystemTest {
     public void sendMessage_failsIfSourceAgentDoesNotExist() {
         addAgent(agentInfos, 2, AddType.REGISTERED); // only target agent exists
 
-        Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG), AGENT_DOES_NOT_EXIST);
+        Assert.assertEquals(StatusCodes.AGENT_DOES_NOT_EXIST, testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG));
     }
 
     @Test
     public void sendMessage_failsIfTargetAgentDoesNotExist() {
         addAgent(agentInfos, 1, AddType.REGISTERED); // only source agent exists
 
-        Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG), AGENT_DOES_NOT_EXIST);
+        Assert.assertEquals(StatusCodes.AGENT_DOES_NOT_EXIST, testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG));
     }
 
     @Test
@@ -179,7 +181,7 @@ public class MessagingSystemTest {
         addAgent(agentInfos, 1, AddType.REGISTERED); // source did not login
         addAgent(agentInfos, 2, AddType.REGISTERED); // target doesn't have to be logged in
 
-        Assert.assertEquals(AGENT_NOT_LOGGED_IN, testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG));
+        Assert.assertEquals(StatusCodes.AGENT_NOT_LOGGED_IN, testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG));
     }
 
     @Test
@@ -199,7 +201,7 @@ public class MessagingSystemTest {
         addAgent(agentInfos, 1, AddType.LOGGEDIN);   // source must be logged in
         addAgent(agentInfos, 2, AddType.REGISTERED); // target doesn't have to be logged in
 
-        Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_2, AID_1, AID_2, VALID_MSG), SESSION_KEY_UNRECOGNIZED);
+        Assert.assertEquals(StatusCodes.SESSION_KEY_UNRECOGNIZED, testSystem.sendMessage(VALID_SKEY_2, AID_1, AID_2, VALID_MSG));
     }
 
     @Test
@@ -208,7 +210,7 @@ public class MessagingSystemTest {
         addAgent(agentInfos, 2, AddType.REGISTERED); // target doesn't have to be logged in
 
         final String LONG_MESSAGE = Utils.getNCharacters(MAX_MESSAGE_LENGTH + 1);
-        Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, LONG_MESSAGE), MESSAGE_LENGTH_EXCEEDED);
+        Assert.assertEquals(StatusCodes.MESSAGE_LENGTH_EXCEEDED, testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, LONG_MESSAGE));
     }
 
     @Test
@@ -216,14 +218,16 @@ public class MessagingSystemTest {
         addAgent(agentInfos, 1, AddType.LOGGEDIN);   // source must be logged in
         addAgent(agentInfos, 2, AddType.REGISTERED); // target doesn't have to be logged in
 
-        for (String bw : BLOCKED_WORDS) {
+        final String wordsThatShouldBeBlocked[] = {"recipe", "ginger", "nuclear"};
+
+        for (String bw : wordsThatShouldBeBlocked) {
 
             final String altCapBW = alternateCapitalization(bw);
-            final String before = VALID_MSG + altCapBW + " " + altCapBW + VALID_MSG;
-            final String after = before.replaceAll(altCapBW + "\\s?", "");
+            final String message_sent = VALID_MSG + altCapBW + " " + altCapBW + VALID_MSG;
+            final String expect_to_receive = message_sent.replaceAll(altCapBW + "\\s?", "");
 
-            Assert.assertEquals(OK, testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, before));
-            Assert.assertEquals(after, agentInfos.get(AID_2).mailbox.consumeNextMessage().getMessage());
+            Assert.assertEquals(StatusCodes.OK, testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, message_sent));
+            Assert.assertEquals(expect_to_receive, agentInfos.get(AID_2).mailbox.consumeNextMessage().getMessage());
         }
     }
 
@@ -232,7 +236,7 @@ public class MessagingSystemTest {
         addAgent(agentInfos, 1, AddType.LOGGEDIN);   // source must be logged in
         addAgent(agentInfos, 2, AddType.REGISTERED); // target doesn't have to be logged in
 
-        Assert.assertEquals(testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG), OK);
+        Assert.assertEquals(StatusCodes.OK, testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG));
     }
 
     @Test
@@ -298,10 +302,14 @@ public class MessagingSystemTest {
     @Test
     public void getNextMessage_returnsFirstMessageInTheMailboxIfAgentHasMessages() {
         addAgent(agentInfos, 1, AddType.LOGGEDIN);
-        agentInfos.get(AID_1).mailbox.addMessage(new Message(AID_2, AID_1, "msg1"));
-        agentInfos.get(AID_1).mailbox.addMessage(new Message(AID_2, AID_1, "msg2"));
 
-        Assert.assertEquals("msg1", testSystem.getNextMessage(VALID_SKEY_1, AID_1).getMessage());
+        final String message1 = "msg1";
+        final String message2 = "msg2";
+
+        agentInfos.get(AID_1).mailbox.addMessage(new Message(AID_2, AID_1, message1));
+        agentInfos.get(AID_1).mailbox.addMessage(new Message(AID_2, AID_1, message2));
+
+        Assert.assertEquals(message1, testSystem.getNextMessage(VALID_SKEY_1, AID_1).getMessage());
     }
 
     private void addAgent(final Map<String, AgentInfo> agentInfos, int agent, AddType type) {

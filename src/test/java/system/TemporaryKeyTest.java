@@ -9,7 +9,7 @@ import java.time.Duration;
 
 public class TemporaryKeyTest {
 
-    private final String keyString = "temporaryKey";
+    private static final String keyString = "temporaryKey";
 
     private TemporaryKey testNonExpiredKey;
     private TemporaryKey testExpiredKey;

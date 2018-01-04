@@ -13,13 +13,13 @@ import static org.mockito.Mockito.when;
 public class AgentTest {
 
     // Main agent details
-    private final String AGENT_ID = "1234xy";
-    private final String LOGIN_KEY = Utils.getNCharacters(10);
-    private final String SESSN_KEY = Utils.getNCharacters(50);
+    private static final String AGENT_ID = "1234xy";
+    private static final String LOGIN_KEY = Utils.getNCharacters(10);
+    private static final String SESSN_KEY = Utils.getNCharacters(50);
 
     // For messaging
-    private final String TARGET_AGENT_ID = "5678ab";
-    private final String MESSAGE = "message";
+    private static final String TARGET_AGENT_ID = "5678ab";
+    private static final String MESSAGE = "message";
 
     private Agent testAgent_default;
     private Agent testAgent_registered;
@@ -96,8 +96,7 @@ public class AgentTest {
         when(mockMessagingSystem.sendMessage(Mockito.anyString(),
                 Mockito.anyString(),
                 Mockito.anyString(),
-                Mockito.anyString())).thenReturn(
-                StatusCodes.OK);
+                Mockito.anyString())).thenReturn(StatusCodes.OK);
 
         Assert.assertTrue(testAgent_loggedIn.sendMessage(TARGET_AGENT_ID, MESSAGE));
     }

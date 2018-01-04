@@ -9,12 +9,13 @@ import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import static org.mockito.Mockito.when;
-import static system.Mailbox.MAX_MESSAGES;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class MailboxTest {
 
-    private final String OWNER_ID = "1234xy", SENDER_ID = "5678vw", MESSAGE = "message";
+    private static final int MAX_MESSAGES = 25;
+    private static final String OWNER_ID = "1234xy", SENDER_ID = "5678vw", MESSAGE = "message";
+
     private Mailbox testEmptyMailbox;
     private Mailbox testMailboxWith1Message;
     private Queue<Message> messageQueue;
