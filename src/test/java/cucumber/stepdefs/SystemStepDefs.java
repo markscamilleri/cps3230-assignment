@@ -1,6 +1,5 @@
 package cucumber.stepdefs;
 
-import cucumber.api.PendingException;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
@@ -185,13 +184,14 @@ public class SystemStepDefs {
     
     @When("^I click on “Log out”$")
     public void i_click_on_Log_out() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+        Assume.assumeTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmail"));
+        
+        driver.findElement(By.id("logout")).click();
     }
     
+    @Deprecated
     @Then("^I should be logged out$")
     public void i_should_be_logged_out() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+        i_will_be_logged_out();
     }
 }
