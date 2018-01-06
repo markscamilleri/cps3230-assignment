@@ -146,6 +146,8 @@ public class SystemStepDefs {
     }
     @When("^I attempt to send the message (.*) to another agent$")
     public void iAttemptToSendTheMessageMessageToAnotherAgent(String message) throws Throwable {
+        registerAgent(new ChromeDriver(), OTHER_AGENT_ID);
+        
         driver.findElement(By.id("destination")).click();
         driver.findElement(By.id("destination")).sendKeys(OTHER_AGENT_ID);
         driver.findElement(By.id("messageBody")).click();
@@ -179,7 +181,7 @@ public class SystemStepDefs {
     
     @Then("^I will be logged out$")
     public void i_will_be_logged_out() {
-        Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/login"));
+        Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
     }
     
     @When("^I click on “Log out”$")

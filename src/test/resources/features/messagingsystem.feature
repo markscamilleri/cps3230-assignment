@@ -34,7 +34,7 @@ Feature: Messaging System
       | message                 | new-message |
       | Hello there             | Hello there |
       | Send recipe now         | Send now    |
-      | Nuclear recipe is ready | ready       |
+      | Nuclear recipe is ready | is ready    |
       | GinGer nuclear RECipE.  | .           |
 
   Scenario: Logging out
