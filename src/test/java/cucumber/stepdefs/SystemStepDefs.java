@@ -63,18 +63,6 @@ public class SystemStepDefs {
         loginAgent(driver, loginKey);
     }
     
-    /**
-     * Logs in the agent on the specified WebDriver. No checks are done.
-     *
-     * @param driver   the WebDriver to use
-     * @param loginKey the loginKey to use
-     */
-    private static void loginAgent(WebDriver driver, String loginKey) {
-        driver.findElement(By.id("lKeyInput")).click();
-        driver.findElement(By.id("lKeyInput")).sendKeys(loginKey);
-        driver.findElement(By.id("submit")).click();
-    }
-    
     @Then("^I should be allowed to log in$")
     public void i_should_be_allowed_to_log_in() {
         System.out.println(driver.getCurrentUrl());
@@ -98,19 +86,6 @@ public class SystemStepDefs {
         
         final String loginKey = driver.findElement(By.id("lKey")).getText();
         loginAgent(driver, loginKey);
-    }
-    
-    /**
-     * Registers the agent. No checks are done if this was successful
-     *
-     * @param driver  the WebDriver to use
-     * @param agentId the agent id to login
-     */
-    private static void registerAgent(WebDriver driver, String agentId) {
-        driver.get(baseUrl + "/register");
-        driver.findElement(By.id("idInput")).click();
-        driver.findElement(By.id("idInput")).sendKeys(agentId);
-        driver.findElement(By.id("submit")).click();
     }
     
     @When("^I attempt to send (\\d+) messages$")
@@ -196,4 +171,30 @@ public class SystemStepDefs {
     public void i_should_be_logged_out() {
         i_will_be_logged_out();
     }
+    
+     /**
+     * Registers the agent. No checks are done if this was successful
+     *
+     * @param driver  the WebDriver to use
+     * @param agentId the agent id to login
+     */
+    private static void registerAgent(WebDriver driver, String agentId) {
+        driver.get(baseUrl + "/register");
+        driver.findElement(By.id("idInput")).click();
+        driver.findElement(By.id("idInput")).sendKeys(agentId);
+        driver.findElement(By.id("submit")).click();
+    }
+        
+    /**
+     * Logs in the agent on the specified WebDriver. No checks are done.
+     *
+     * @param driver   the WebDriver to use
+     * @param loginKey the loginKey to use
+     */
+    private static void loginAgent(WebDriver driver, String loginKey) {
+        driver.findElement(By.id("lKeyInput")).click();
+        driver.findElement(By.id("lKeyInput")).sendKeys(loginKey);
+        driver.findElement(By.id("submit")).click();
+    }
+
 }
