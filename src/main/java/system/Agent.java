@@ -55,13 +55,12 @@ public class Agent {
      * @param message            The content of the message.
      * @return true if successful, false otherwise.
      */
-    public boolean sendMessage(final String destinationAgentId, final String message) {
+    public StatusCodes sendMessage(final String destinationAgentId, final String message) {
 
         if (sessionKey == null) {
-            return false;
+            return StatusCodes.AGENT_NOT_LOGGED_IN;
         } else {
-            final StatusCodes temp = messagingSystem.sendMessage(sessionKey, id, destinationAgentId, message);
-            return temp == StatusCodes.OK;
+            return messagingSystem.sendMessage(sessionKey, id, destinationAgentId, message);
         }
     }
 
