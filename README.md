@@ -1,5 +1,12 @@
 # CPS3230 Assignment
 Our submission for the CPS3230 Assignment.
+
+## Note
+Chromedriver will no longer be included with the github repo. 
+Please remember to download it and place it in the root folder of your local repo. 
+This is due to OS differences.
+[Link to Chromedriver](https://sites.google.com/a/chromium.org/chromedriver/)
+
 These are the specifications of the system:
 1. Every time an agent wants to use the system, they must first contact their
 supervisor who will decide if it is safe for them to use the system at that point in
