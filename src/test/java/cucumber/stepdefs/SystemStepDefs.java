@@ -145,7 +145,7 @@ public class SystemStepDefs {
         Assert.assertTrue(notificationText.equals("Failed to add the message to the destination mailbox"));
     }
     @When("^I attempt to send the message (.*) to another agent$")
-    public void iAttemptToSendTheMessageMessageToAnotherAgent(String message) throws Throwable {
+    public void iAttemptToSendTheMessageMessageToAnotherAgent(String message) {
         registerAgent(new ChromeDriver(), OTHER_AGENT_ID);
         
         driver.findElement(By.id("destination")).click();
@@ -156,7 +156,7 @@ public class SystemStepDefs {
     }
     
     @Then("^the other agent should receive the message (.*)$")
-    public void theOtherAgentShouldReceiveTheMessageNewMessage(String message) throws Throwable {
+    public void theOtherAgentShouldReceiveTheMessageNewMessage(String message) {
         WebDriver driver2 = new ChromeDriver();
         registerAgent(driver2, OTHER_AGENT_ID);
         Assume.assumeTrue(driver2.getCurrentUrl().endsWith(baseUrl + "/login"));
@@ -179,11 +179,6 @@ public class SystemStepDefs {
         Assert.assertEquals(message, driver2.findElement(By.id("message")).getText());
     }
     
-    @Then("^I will be logged out$")
-    public void i_will_be_logged_out() {
-        Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
-    }
-    
     @When("^I click on “Log out”$")
     public void i_click_on_Log_out() {
         Assume.assumeTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmail"));
@@ -191,9 +186,8 @@ public class SystemStepDefs {
         driver.findElement(By.id("logout")).click();
     }
     
-    @Deprecated
     @Then("^I should be logged out$")
     public void i_should_be_logged_out() {
-        i_will_be_logged_out();
+        Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
     }
 }

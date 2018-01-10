@@ -23,7 +23,7 @@ Feature: Messaging System
     Then the messages should be successfully sent
     When I try to send another message
     Then the system will inform me that I have exceeded my quota
-    And I will be logged out
+    And I should be logged out
 
   Scenario Outline: Blocked words
     Given I am a logged in agent
