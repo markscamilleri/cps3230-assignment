@@ -3,7 +3,6 @@ package webapp;
 import system.Message;
 import system.MessagingSystem;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
@@ -44,15 +43,15 @@ public class ReadMessageServlet extends HttpServlet {
                         "    <b>Timestamp</b>: " + Utils.getSpan("timestamp", "" + message.getTimestamp()) + "<br>" +
                         "    <b>Message</b>: " + Utils.getSpan("message", message.getMessage()) + "<br>" +
                         "</p>" +
-                        Utils.getHrefButton("/readmessage", "consumeAnother", "Consume another message", false) + "<br>" +
-                        Utils.getHrefButton("/sendmail", "backToMailbox", "Go back", false)
+                        Utils.getHrefButton("/readmessage", "consumeAnother", "Consume another message") + "<br>" +
+                        Utils.getHrefButton("/sendmail", "backToMailbox", "Go back")
                 );
             } else {
                 response.getWriter().println("" +
                         "<h1>Latest Message</h1>" +
                         "<p>You have no new messages</p>" +
-                        Utils.getHrefButton("/readmessage", "consume", "Try again", false) + "<br>" +
-                        Utils.getHrefButton("/sendmail", "backToMailbox", "Go back", false)
+                        Utils.getHrefButton("/readmessage", "consume", "Try again") + "<br>" +
+                        Utils.getHrefButton("/sendmail", "backToMailbox", "Go back")
                 );
             }
         }

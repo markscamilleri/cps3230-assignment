@@ -3,7 +3,6 @@ package webapp;
 import system.MessagingSystem;
 import system.StatusCodes;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
@@ -66,11 +65,11 @@ public class SendMailServlet extends HttpServlet {
             response.getWriter().println("" +
                     "<h1>Agent " + id + "'s Mailbox</h1>" +
                     "<hr>" +
-                    Utils.getHrefButton("/logout", "logout", "Logout", false) +
+                    Utils.getHrefButton("/logout", "logout", "Logout") +
                     "<hr>" +
                     "<div id=\"mailboxBlock\" class=\"inbox\">" +
                     "    <p id=\"mailboxMessagae\">" + mailboxMessage + "</p>" +
-                    "    " + Utils.getHrefButton("/readmessage", "consumeMessage", "Get Next Message", !hasMessages) +
+                    "    " + Utils.getHrefButton("/readmessage", "consumeMessage", "Get Next Message") +
                     "</div>" +
                     "<hr>" +
                     "<div id=\"composeFormBlock\" class=\"compose\">" +

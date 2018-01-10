@@ -35,9 +35,9 @@ public class Utils {
         deleteCookie(new Cookie(cookieName, null), response);
     }
 
-    public static String getHrefButton(String href, String id, String content, boolean disabled) {
-        return "<a href=\"" + href + "\"><button id=\"" + id + "\" " +
-                (disabled ? "disabled" : " ") + "> " + content + " </button></a>";
+    public static String getHrefButton(String href, String id, String content) {
+        return "<a href=\"" + href + "\"><button id=\"" + id + "\" > " +
+                       content + " </button></a>";
     }
 
     public static String getSubmitButton(String id, String content) {
