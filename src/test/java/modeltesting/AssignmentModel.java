@@ -1,13 +1,11 @@
 package modeltesting;
 
+import nz.ac.waikato.modeljunit.Action;
+
 public class AssignmentModel {
-
-
-    public enum Page {
-        REGISTER,
-        LOGIN,
-        LOGOUT,
-        SEND_MAIL,
-        READ_MAIL
+    
+    @Action
+    private void login(){
+    
     }
 }
