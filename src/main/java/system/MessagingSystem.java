@@ -83,6 +83,8 @@ public class MessagingSystem {
         final AgentInfo info = agentInfos.get(agentId);
         if (info != null) {
             info.sessionKey = new TemporaryKey("", Duration.ZERO);
+            info.messagesRecv = 0;
+            info.messagesSent = 0;
             return true;
         } else {
             return false;
