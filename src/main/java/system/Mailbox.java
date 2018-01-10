@@ -11,7 +11,6 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class Mailbox {
 
-    final static int MAX_MESSAGES = 25;
     final static Duration MESSAGE_TIME_LIMIT = Duration.ofMinutes(30);
 
     private final Queue<Message> messages;
@@ -22,7 +21,7 @@ public class Mailbox {
     private final String ownerId;
 
     Mailbox(String ownerId) {
-        this(ownerId, new LinkedBlockingQueue<>(MAX_MESSAGES));
+        this(ownerId, new LinkedBlockingQueue<>());
     }
 
     Mailbox(String ownerId, Queue<Message> messages) {
