@@ -190,5 +190,4 @@ public class SystemStepDefs {
         driver.findElement(By.id("lKeyInput")).sendKeys(loginKey);
         driver.findElement(By.id("submit")).click();
     }
-
 }
