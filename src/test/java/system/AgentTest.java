@@ -78,7 +78,7 @@ public class AgentTest {
     public void sendMessage_falseIfNotLoggedIn() {
         // by default agent is not logged in
 
-        Assert.assertFalse(testAgent_default.sendMessage(TARGET_AGENT_ID, MESSAGE));
+        Assert.assertEquals(StatusCodes.AGENT_NOT_LOGGED_IN, testAgent_default.sendMessage(TARGET_AGENT_ID, MESSAGE));
     }
 
     @Test
@@ -88,7 +88,7 @@ public class AgentTest {
                 Mockito.anyString(),
                 Mockito.anyString())).thenReturn(StatusCodes.GENERIC_ERROR);
 
-        Assert.assertFalse(testAgent_loggedIn.sendMessage(TARGET_AGENT_ID, MESSAGE));
+        Assert.assertEquals(StatusCodes.GENERIC_ERROR ,testAgent_loggedIn.sendMessage(TARGET_AGENT_ID, MESSAGE));
     }
 
     @Test
@@ -98,7 +98,7 @@ public class AgentTest {
                 Mockito.anyString(),
                 Mockito.anyString())).thenReturn(StatusCodes.OK);
 
-        Assert.assertTrue(testAgent_loggedIn.sendMessage(TARGET_AGENT_ID, MESSAGE));
+        Assert.assertEquals(StatusCodes.OK, testAgent_loggedIn.sendMessage(TARGET_AGENT_ID, MESSAGE));
     }
 
     @Test
