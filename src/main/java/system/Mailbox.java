@@ -35,7 +35,7 @@ public class Mailbox {
      *
      * @return A message or null if the mailbox is empty.
      */
-    public synchronized Message consumeNextMessage() {
+    public Message consumeNextMessage() {
         messages.removeIf(TemporaryObject::isExpired);
         return messages.poll();
     }
@@ -45,7 +45,7 @@ public class Mailbox {
      *
      * @return true if there is at least one message in the mailbox.
      */
-    public synchronized boolean hasMessages() {
+    public boolean hasMessages() {
         messages.removeIf(TemporaryObject::isExpired);
         return !messages.isEmpty();
     }
@@ -56,7 +56,7 @@ public class Mailbox {
      * @param message Message to add to mailbox.
      * @return true if successful, false otherwise.
      */
-    public synchronized boolean addMessage(Message message) {
+    public boolean addMessage(Message message) {
         messages.removeIf(TemporaryObject::isExpired);
         return message.getTargetAgentId().equals(this.ownerId)
                 && !message.isExpired()
