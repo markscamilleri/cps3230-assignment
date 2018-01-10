@@ -150,6 +150,19 @@ public class MessagingSystemTest {
     }
 
     @Test
+    public void logout_trueIfAgentHadSentOrReceivedButCountersReset() {
+        addAgent(agentInfos, 1, AddType.LOGGEDIN);
+
+        AgentInfo agentInfo = agentInfos.get(AID_1);
+        agentInfo.messagesSent = 5;
+        agentInfo.messagesRecv = 5;
+
+        Assume.assumeTrue(testSystem.logout(AID_1));
+        Assert.assertEquals(0, agentInfo.messagesSent);
+        Assert.assertEquals(0, agentInfo.messagesRecv);
+    }
+
+    @Test
     public void logout_trueIfAgentLoggedIn() {
         addAgent(agentInfos, 1, AddType.LOGGEDIN);
 
