@@ -9,11 +9,7 @@ import java.time.Instant;
 class TemporaryKey extends TemporaryObject<String> {
 
     TemporaryKey(String key, Duration timeLimit) {
-        this(key, timeLimit, Clock.systemUTC());
-    }
-
-    TemporaryKey(String key, Duration timeLimit, Clock clock) {
-        super(key, Instant.now(clock).plus(timeLimit), clock);
+        super(key, Instant.now().plus(timeLimit), Clock.systemUTC());
     }
 
     public String getKey() {

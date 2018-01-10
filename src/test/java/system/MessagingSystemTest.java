@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.mockito.Mockito.when;
+import static system.MessagingSystem.MAX_MESSAGES_RECV;
+import static system.MessagingSystem.MAX_MESSAGES_SENT;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class MessagingSystemTest {
@@ -148,6 +150,19 @@ public class MessagingSystemTest {
     }
 
     @Test
+    public void logout_trueIfAgentHadSentOrReceivedButCountersReset() {
+        addAgent(agentInfos, 1, AddType.LOGGEDIN);
+
+        AgentInfo agentInfo = agentInfos.get(AID_1);
+        agentInfo.messagesSent = 5;
+        agentInfo.messagesRecv = 5;
+
+        Assume.assumeTrue(testSystem.logout(AID_1));
+        Assert.assertEquals(0, agentInfo.messagesSent);
+        Assert.assertEquals(0, agentInfo.messagesRecv);
+    }
+
+    @Test
     public void logout_trueIfAgentLoggedIn() {
         addAgent(agentInfos, 1, AddType.LOGGEDIN);
 
@@ -226,9 +241,31 @@ public class MessagingSystemTest {
             final String message_sent = VALID_MSG + altCapBW + " " + altCapBW + VALID_MSG;
             final String expect_to_receive = message_sent.replaceAll(altCapBW + "\\s?", "");
 
-            Assert.assertEquals(StatusCodes.OK, testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, message_sent));
+            Assume.assumeTrue(StatusCodes.OK == testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, message_sent));
             Assert.assertEquals(expect_to_receive, agentInfos.get(AID_2).mailbox.consumeNextMessage().getMessage());
         }
+    }
+
+    @Test
+    public void sendMessage_okIfSendQuotaReachedButAgentGetsLoggedOut() {
+        addAgent(agentInfos, 1, AddType.LOGGEDIN);   // source must be logged in
+        addAgent(agentInfos, 2, AddType.REGISTERED); // target doesn't have to be logged in
+
+        agentInfos.get(AID_1).messagesSent = MAX_MESSAGES_SENT - 1;
+
+        Assume.assumeTrue(StatusCodes.OK == testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG));
+        Assert.assertTrue(agentInfos.get(AID_1).sessionKey.isExpired());
+    }
+
+    @Test
+    public void sendMessage_okIfRecvQuotaReachedButAgentGetsLoggedOut() {
+        addAgent(agentInfos, 1, AddType.LOGGEDIN); // source must be logged in
+        addAgent(agentInfos, 2, AddType.LOGGEDIN); // target is logged in so that final assert makes sense
+
+        agentInfos.get(AID_2).messagesRecv = MAX_MESSAGES_RECV - 1;
+
+        Assume.assumeTrue(StatusCodes.OK == testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG));
+        Assert.assertTrue(agentInfos.get(AID_2).sessionKey.isExpired());
     }
 
     @Test

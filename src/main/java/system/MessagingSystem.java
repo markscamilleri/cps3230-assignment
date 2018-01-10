@@ -18,6 +18,8 @@ public class MessagingSystem {
     public final static int SESSION_KEY_LENGTH = 50;
 
     public final static int MAX_MESSAGE_LENGTH = 140;
+    public final static int MAX_MESSAGES_SENT = 25;
+    public final static int MAX_MESSAGES_RECV = 25;
     public final static String BLOCKED_WORDS[] = {"recipe", "ginger", "nuclear"};
 
     private final Map<String, AgentInfo> agentInfos;
@@ -68,6 +70,8 @@ public class MessagingSystem {
         final AgentInfo info = agentInfos.get(agentId);
         if (info != null && info.loginKey.equals(loginKey)) {
             info.sessionKey = new TemporaryKey(Utils.getNRandomCharacters(SESSION_KEY_LENGTH), SESSION_KEY_TIME_LIMIT);
+            info.messagesSent = 0;
+            info.messagesRecv = 0;
             return info.sessionKey.getKey();
         } else {
             return null;
@@ -79,6 +83,8 @@ public class MessagingSystem {
         final AgentInfo info = agentInfos.get(agentId);
         if (info != null) {
             info.sessionKey = new TemporaryKey("", Duration.ZERO);
+            info.messagesRecv = 0;
+            info.messagesSent = 0;
             return true;
         } else {
             return false;
@@ -124,6 +130,14 @@ public class MessagingSystem {
 
             final Message toSend = new Message(sourceAgentId, targetAgentId, message);
             if (targetAgentInfo.mailbox.addMessage(toSend)) {
+                sourceAgentInfo.messagesSent++;
+                targetAgentInfo.messagesRecv++;
+                if (sourceAgentInfo.messagesSent == MAX_MESSAGES_SENT) {
+                    logout(sourceAgentId);
+                }
+                if (targetAgentInfo.messagesRecv == MAX_MESSAGES_RECV) {
+                    logout(targetAgentId);
+                }
                 return StatusCodes.OK;
             } else {
                 return StatusCodes.FAILED_TO_ADD_TO_MAILBOX;

@@ -21,9 +21,7 @@ public class MailboxTest {
     private Queue<Message> messageQueue;
 
     @Mock
-    private Message mockMessage1;
-    @Mock
-    private Message mockMessage2;
+    private Message mockMessage;
 
     @Before
     public void setUp() {
@@ -32,17 +30,12 @@ public class MailboxTest {
 
         messageQueue = new LinkedBlockingQueue<>(MAX_MESSAGES);
         testMailboxWith1Message = new Mailbox(OWNER_ID, messageQueue);
-        messageQueue.add(mockMessage1);
+        messageQueue.add(mockMessage);
 
-        when(mockMessage1.getSourceAgentId()).thenReturn(SENDER_ID);
-        when(mockMessage1.getTargetAgentId()).thenReturn(OWNER_ID);
-        when(mockMessage1.getMessage()).thenReturn(MESSAGE);
-        when(mockMessage1.isExpired()).thenReturn(false);
-
-        when(mockMessage2.getSourceAgentId()).thenReturn(SENDER_ID);
-        when(mockMessage2.getTargetAgentId()).thenReturn(OWNER_ID);
-        when(mockMessage2.getMessage()).thenReturn(MESSAGE);
-        when(mockMessage2.isExpired()).thenReturn(false);
+        when(mockMessage.getSourceAgentId()).thenReturn(SENDER_ID);
+        when(mockMessage.getTargetAgentId()).thenReturn(OWNER_ID);
+        when(mockMessage.getMessage()).thenReturn(MESSAGE);
+        when(mockMessage.isExpired()).thenReturn(false);
     }
 
     @After
@@ -64,7 +57,7 @@ public class MailboxTest {
 
     @Test
     public void consumeNextMessage_unsuccessfulIfTimeLimitExceeded() {
-        when(mockMessage1.isExpired()).thenReturn(true);
+        when(mockMessage.isExpired()).thenReturn(true);
 
         Assert.assertNull(testMailboxWith1Message.consumeNextMessage());
     }
@@ -81,52 +74,27 @@ public class MailboxTest {
 
     @Test
     public void hasMessages_falseIfTimeLimitExceeded() {
-        when(mockMessage1.isExpired()).thenReturn(true);
+        when(mockMessage.isExpired()).thenReturn(true);
 
         Assert.assertFalse(testMailboxWith1Message.hasMessages());
     }
 
     @Test
-    public void addMessage_trueBelowLimit() {
-
-        for (int i = 0; i < MAX_MESSAGES; i++) {
-            Assert.assertTrue(testEmptyMailbox.addMessage(mockMessage1));
-        }
-    }
-
-    @Test
-    public void addMessage_trueIfMessagesExpire() {
-
-        for (int i = 0; i < MAX_MESSAGES; i++) {
-            Assume.assumeTrue(testEmptyMailbox.addMessage(mockMessage1));
-        }
-        Assume.assumeFalse(testEmptyMailbox.addMessage(mockMessage1));
-
-        when(mockMessage1.isExpired()).thenReturn(true);
-
-        Assert.assertTrue(testEmptyMailbox.addMessage(mockMessage2));
-    }
-
-    @Test
-    public void addMessage_falseIfMailboxFull() {
-
-        for (int i = 0; i < MAX_MESSAGES; i++) {
-            Assume.assumeTrue(testEmptyMailbox.addMessage(mockMessage1));
-        }
-        Assert.assertFalse(testEmptyMailbox.addMessage(mockMessage1));
+    public void addMessage_trueIfSuccessful() {
+        Assert.assertTrue(testEmptyMailbox.addMessage(mockMessage));
     }
 
     @Test
     public void addMessage_falseIfMessageTimestampIsTooLongAgo() {
-        when(mockMessage1.isExpired()).thenReturn(true);
+        when(mockMessage.isExpired()).thenReturn(true);
 
-        Assert.assertFalse(testEmptyMailbox.addMessage(mockMessage1));
+        Assert.assertFalse(testEmptyMailbox.addMessage(mockMessage));
     }
 
     @Test
     public void addMessage_falseIfOwnerIsNotMessageTarget() {
-        when(mockMessage1.getTargetAgentId()).thenReturn("AnotherID");
+        when(mockMessage.getTargetAgentId()).thenReturn("AnotherID");
 
-        Assert.assertFalse(testEmptyMailbox.addMessage(mockMessage1));
+        Assert.assertFalse(testEmptyMailbox.addMessage(mockMessage));
     }
 }
