@@ -123,24 +123,36 @@ public class MessagingSystem {
             return MESSAGE_LENGTH_EXCEEDED;
 
         } else {
-            // Remove blocked words
-            for (final String word : BLOCKED_WORDS) {
-                message = message.replaceAll("(?i)" + word + "\\s?", "");
+            boolean sourceLoggedOut = false, targetLoggedOut = false;
+            if (sourceAgentInfo.messagesSent == MAX_MESSAGES_SENT) {
+                logout(sourceAgentId);
+                sourceLoggedOut = true;
+            }
+            if (targetAgentInfo.messagesRecv == MAX_MESSAGES_RECV) {
+                logout(targetAgentId);
+                targetLoggedOut = true;
             }
 
-            final Message toSend = new Message(sourceAgentId, targetAgentId, message);
-            if (targetAgentInfo.mailbox.addMessage(toSend)) {
-                sourceAgentInfo.messagesSent++;
-                targetAgentInfo.messagesRecv++;
-                if (sourceAgentInfo.messagesSent == MAX_MESSAGES_SENT) {
-                    logout(sourceAgentId);
-                }
-                if (targetAgentInfo.messagesRecv == MAX_MESSAGES_RECV) {
-                    logout(targetAgentId);
-                }
-                return StatusCodes.OK;
+            if (sourceLoggedOut && targetLoggedOut) {
+                return StatusCodes.BOTH_AGENT_QUOTAS_EXCEEDED;
+            } else if (sourceLoggedOut) {
+                return StatusCodes.SOURCE_AGENT_QUOTA_EXCEEDED;
+            } else if (targetLoggedOut) {
+                return StatusCodes.TARGET_AGENT_QUOTA_EXCEEDED;
             } else {
-                return StatusCodes.FAILED_TO_ADD_TO_MAILBOX;
+                // Remove blocked words
+                for (final String word : BLOCKED_WORDS) {
+                    message = message.replaceAll("(?i)" + word + "\\s?", "");
+                }
+
+                final Message toSend = new Message(sourceAgentId, targetAgentId, message);
+                if (targetAgentInfo.mailbox.addMessage(toSend)) {
+                    sourceAgentInfo.messagesSent++;
+                    targetAgentInfo.messagesRecv++;
+                    return StatusCodes.OK;
+                } else {
+                    return StatusCodes.FAILED_TO_ADD_TO_MAILBOX;
+                }
             }
         }
     }

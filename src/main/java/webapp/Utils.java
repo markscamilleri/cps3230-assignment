@@ -36,7 +36,7 @@ public class Utils {
     }
 
     public static String getHrefButton(String href, String id, String content) {
-        return "<a href=\"" + href + "\"><button id=\"" + id + "\" > " +
+        return "<a href=\"" + href + "\"><button type=\"button\" id=\"" + id + "\" > " +
                        content + " </button></a>";
     }
 
