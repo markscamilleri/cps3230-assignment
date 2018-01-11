@@ -124,7 +124,10 @@ public class SystemStepDefs {
     }
     @When("^I attempt to send the message (.*) to another agent$")
     public void iAttemptToSendTheMessageMessageToAnotherAgent(String message) {
-        registerAgent(new ChromeDriver(), OTHER_AGENT_ID); // register the recipient
+        final ChromeDriver driver2 = new ChromeDriver();
+        registerAgent(driver2, OTHER_AGENT_ID); // register the recipient
+        driver2.quit();
+
         gotoSendMessagePage(driver);
         
         driver.findElement(By.id("destination")).click();
