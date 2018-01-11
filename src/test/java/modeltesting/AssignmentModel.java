@@ -8,24 +8,17 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import util.Utils;
 
-import java.util.Random;
-
 import static webapp.StartJettyHandler.PORT_NUMBER;
 
 public class AssignmentModel implements FsmModel {
-    
+
     private final static String baseUrl = "localhost:" + PORT_NUMBER;
-    
+
     private WebDriver driver = new ChromeDriver();
     private ModelStateEnum currentState = ModelStateEnum.UNREGISTERED;
-    
+
     private String agentID = null;
     private String loginKey = null;
-    
-    @Action
-    public void register() {
-        currentState = ModelStateEnum.SUPERVISOR_CHECKING;
-    }
 
     @Action
     public void normalRegister() {
@@ -52,37 +45,67 @@ public class AssignmentModel implements FsmModel {
     public boolean spyRegisterGuard() {
         return currentState == ModelStateEnum.UNREGISTERED;
     }
-    
+
     @Action
-    public void validLogin() {
+    public void validLoginKeyLogin() {
         loginKey = driver.findElement(By.id("lKey")).getText();
         loginAgent(driver, loginKey);
 
         Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmail"));
-        currentState = ModelStateEnum.LOGIN_KEY_CHECKING;
+        currentState = ModelStateEnum.LOGGED_IN;
     }
-    
-    public boolean validLoginGuard() {
+
+    public boolean validLoginKeyLoginGuard() {
         return currentState == ModelStateEnum.REGISTERED;
     }
 
     @Action
-    public void invalidLogin() {
+    public void invalidLoginKeyLogin() {
         loginAgent(driver, "invalidLoginKey");
 
         Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/login"));
-        currentState = ModelStateEnum.LOGIN_KEY_CHECKING;
+        currentState = ModelStateEnum.LOGGED_IN;
     }
 
-    public boolean invalidLoginGuard() {
+    public boolean invalidLoginKeyLoginGuard() {
         return currentState == ModelStateEnum.REGISTERED;
     }
-    
+
+    @Action
+    public void sendMessage() {
+        // todo (probably should create multiple for valid/invalid)
+    }
+
+    public boolean sendMessageGuard() {
+        return currentState == ModelStateEnum.LOGGED_IN;
+        // todo (to send another message): ||  currentState == ModelStateEnum.SENDING_MESSAGE
+    }
+
+    @Action
+    public void readMessage() {
+        // todo
+    }
+
+    public boolean readMessageGuard() {
+        return currentState == ModelStateEnum.LOGGED_IN;
+        // todo (to read another message): ||  currentState == ModelStateEnum.READING_MESSAGE;
+    }
+
+    @Action
+    public void goBack() {
+        // todo (note that this covers both sendmessage and readmessage pages)
+    }
+
+    public boolean goBackGuard() {
+        return currentState == ModelStateEnum.SENDING_MESSAGE
+                || currentState == ModelStateEnum.READING_MESSAGE;
+    }
+
     @Override
     public Object getState() {
         return currentState;
     }
-    
+
     @Override
     public void reset(boolean b) {
         currentState = ModelStateEnum.UNREGISTERED;
