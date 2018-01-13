@@ -8,11 +8,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import util.Utils;
 
-import static webapp.StartJettyHandler.PORT_NUMBER;
-
 public class AssignmentModel implements FsmModel {
 
-    private final static String baseUrl = "localhost:" + PORT_NUMBER;
+    private final static String baseUrl = "localhost:" + webapp.StartJettyHandler.PORT_NUMBER;
 
     private WebDriver driver = new ChromeDriver();
     private ModelStateEnum currentState = ModelStateEnum.UNREGISTERED;
@@ -73,22 +71,30 @@ public class AssignmentModel implements FsmModel {
 
     @Action
     public void sendMessage() {
-        // todo (probably should create multiple for valid/invalid)
+        // todo: should probably create multiple for valid/invalid
+        // - sendLongMessage
+        // - sendMessageWithBlockedWords
+        // - sendNormalMessage
+        // todo: should probably apply the following change in system's sendMessage
+        // - FROM: final AgentInfo targetAgentInfo = agentInfos.get(targetAgentId);
+        // - TO:   final AgentInfo targetAgentInfo = agentInfos.computeIfAbsent(targetAgentId, AgentInfo::new);
     }
 
     public boolean sendMessageGuard() {
-        return currentState == ModelStateEnum.LOGGED_IN;
-        // todo (to send another message): ||  currentState == ModelStateEnum.SENDING_MESSAGE
+        return currentState == ModelStateEnum.LOGGED_IN
+                || currentState == ModelStateEnum.SENDING_MESSAGE;
     }
 
     @Action
     public void readMessage() {
         // todo
+        // - readMessageWithEmptyMailbox
+        // - readMessageWithNonEmptyMailbox
     }
 
     public boolean readMessageGuard() {
-        return currentState == ModelStateEnum.LOGGED_IN;
-        // todo (to read another message): ||  currentState == ModelStateEnum.READING_MESSAGE;
+        return currentState == ModelStateEnum.LOGGED_IN
+                || currentState == ModelStateEnum.READING_MESSAGE;
     }
 
     @Action
