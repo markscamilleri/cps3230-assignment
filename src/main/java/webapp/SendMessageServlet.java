@@ -43,12 +43,12 @@ public class SendMessageServlet extends HttpServlet {
                 // Set the status message
                 if (statusValue.equals(StatusCodes.OK.name())) {
                     sendingMessageStatusText = "Message sent successfully.";
-                } else if (statusValue.equals(StatusCodes.TARGET_AGENT_QUOTA_EXCEEDED.name())) {
-                    sendingMessageStatusText = "Message not sent since target agent's quota exceeded.";
                 } else if (statusValue.equals(StatusCodes.TARGET_AGENT_DOES_NOT_EXIST.name())) {
                     sendingMessageStatusText = "Message not sent since the target agent does not exist.";
                 } else if (statusValue.equals(StatusCodes.MESSAGE_LENGTH_EXCEEDED.name())) {
                     sendingMessageStatusText = "Message not sent since it is longer than 140 characters.";
+                } else if (statusValue.equals(StatusCodes.TARGET_AGENT_QUOTA_EXCEEDED.name())) {
+                    sendingMessageStatusText = "Message not sent since target agent's quota exceeded.";
                 } else {
                     /*In the case of SESSION_KEY_UNRECOGNIZED, SOURCE_AGENT_NOT_LOGGED_IN, and
                     SESSION_KEY_INVALID_LENGTH, the user should have been logged out.*/
@@ -89,8 +89,9 @@ public class SendMessageServlet extends HttpServlet {
 
             switch (status) {
                 case SOURCE_AGENT_DOES_NOT_EXIST:
-                case SESSION_KEY_UNRECOGNIZED:
                 case SOURCE_AGENT_NOT_LOGGED_IN:
+                case SESSION_KEY_UNRECOGNIZED:
+                case FAILED_TO_ADD_TO_MAILBOX:
                     response.addCookie(new Cookie(CookieNames.LOGGED_OUT_STATUS.name(),
                             "You_were_logged_out_due_to_an_error_in_the_system."));
                     Utils.deleteCookie(idCookie, response);
