@@ -11,16 +11,16 @@ import static system.StatusCodes.*;
 
 public class MessagingSystem {
 
-    private final static Duration LOGIN_KEY_TIME_LIMIT = Duration.ofMinutes(1);
-    private final static Duration SESSION_KEY_TIME_LIMIT = Duration.ofMinutes(10);
+    private static final Duration LOGIN_KEY_TIME_LIMIT = Duration.ofMinutes(1);
+    private static final Duration SESSION_KEY_TIME_LIMIT = Duration.ofMinutes(10);
 
-    private final static int LOGIN_KEY_LENGTH = 10;
-    private final static int SESSION_KEY_LENGTH = 50;
+    private static final int LOGIN_KEY_LENGTH = 10;
+    private static final int SESSION_KEY_LENGTH = 50;
 
-    private final static int MAX_MESSAGE_LENGTH = 140;
-    private final static int MAX_MESSAGES_SENT = 25;
-    private final static int MAX_MESSAGES_RECV = 25;
-    private final static String BLOCKED_WORDS[] = {"recipe", "ginger", "nuclear"};
+    private static final int MAX_MESSAGE_LENGTH = 140;
+    private static final int MAX_MESSAGES_SENT = 25;
+    private static final int MAX_MESSAGES_RECV = 25;
+    private static final String BLOCKED_WORDS[] = {"recipe", "ginger", "nuclear"};
 
     private final Map<String, AgentInfo> agentInfos;
 
@@ -106,10 +106,10 @@ public class MessagingSystem {
      * Should check that a message does not contain any blocked words.
      * Should check that a message is not longer than 140 characters.
      *
-     * @param sessionKey
-     * @param sourceAgentId
-     * @param targetAgentId
-     * @param message
+     * @param sessionKey The session key
+     * @param sourceAgentId The sender agent's id
+     * @param targetAgentId The receiver agent's id
+     * @param message The message to be sent
      * @return "OK" if the message is sent, or an appropriate error if not.
      */
     public StatusCodes sendMessage(String sessionKey, String sourceAgentId, String targetAgentId, String message) {

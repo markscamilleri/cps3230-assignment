@@ -19,7 +19,7 @@ import java.util.Random;
 
 public class AssignmentModel implements FsmModel {
 
-    private final static String baseUrl = "localhost:" + webapp.StartJettyHandler.PORT_NUMBER;
+    private static final String baseUrl = "localhost:" + webapp.StartJettyHandler.PORT_NUMBER;
     private WebDriver driver = new ChromeDriver();
 
     private ModelStateEnum currentState = ModelStateEnum.UNREGISTERED;
