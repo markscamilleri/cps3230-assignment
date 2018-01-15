@@ -58,7 +58,7 @@ public class Agent {
     public StatusCodes sendMessage(final String destinationAgentId, final String message) {
 
         if (sessionKey == null) {
-            return StatusCodes.AGENT_NOT_LOGGED_IN;
+            return StatusCodes.SOURCE_AGENT_NOT_LOGGED_IN;
         } else {
             return messagingSystem.sendMessage(sessionKey, id, destinationAgentId, message);
         }

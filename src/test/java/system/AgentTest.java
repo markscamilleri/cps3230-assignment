@@ -78,7 +78,7 @@ public class AgentTest {
     public void sendMessage_falseIfNotLoggedIn() {
         // by default agent is not logged in
 
-        Assert.assertEquals(StatusCodes.AGENT_NOT_LOGGED_IN, testAgent_default.sendMessage(TARGET_AGENT_ID, MESSAGE));
+        Assert.assertEquals(StatusCodes.SOURCE_AGENT_NOT_LOGGED_IN, testAgent_default.sendMessage(TARGET_AGENT_ID, MESSAGE));
     }
 
     @Test

@@ -110,11 +110,14 @@ public class MessagingSystem {
         final AgentInfo sourceAgentInfo = agentInfos.get(sourceAgentId);
         final AgentInfo targetAgentInfo = agentInfos.get(targetAgentId);
 
-        if (sourceAgentInfo == null || targetAgentInfo == null) {
-            return AGENT_DOES_NOT_EXIST;
+        if (sourceAgentInfo == null) {
+            return SOURCE_AGENT_DOES_NOT_EXIST;
+
+        } else if (targetAgentInfo == null) {
+            return TARGET_AGENT_DOES_NOT_EXIST;
 
         } else if (sourceAgentInfo.sessionKey.isExpired()) {
-            return AGENT_NOT_LOGGED_IN;
+            return SOURCE_AGENT_NOT_LOGGED_IN;
 
         } else if (!sourceAgentInfo.sessionKey.equals(sessionKey)) {
             return SESSION_KEY_UNRECOGNIZED;
