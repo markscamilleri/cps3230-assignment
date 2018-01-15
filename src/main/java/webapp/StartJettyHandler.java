@@ -25,7 +25,8 @@ public class StartJettyHandler {
                 context.addServlet(new ServletHolder(new DefaultServlet()), "/");
                 context.addServlet(new ServletHolder(new RegisterServlet(messagingSystem)), "/register/*");
                 context.addServlet(new ServletHolder(new LoginServlet(messagingSystem)), "/login/*");
-                context.addServlet(new ServletHolder(new SendMailServlet(messagingSystem)), "/sendmail/*");
+                context.addServlet(new ServletHolder(new LoggedInServlet()), "/loggedin/*");
+                context.addServlet(new ServletHolder(new SendMessageServlet(messagingSystem)), "/sendmessage/*");
                 context.addServlet(new ServletHolder(new ReadMessageServlet(messagingSystem)), "/readmessage/*");
                 context.addServlet(new ServletHolder(new LogoutServlet(messagingSystem)), "/logout/*");
 

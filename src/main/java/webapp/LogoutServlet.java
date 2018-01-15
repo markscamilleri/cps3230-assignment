@@ -30,6 +30,7 @@ public class LogoutServlet extends HttpServlet {
             Utils.deleteCookie(sKeyCookie, response);
         }
 
+        response.addCookie(new Cookie(CookieNames.LOGGED_OUT_STATUS.name(), "Successfully_logged_out."));
         response.sendRedirect("/register");
     }
 }

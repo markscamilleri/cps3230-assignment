@@ -60,7 +60,7 @@ public class LoginServlet extends HttpServlet {
             if (agent.login()) {
                 Utils.deleteCookie(lKeyCookie, response);
                 response.addCookie(new Cookie(CookieNames.SESSION_KEY.name(), agent.getSessionKey()));
-                response.sendRedirect("/sendmail");
+                response.sendRedirect("/loggedin");
             } else {
                 response.sendRedirect("/login");
             }
