@@ -12,20 +12,21 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import util.Utils;
 
+import java.time.Instant;
 import java.util.Random;
 
 
 public class AssignmentModel implements FsmModel {
     
-    private final static String baseUrl = "localhost:" + webapp.StartJettyHandler.PORT_NUMBER;
+    public final static String baseUrl = "localhost:" + webapp.StartJettyHandler.PORT_NUMBER;
     
-    private WebDriver driver = new ChromeDriver();
-    private ModelStateEnum currentState = ModelStateEnum.UNREGISTERED;
+    public WebDriver driver = new ChromeDriver();
+    public ModelStateEnum currentState = ModelStateEnum.UNREGISTERED;
     
-    private String agentID = null;
-    private String loginKey = null;
+    public String agentID = null;
+    public String loginKey = null;
     
-    private int agentMessages = 0;
+    public int agentMessages = 0;
     
     @Action
     public void normalRegister() {
@@ -78,7 +79,6 @@ public class AssignmentModel implements FsmModel {
         return currentState == ModelStateEnum.REGISTERED;
     }
     
-    
     // todo: should probably create multiple for valid/invalid
     // - sendLongMessage
     // - sendMessageWithBlockedWords
@@ -91,20 +91,20 @@ public class AssignmentModel implements FsmModel {
     // - FROM: final AgentInfo targetAgentInfo = agentInfos.get(targetAgentId);
     // - TO:   final AgentInfo targetAgentInfo = agentInfos.computeIfAbsent(targetAgentId, AgentInfo::new);
     @Action
-    private void gotoSendMessagePage() {
+    public void gotoSendMessagePage() {
         driver.findElement(By.id("sendMessage")).click();
-        Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmail"));
+        Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmessage"));
         currentState = ModelStateEnum.SENDING_MESSAGE;
     }
     
-    private boolean gotoSendMessagePageGuard() {
+    public boolean gotoSendMessagePageGuard() {
         return currentState == ModelStateEnum.LOGGED_IN;
     }
     
     @Action
     public void sendNormalMessage() {
         sendMessageHelper(driver, agentID, "Hello World");
-        Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmail"));
+        Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmessage"));
         agentMessages++;
         currentState = ModelStateEnum.SENDING_MESSAGE;
     }
@@ -116,11 +116,10 @@ public class AssignmentModel implements FsmModel {
     @Action
     public void sendLongMessage() {
         sendMessageHelper(driver, agentID, Utils.getNCharacters(150));
-        Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmail"));
+        Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmessage"));
         
         final String notificationText = driver.findElement(By.id("notif")).getText();
-        Assert.assertTrue(notificationText.equals("Message sent successfully."));
-        agentMessages++;
+        Assert.assertTrue(notificationText.equals("Message not sent since it is longer than 140 characters."));
         currentState = ModelStateEnum.SENDING_MESSAGE;
     }
     
@@ -131,8 +130,8 @@ public class AssignmentModel implements FsmModel {
     @Action
     public void sendMessageWithBlockedWords() {
         sendMessageHelper(driver, agentID, "Get the nuclEAR REcipe with GinGer");
-        Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmail"));
-    
+        Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmessage"));
+        
         final String notificationText = driver.findElement(By.id("notif")).getText();
         Assert.assertTrue(notificationText.equals("Message sent successfully."));
         agentMessages++;
@@ -147,10 +146,10 @@ public class AssignmentModel implements FsmModel {
     public void sendMessageWithNonExistentTarget() {
         // 6 characters to not clash with test agent of 5 characters
         final String AGENT_2 = Utils.getNRandomCharacters(6);
-    
+        
         sendMessageHelper(driver, AGENT_2, "Hello World");
-        Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmail"));
-    
+        Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmessage"));
+        
         final String notificationText = driver.findElement(By.id("notif")).getText();
         Assert.assertTrue(notificationText.equals("Message not sent since the target agent does not exist."));
         currentState = ModelStateEnum.SENDING_MESSAGE;
@@ -161,32 +160,32 @@ public class AssignmentModel implements FsmModel {
     }
     
     @Action
-    private void gotoReadMessagePage() {
+    public void gotoReadMessagePage() {
         driver.findElement(By.id("consumeMessage")).click();
         Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/readmessage"));
         currentState = ModelStateEnum.READING_MESSAGE;
     }
     
-    private boolean gotoReadMessagePageGuard() {
+    public boolean gotoReadMessagePageGuard() {
         return currentState == ModelStateEnum.LOGGED_IN;
     }
     
     @Action
-    private void consumeAnotherMessage() {
+    public void consumeAnotherMessage() {
         driver.findElement(By.id("consume")).click();
-
+        
         Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/readmessage"));
         currentState = ModelStateEnum.READING_MESSAGE;
     }
     
-    private boolean consumeAnotherMessageGuard() {
+    public boolean consumeAnotherMessageGuard() {
         return currentState == ModelStateEnum.HAS_READ_MESSAGE;
     }
     
     @Action
     public void consumeMessage() {
         Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/readmessage"));
-        if(agentMessages == 0){
+        if (agentMessages == 0) {
             Assert.assertEquals("You have no new messages.", driver.findElement(By.id("message")).getText());
             Assert.assertEquals("Try again", driver.findElement(By.id("consume")).getText());
         } else {
@@ -224,11 +223,35 @@ public class AssignmentModel implements FsmModel {
         currentState = ModelStateEnum.UNREGISTERED;
         agentID = null;
         loginKey = null;
+        agentMessages = 0;
         
         if (driverReset) {
             driver.quit();
             driver = new ChromeDriver();
         }
+    }
+    
+    @Test
+    public void main() {
+        Instant startTime = Instant.now();
+        Instant finishTime = startTime.plusSeconds(30); //startTime.plus(Duration.ofMinutes(15));
+        int testcount = 0;
+        
+        Tester tester = new GreedyTester(new AssignmentModel());
+        tester.setRandom(new Random());
+        tester.buildGraph();
+        tester.addListener(new StopOnFailureListener());
+        tester.addCoverageMetric(new TransitionCoverage());
+        tester.addCoverageMetric(new TransitionPairCoverage());
+        tester.addCoverageMetric(new StateCoverage());
+        tester.addCoverageMetric(new ActionCoverage());
+        tester.addListener("verbose");
+        while (Instant.now().isBefore(finishTime)) {
+            tester.generate();
+            testcount++;
+        }
+        tester.printCoverage();
+        System.out.println(testcount);
     }
     
     /**
@@ -271,19 +294,4 @@ public class AssignmentModel implements FsmModel {
         driver.findElement(By.id("submit")).click();
     }
     
-    @Test
-    public void main() {
-        Tester tester = new GreedyTester(new AssignmentModel());
-        tester.setRandom(new Random());
-        tester.generate(100);
-        tester.buildGraph();
-        tester.addListener(new StopOnFailureListener());
-        tester.addCoverageMetric(new TransitionCoverage());
-        tester.addCoverageMetric(new TransitionPairCoverage());
-        tester.addCoverageMetric(new StateCoverage());
-        tester.addCoverageMetric(new ActionCoverage());
-        tester.addListener("verbose");
-        tester.generate(30);
-        tester.printCoverage();
-    }
 }
