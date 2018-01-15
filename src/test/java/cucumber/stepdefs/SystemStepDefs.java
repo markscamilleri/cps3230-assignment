@@ -116,7 +116,7 @@ public class SystemStepDefs {
     }
     
     @Then("^the system will inform me that I have exceeded my quota$")
-    public void the_system_will_inform_me_that_I_have_exceeded_my_quota() { // todo: "exceeded your quota"
+    public void the_system_will_inform_me_that_I_have_exceeded_my_quota() {
         final String notificationText = driver.findElement(By.id("notif")).getText();
 
         Assert.assertTrue(notificationText.equals("You were logged out due to an exceeded quota."));
