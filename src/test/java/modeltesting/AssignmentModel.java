@@ -237,6 +237,8 @@ public class AssignmentModel implements FsmModel {
         Instant startTime = Instant.now();
         Instant finishTime = startTime.plus(Duration.ofMinutes(15));
         int testcount = 0;
+
+        System.setProperty("webdriver.chrome.driver", "chromedriver");
         
         Tester tester = new GreedyTester(new AssignmentModel());
         tester.setRandom(new Random());
