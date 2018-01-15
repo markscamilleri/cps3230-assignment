@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 import static system.MessagingSystem.MAX_MESSAGES_RECV;
 import static system.MessagingSystem.MAX_MESSAGES_SENT;
 
+// todo: check that message sent/notsent?
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class MessagingSystemTest {
 
