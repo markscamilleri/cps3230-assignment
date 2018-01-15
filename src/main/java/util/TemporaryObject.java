@@ -20,7 +20,8 @@ public abstract class TemporaryObject<T> {
     }
 
     public boolean isExpired() {
-        return Instant.now(clock).equals(timeout) || Instant.now(clock).isAfter(timeout);
+        final Instant now = Instant.now(clock);
+        return now.equals(timeout) || now.isAfter(timeout);
     }
 
     protected Instant getTimeout() {
