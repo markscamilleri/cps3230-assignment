@@ -11,16 +11,16 @@ import static system.StatusCodes.*;
 
 public class MessagingSystem {
 
-    public final static Duration LOGIN_KEY_TIME_LIMIT = Duration.ofMinutes(1);
-    public final static Duration SESSION_KEY_TIME_LIMIT = Duration.ofMinutes(10);
+    private final static Duration LOGIN_KEY_TIME_LIMIT = Duration.ofMinutes(1);
+    private final static Duration SESSION_KEY_TIME_LIMIT = Duration.ofMinutes(10);
 
-    public final static int LOGIN_KEY_LENGTH = 10;
-    public final static int SESSION_KEY_LENGTH = 50;
+    final static int LOGIN_KEY_LENGTH = 10;
+    private final static int SESSION_KEY_LENGTH = 50;
 
-    public final static int MAX_MESSAGE_LENGTH = 140;
-    public final static int MAX_MESSAGES_SENT = 25;
-    public final static int MAX_MESSAGES_RECV = 25;
-    public final static String BLOCKED_WORDS[] = {"recipe", "ginger", "nuclear"};
+    private final static int MAX_MESSAGE_LENGTH = 140;
+    private final static int MAX_MESSAGES_SENT = 25;
+    private final static int MAX_MESSAGES_RECV = 25;
+    private final static String BLOCKED_WORDS[] = {"recipe", "ginger", "nuclear"};
 
     private final Map<String, AgentInfo> agentInfos;
 
@@ -78,6 +78,13 @@ public class MessagingSystem {
         }
     }
 
+    /**
+     * Logs out a user given an agent id by setting the agent's session key
+     * to an expired key and resetting the agent's message send/receive counts.
+     *
+     * @param agentId The agent id
+     * @return False if the agent does not exist.
+     */
     public boolean logout(String agentId) {
 
         final AgentInfo info = agentInfos.get(agentId);

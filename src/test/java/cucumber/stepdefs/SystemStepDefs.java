@@ -11,10 +11,11 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
-import static system.MessagingSystem.LOGIN_KEY_LENGTH;
 import static webapp.StartJettyHandler.PORT_NUMBER;
 
 public class SystemStepDefs {
+
+    private final static int LOGIN_KEY_LENGTH = 10;
 
     private final static String baseUrl = "localhost:" + PORT_NUMBER;
     private final static String AGENT_ID = "1234xy";
