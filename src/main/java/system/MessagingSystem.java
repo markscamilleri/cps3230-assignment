@@ -106,10 +106,10 @@ public class MessagingSystem {
      * Should check that a message does not contain any blocked words.
      * Should check that a message is not longer than 140 characters.
      *
-     * @param sessionKey The session key
+     * @param sessionKey    The session key
      * @param sourceAgentId The sender agent's id
      * @param targetAgentId The receiver agent's id
-     * @param message The message to be sent
+     * @param message       The message to be sent
      * @return "OK" if the message is sent, or an appropriate error if not.
      */
     public StatusCodes sendMessage(String sessionKey, String sourceAgentId, String targetAgentId, String message) {

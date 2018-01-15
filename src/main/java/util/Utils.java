@@ -4,15 +4,16 @@ import java.util.Locale;
 import java.util.Random;
 
 public class Utils {
-    
+
     private static final String UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final String LOWER = UPPER.toLowerCase(Locale.ROOT);
     private static final String DIGITS = "0123456789";
     private static final String SYMBOLS = "!%^&*()";
     private static final String ALLCHARS = UPPER + LOWER + DIGITS + SYMBOLS;
-    
+
     /**
      * Gets a number of random printable characters
+     *
      * @param characterCount The number of random characters to return
      * @return A string with the specified amount of random characters
      */
@@ -26,13 +27,14 @@ public class Utils {
         }
         return randString.toString();
     }
-    
+
     /**
      * Gets a number of printable characters with the prefix specified
      * There is no degree of randomness imposed in this, and characters
      * will probably be ordered.
+     *
      * @param characterCount The number of characters to return
-     * @param startWith The prefix to start with
+     * @param startWith      The prefix to start with
      * @return The prefix and the number of characters specified, concatenated to one string.
      */
     public static String getNCharacters(int characterCount, String startWith) {
@@ -45,9 +47,10 @@ public class Utils {
         }
         return nonRandString.substring(0, characterCount);
     }
-    
+
     /**
      * Returns a number of characters with no prefix. No randomness enforced
+     *
      * @param characterCount the number of characters to return
      * @return A string with the specified number of characters.
      */
