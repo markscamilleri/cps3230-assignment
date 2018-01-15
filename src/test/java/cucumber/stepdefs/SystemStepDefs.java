@@ -69,8 +69,8 @@ public class SystemStepDefs {
     }
     
     @When("^I wait for (\\d+) seconds$")
-    public void i_wait_for_seconds(int arg1) throws InterruptedException {
-        Thread.sleep(arg1 * 1000);
+    public void i_wait_for_seconds(int seconds) throws InterruptedException {
+        Thread.sleep(seconds * 1000);
     }
     
     @Then("^I should not be allowed to log in$")
@@ -90,6 +90,7 @@ public class SystemStepDefs {
     @When("^I attempt to send (\\d+) messages$")
     public void i_attempt_to_send_messages(int arg1) {
         gotoSendMessagePage(driver);
+        Assume.assumeTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmessage"));
 
         for (int i = 0; i < arg1; i++) {
             driver.findElement(By.id("destination")).click();
@@ -108,6 +109,8 @@ public class SystemStepDefs {
     
     @When("^I try to send another message$")
     public void i_try_to_send_another_message() {
+        Assume.assumeTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmessage"));
+
         driver.findElement(By.id("destination")).click();
         driver.findElement(By.id("destination")).sendKeys(AGENT_ID);
         driver.findElement(By.id("messageBody")).click();
@@ -126,8 +129,10 @@ public class SystemStepDefs {
         final ChromeDriver driver2 = new ChromeDriver();
         registerAgent(driver2, OTHER_AGENT_ID); // register the recipient
         driver2.quit();
+        Assume.assumeTrue(driver.getCurrentUrl().endsWith(baseUrl + "/loggedin"));
 
         gotoSendMessagePage(driver);
+        Assume.assumeTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmessage"));
         
         driver.findElement(By.id("destination")).click();
         driver.findElement(By.id("destination")).sendKeys(OTHER_AGENT_ID);
@@ -149,7 +154,8 @@ public class SystemStepDefs {
         // From here on, only assertions since they form part of what is tested
 
         gotoReadMessagePage(driver2);
-        // todo: go through this whole file and assert/assume page locations
+        Assume.assumeTrue(driver.getCurrentUrl().endsWith(baseUrl + "/readmessage"));
+
         Assert.assertEquals(AGENT_ID, driver2.findElement(By.id("from")).getText());
         Assert.assertEquals(OTHER_AGENT_ID, driver2.findElement(By.id("to")).getText());
         Assert.assertEquals(message, driver2.findElement(By.id("message")).getText());
