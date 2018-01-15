@@ -121,6 +121,7 @@ public class AssignmentModel implements FsmModel {
         
         final String notificationText = driver.findElement(By.id("notif")).getText();
         Assert.assertTrue(notificationText.equals("Message not sent since it is longer than 140 characters."));
+        // assertion exception, we don't know where this came from
         currentState = ModelStateEnum.SENDING_MESSAGE;
     }
     
@@ -187,10 +188,10 @@ public class AssignmentModel implements FsmModel {
     public void consumeMessage() {
         Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/readmessage"));
         if (agentMessages == 0) {
-            Assert.assertEquals("You have no new messages.", driver.findElement(By.id("message")).getText());
+            Assert.assertEquals("You have no new messages.", driver.findElement(By.id("messageContainer")).getText());
             Assert.assertEquals("Try again", driver.findElement(By.id("consume")).getText());
         } else {
-            Assert.assertNotEquals("You have no new messages.", driver.findElement(By.id("message")).getText());
+            Assert.assertNotEquals("You have no new messages.", driver.findElement(By.id("messageContainer")).getText());
             Assert.assertEquals("Consume another message", driver.findElement(By.id("consume")).getText());
             agentMessages--;
         }
