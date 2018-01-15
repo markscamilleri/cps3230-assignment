@@ -14,7 +14,7 @@ public class MessagingSystem {
     private final static Duration LOGIN_KEY_TIME_LIMIT = Duration.ofMinutes(1);
     private final static Duration SESSION_KEY_TIME_LIMIT = Duration.ofMinutes(10);
 
-    final static int LOGIN_KEY_LENGTH = 10;
+    private final static int LOGIN_KEY_LENGTH = 10;
     private final static int SESSION_KEY_LENGTH = 50;
 
     private final static int MAX_MESSAGE_LENGTH = 140;
