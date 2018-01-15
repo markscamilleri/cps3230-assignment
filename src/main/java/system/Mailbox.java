@@ -14,10 +14,6 @@ public class Mailbox {
     final static Duration MESSAGE_TIME_LIMIT = Duration.ofMinutes(30);
 
     private final Queue<Message> messages;
-
-    /**
-     * The id of the owner of the mailbox.
-     */
     private final String ownerId;
 
     Mailbox(String ownerId) {
