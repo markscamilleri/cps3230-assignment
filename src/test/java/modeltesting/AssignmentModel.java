@@ -220,12 +220,13 @@ public class AssignmentModel implements FsmModel {
     }
     
     @Override
-    public void reset(boolean b) {
+    public void reset(boolean driverReset) {
         currentState = ModelStateEnum.UNREGISTERED;
         agentID = null;
         loginKey = null;
         
-        if (b) {
+        if (driverReset) {
+            driver.quit();
             driver = new ChromeDriver();
         }
     }
