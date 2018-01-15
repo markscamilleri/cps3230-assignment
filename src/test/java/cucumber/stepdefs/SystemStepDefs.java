@@ -116,7 +116,7 @@ public class SystemStepDefs {
     }
     
     @Then("^the system will inform me that I have exceeded my quota$")
-    public void the_system_will_inform_me_that_I_have_exceeded_my_quota() { // todo: "exceeded your quota"
+    public void the_system_will_inform_me_that_I_have_exceeded_my_quota() {
         final String notificationText = driver.findElement(By.id("notif")).getText();
 
         Assert.assertTrue(notificationText.equals("You were logged out due to an exceeded quota."));
@@ -149,7 +149,7 @@ public class SystemStepDefs {
         // From here on, only assertions since they form part of what is tested
 
         gotoReadMessagePage(driver2);
-        //TODO go through this whole file and assert/assume page locations
+        // todo: go through this whole file and assert/assume page locations
         Assert.assertEquals(AGENT_ID, driver2.findElement(By.id("from")).getText());
         Assert.assertEquals(OTHER_AGENT_ID, driver2.findElement(By.id("to")).getText());
         Assert.assertEquals(message, driver2.findElement(By.id("message")).getText());

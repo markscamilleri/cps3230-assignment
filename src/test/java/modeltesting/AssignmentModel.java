@@ -80,17 +80,6 @@ public class AssignmentModel implements FsmModel {
         return currentState == ModelStateEnum.REGISTERED;
     }
     
-    // todo: should probably create multiple for valid/invalid
-    // - sendLongMessage
-    // - sendMessageWithBlockedWords
-    // - sendNormalMessage
-    // - sendMessageWithNonExistentTarget
-    // todo: should probably apply the following change in system's sendMessageHelper
-    // - FROM: final AgentInfo targetAgentInfo = agentInfos.get(targetAgentId);
-    // - TO:   final AgentInfo targetAgentInfo = agentInfos.computeIfAbsent(targetAgentId, AgentInfo::new);
-    // todo: should probably apply the following change in system's sendMessageHelper
-    // - FROM: final AgentInfo targetAgentInfo = agentInfos.get(targetAgentId);
-    // - TO:   final AgentInfo targetAgentInfo = agentInfos.computeIfAbsent(targetAgentId, AgentInfo::new);
     @Action
     public void gotoSendMessagePage() {
         driver.findElement(By.id("sendMessage")).click();

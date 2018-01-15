@@ -37,7 +37,7 @@ public class ReadMessageServlet extends HttpServlet {
                 response.getWriter().println("" +
                         "<h1>Latest Message</h1>" +
                         "<hr>" +
-                        "<p id=\"message\">" +
+                        "<p id=\"messageContainer\">" +
                         "    <b>From</b>: Agent " + Utils.getSpan("from", message.getSourceAgentId()) + "<br>" +
                         "    <b>To</b>: Agent " + Utils.getSpan("to", message.getTargetAgentId()) + "<br>" +
                         "    <b>Timestamp</b>: " + Utils.getSpan("timestamp", "" + message.getTimestamp()) + "<br>" +
@@ -50,7 +50,7 @@ public class ReadMessageServlet extends HttpServlet {
                 response.getWriter().println("" +
                         "<h1>Latest Message</h1>" +
                         "<hr>" +
-                        "<p id=\"message\">You have no new messages.</p>" +
+                        "<p id=\"messageContainer\">You have no new messages.</p>" +
                         Utils.getHrefButton("/readmessage", "consume", "Try again") + "<br>" +
                         Utils.getHrefButton("/loggedin", "backToMailbox", "Go back")
                 );
