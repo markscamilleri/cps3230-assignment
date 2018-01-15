@@ -43,7 +43,7 @@ public class ReadMessageServlet extends HttpServlet {
                         "    <b>Timestamp</b>: " + Utils.getSpan("timestamp", "" + message.getTimestamp()) + "<br>" +
                         "    <b>Message</b>: " + Utils.getSpan("message", message.getMessage()) + "<br>" +
                         "</p>" +
-                        Utils.getHrefButton("/readmessage", "consumeAnother", "Consume another message") + "<br>" +
+                        Utils.getHrefButton("/readmessage", "consume", "Consume another message") + "<br>" +
                         Utils.getHrefButton("/loggedin", "backToMailbox", "Go back")
                 );
             } else {
