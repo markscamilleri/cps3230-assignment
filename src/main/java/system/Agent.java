@@ -23,7 +23,7 @@ public class Agent {
         this.loginKey = loginKey;
     }
 
-    public Agent(String id, Supervisor supervisor, MessagingSystem messagingSystem, String loginKey, String sessionKey) {
+    Agent(String id, Supervisor supervisor, MessagingSystem messagingSystem, String loginKey, String sessionKey) {
         this(id, supervisor, messagingSystem, loginKey);
         this.sessionKey = sessionKey;
     }

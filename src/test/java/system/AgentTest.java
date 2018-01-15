@@ -1,6 +1,9 @@
 package system;
 
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -88,7 +91,7 @@ public class AgentTest {
                 Mockito.anyString(),
                 Mockito.anyString())).thenReturn(StatusCodes.GENERIC_ERROR);
 
-        Assert.assertEquals(StatusCodes.GENERIC_ERROR ,testAgent_loggedIn.sendMessage(TARGET_AGENT_ID, MESSAGE));
+        Assert.assertEquals(StatusCodes.GENERIC_ERROR, testAgent_loggedIn.sendMessage(TARGET_AGENT_ID, MESSAGE));
     }
 
     @Test
