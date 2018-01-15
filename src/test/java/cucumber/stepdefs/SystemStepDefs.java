@@ -66,7 +66,7 @@ public class SystemStepDefs {
     @Then("^I should be allowed to log in$")
     public void i_should_be_allowed_to_log_in() {
         System.out.println(driver.getCurrentUrl());
-        Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmail"));
+        Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/loggedin"));
     }
     
     @When("^I wait for (\\d+) seconds$")
@@ -90,6 +90,8 @@ public class SystemStepDefs {
     
     @When("^I attempt to send (\\d+) messages$")
     public void i_attempt_to_send_messages(int arg1) {
+        gotoSendMessagePage(driver);
+
         for (int i = 0; i < arg1; i++) {
             driver.findElement(By.id("destination")).click();
             driver.findElement(By.id("destination")).sendKeys(AGENT_ID);
@@ -102,7 +104,7 @@ public class SystemStepDefs {
     @Then("^the messages should be successfully sent$")
     public void the_messages_should_be_successfully_sent() {
         final String notificationText = driver.findElement(By.id("notif")).getText();
-        Assert.assertTrue(notificationText.equals("Message Sent Successfully"));
+        Assert.assertTrue(notificationText.equals("Message sent successfully."));
     }
     
     @When("^I try to send another message$")
@@ -117,11 +119,16 @@ public class SystemStepDefs {
     @Then("^the system will inform me that I have exceeded my quota$")
     public void the_system_will_inform_me_that_I_have_exceeded_my_quota() { // todo: "exceeded your quota"
         final String notificationText = driver.findElement(By.id("notif")).getText();
-        Assert.assertTrue(notificationText.equals("Failed to add the message to the destination mailbox"));
+
+        Assert.assertTrue(notificationText.equals("You were logged out due to an exceeded quota."));
     }
     @When("^I attempt to send the message (.*) to another agent$")
     public void iAttemptToSendTheMessageMessageToAnotherAgent(String message) {
-        registerAgent(new ChromeDriver(), OTHER_AGENT_ID);
+        final ChromeDriver driver2 = new ChromeDriver();
+        registerAgent(driver2, OTHER_AGENT_ID); // register the recipient
+        driver2.quit();
+
+        gotoSendMessagePage(driver);
         
         driver.findElement(By.id("destination")).click();
         driver.findElement(By.id("destination")).sendKeys(OTHER_AGENT_ID);
@@ -132,31 +139,26 @@ public class SystemStepDefs {
     
     @Then("^the other agent should receive the message (.*)$")
     public void theOtherAgentShouldReceiveTheMessageNewMessage(String message) {
-        WebDriver driver2 = new ChromeDriver();
+        final WebDriver driver2 = new ChromeDriver();
         registerAgent(driver2, OTHER_AGENT_ID);
         Assume.assumeTrue(driver2.getCurrentUrl().endsWith(baseUrl + "/login"));
         
         final String loginKey = driver2.findElement(By.id("lKey")).getText();
         loginAgent(driver2, loginKey);
-        Assume.assumeTrue(driver2.getCurrentUrl().endsWith(baseUrl + "/sendmail"));
+        Assume.assumeTrue(driver2.getCurrentUrl().endsWith(baseUrl + "/loggedin"));
         
         // From here on, only assertions since they form part of what is tested
-        
-        WebElement button = driver2.findElement(By.id("consumeMessage"));
-        Assert.assertTrue(button.isEnabled());
-        
-        button.click();
-        String nextPage = "/readmessage";
-        Assert.assertTrue("The button did not lead to " + nextPage, driver2.getCurrentUrl().endsWith(baseUrl + nextPage));
-        
+
+        gotoReadMessagePage(driver2);
         Assert.assertEquals(AGENT_ID, driver2.findElement(By.id("from")).getText());
         Assert.assertEquals(OTHER_AGENT_ID, driver2.findElement(By.id("to")).getText());
         Assert.assertEquals(message, driver2.findElement(By.id("message")).getText());
+        driver2.quit();
     }
     
     @When("^I click on “Log out”$")
     public void i_click_on_Log_out() {
-        Assume.assumeTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmail"));
+        Assume.assumeTrue(driver.getCurrentUrl().endsWith(baseUrl + "/loggedin"));
         
         driver.findElement(By.id("logout")).click();
     }
@@ -191,4 +193,21 @@ public class SystemStepDefs {
         driver.findElement(By.id("submit")).click();
     }
 
+    /**
+     * Goes to the read message page on the specified WebDriver. No checks are done.
+     *
+     * @param driver the WebDriver to use
+     */
+    private static void gotoReadMessagePage(WebDriver driver) {
+        driver.findElement(By.id("consumeMessage")).click();
+    }
+
+    /**
+     * Goes to the send message page on the specified WebDriver. No checks are done.
+     *
+     * @param driver the WebDriver to use
+     */
+    private static void gotoSendMessagePage(WebDriver driver) {
+        driver.findElement(By.id("sendMessage")).click();
+    }
 }
