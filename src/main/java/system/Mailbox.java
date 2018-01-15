@@ -9,7 +9,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * This class encapsulates the functionality of a mailbox that holds all container for a user.
  */
-public class Mailbox {
+class Mailbox {
 
     static final Duration MESSAGE_TIME_LIMIT = Duration.ofMinutes(30);
 

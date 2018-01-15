@@ -23,7 +23,7 @@ public class AssignmentModel implements FsmModel {
     private WebDriver driver = new ChromeDriver();
 
     private ModelStateEnum currentState = ModelStateEnum.UNREGISTERED;
-    private Duration TEST_DURATION = Duration.ofMinutes(15);
+    private final Duration TEST_DURATION = Duration.ofMinutes(15);
 
     private String agentID = null;
     private String loginKey = null;
