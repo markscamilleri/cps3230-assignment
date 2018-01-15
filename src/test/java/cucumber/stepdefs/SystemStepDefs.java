@@ -149,7 +149,7 @@ public class SystemStepDefs {
         // From here on, only assertions since they form part of what is tested
 
         gotoReadMessagePage(driver2);
-        //TODO go through this whole file and assert/assume page locations
+        // todo: go through this whole file and assert/assume page locations
         Assert.assertEquals(AGENT_ID, driver2.findElement(By.id("from")).getText());
         Assert.assertEquals(OTHER_AGENT_ID, driver2.findElement(By.id("to")).getText());
         Assert.assertEquals(message, driver2.findElement(By.id("message")).getText());
