@@ -7,8 +7,8 @@ import java.time.Instant;
 
 public class Message extends TemporaryObject<String> {
 
-    private final String sourceAgentId;
-    private final String targetAgentId;
+    private final String sourceAgentId; // sender
+    private final String targetAgentId; // receiver
 
     /**
      * Creates a new message

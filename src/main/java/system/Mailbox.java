@@ -9,15 +9,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * This class encapsulates the functionality of a mailbox that holds all container for a user.
  */
-public class Mailbox {
+class Mailbox {
 
-    final static Duration MESSAGE_TIME_LIMIT = Duration.ofMinutes(30);
+    static final Duration MESSAGE_TIME_LIMIT = Duration.ofMinutes(30);
 
     private final Queue<Message> messages;
-
-    /**
-     * The id of the owner of the mailbox.
-     */
     private final String ownerId;
 
     Mailbox(String ownerId) {

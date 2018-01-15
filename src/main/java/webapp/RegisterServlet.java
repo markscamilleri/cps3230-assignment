@@ -5,7 +5,6 @@ import system.MessagingSystem;
 import system.Supervisor;
 import system.SupervisorImpl;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
@@ -14,11 +13,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet("/register")
-public class RegisterServlet extends HttpServlet {
+class RegisterServlet extends HttpServlet {
 
     private final MessagingSystem messagingSystem;
 
-    public RegisterServlet(final MessagingSystem messagingSystem) {
+    RegisterServlet(final MessagingSystem messagingSystem) {
         this.messagingSystem = messagingSystem;
     }
 

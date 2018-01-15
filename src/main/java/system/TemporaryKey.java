@@ -16,7 +16,14 @@ class TemporaryKey extends TemporaryObject<String> {
         return getTempObject();
     }
 
+    /**
+     * Checks that the key has not expired and compares the
+     * stored temporary string to the argument key.
+     *
+     * @param anotherKey String to compare the stored string to.
+     * @return True if key is not expired and strings match.
+     */
     public boolean equals(String anotherKey) {
-        return !isExpired() && getTempObject().equals(anotherKey);
+        return !this.isExpired() && getTempObject().equals(anotherKey);
     }
 }

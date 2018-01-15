@@ -10,7 +10,7 @@ public class StartJettyHandler {
 
     public static final int PORT_NUMBER = 8080;
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
 
         final MessagingSystem messagingSystem = new MessagingSystem();
         final Runnable runnable = () -> {

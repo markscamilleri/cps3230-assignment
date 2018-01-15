@@ -10,16 +10,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.mockito.Mockito.when;
-import static system.MessagingSystem.MAX_MESSAGES_RECV;
-import static system.MessagingSystem.MAX_MESSAGES_SENT;
 
-// todo: check that message sent/notsent?
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class MessagingSystemTest {
 
     private static final int LOGIN_KEY_LENGTH = 10;
     private static final int SESSION_KEY_LENGTH = 50;
     private static final int MAX_MESSAGE_LENGTH = 140;
+    private static final int MAX_MESSAGES_SENT = 25;
+    private static final int MAX_MESSAGES_RECV = 25;
 
     // Valid login keys (one per agent)
     private static final String VALID_LKEY_1 = Utils.getNCharacters(LOGIN_KEY_LENGTH, "1");
@@ -390,12 +389,6 @@ public class MessagingSystemTest {
         agentInfos.put(agentId, agentInfo);
     }
 
-    private enum AddType {
-        UNREGISTERED,
-        REGISTERED,
-        LOGGEDIN
-    }
-
     private String alternateCapitalization(String string) {
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -406,5 +399,11 @@ public class MessagingSystemTest {
         }
 
         return stringBuilder.toString();
+    }
+
+    private enum AddType {
+        UNREGISTERED,
+        REGISTERED,
+        LOGGEDIN
     }
 }

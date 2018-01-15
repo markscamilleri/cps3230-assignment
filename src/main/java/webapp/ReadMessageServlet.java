@@ -11,11 +11,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet("/readmessage")
-public class ReadMessageServlet extends HttpServlet {
+class ReadMessageServlet extends HttpServlet {
 
     private final MessagingSystem messagingSystem;
 
-    public ReadMessageServlet(MessagingSystem messagingSystem) {
+    ReadMessageServlet(MessagingSystem messagingSystem) {
         this.messagingSystem = messagingSystem;
     }
 
@@ -37,19 +37,20 @@ public class ReadMessageServlet extends HttpServlet {
                 response.getWriter().println("" +
                         "<h1>Latest Message</h1>" +
                         "<hr>" +
-                        "<p>" +
+                        "<p id=\"messageContainer\">" +
                         "    <b>From</b>: Agent " + Utils.getSpan("from", message.getSourceAgentId()) + "<br>" +
                         "    <b>To</b>: Agent " + Utils.getSpan("to", message.getTargetAgentId()) + "<br>" +
                         "    <b>Timestamp</b>: " + Utils.getSpan("timestamp", "" + message.getTimestamp()) + "<br>" +
                         "    <b>Message</b>: " + Utils.getSpan("message", message.getMessage()) + "<br>" +
                         "</p>" +
-                        Utils.getHrefButton("/readmessage", "consumeAnother", "Consume another message") + "<br>" +
+                        Utils.getHrefButton("/readmessage", "consume", "Consume another message") + "<br>" +
                         Utils.getHrefButton("/loggedin", "backToMailbox", "Go back")
                 );
             } else {
                 response.getWriter().println("" +
                         "<h1>Latest Message</h1>" +
-                        "<p>You have no new messages</p>" +
+                        "<hr>" +
+                        "<p id=\"messageContainer\">You have no new messages.</p>" +
                         Utils.getHrefButton("/readmessage", "consume", "Try again") + "<br>" +
                         Utils.getHrefButton("/loggedin", "backToMailbox", "Go back")
                 );
