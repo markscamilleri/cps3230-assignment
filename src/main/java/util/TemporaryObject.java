@@ -12,13 +12,13 @@ public abstract class TemporaryObject<T> {
     private T tempObject;
     private Instant timeout;
     private Clock clock;
-
+    
     protected TemporaryObject(T tempObject, Instant timeout, Clock clock) {
         this.tempObject = tempObject;
         this.timeout = timeout;
         this.clock = clock;
     }
-
+    
     public boolean isExpired() {
         final Instant now = Instant.now(clock);
         return now.equals(timeout) || now.isAfter(timeout);
