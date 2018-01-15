@@ -19,15 +19,15 @@ import java.util.Random;
 
 public class AssignmentModel implements FsmModel {
     
-    public final static String baseUrl = "localhost:" + webapp.StartJettyHandler.PORT_NUMBER;
-    
-    public WebDriver driver = new ChromeDriver();
-    public ModelStateEnum currentState = ModelStateEnum.UNREGISTERED;
-    
-    public String agentID = null;
-    public String loginKey = null;
-    
-    public int agentMessages = 0;
+    private final static String baseUrl = "localhost:" + webapp.StartJettyHandler.PORT_NUMBER;
+    private WebDriver driver = new ChromeDriver();
+
+    private ModelStateEnum currentState = ModelStateEnum.UNREGISTERED;
+    private Duration TEST_DURATION = Duration.ofMinutes(15);
+
+    private String agentID = null;
+    private String loginKey = null;
+    private int agentMessages = 0;
     
     @Action
     public void normalRegister() {
@@ -234,13 +234,12 @@ public class AssignmentModel implements FsmModel {
     
     @Test
     public void main() {
-        Instant startTime = Instant.now();
-        Instant finishTime = startTime.plus(Duration.ofMinutes(15));
-        int testcount = 0;
+        final Instant startTime = Instant.now();
+        final Instant finishTime = startTime.plus(TEST_DURATION);
 
         System.setProperty("webdriver.chrome.driver", "chromedriver");
-        
-        Tester tester = new GreedyTester(new AssignmentModel());
+
+        final Tester tester = new GreedyTester(new AssignmentModel());
         tester.setRandom(new Random());
         tester.buildGraph();
         tester.addListener(new StopOnFailureListener());
@@ -251,10 +250,8 @@ public class AssignmentModel implements FsmModel {
         tester.addListener("verbose");
         while (Instant.now().isBefore(finishTime)) {
             tester.generate();
-            testcount++;
         }
         tester.printCoverage();
-        System.out.println(testcount);
     }
     
     /**
@@ -296,5 +293,4 @@ public class AssignmentModel implements FsmModel {
         driver.findElement(By.id("messageBody")).sendKeys(message);
         driver.findElement(By.id("submit")).click();
     }
-    
 }
