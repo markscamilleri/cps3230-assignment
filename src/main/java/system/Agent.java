@@ -4,7 +4,7 @@ package system;
  * This class encapsulates an Agent that can use the system.
  */
 public class Agent {
-
+    
     private final String id;
     private final Supervisor supervisor;
     private final MessagingSystem messagingSystem;
@@ -23,7 +23,7 @@ public class Agent {
         this.loginKey = loginKey;
     }
 
-    public Agent(String id, Supervisor supervisor, MessagingSystem messagingSystem, String loginKey, String sessionKey) {
+    Agent(String id, Supervisor supervisor, MessagingSystem messagingSystem, String loginKey, String sessionKey) {
         this(id, supervisor, messagingSystem, loginKey);
         this.sessionKey = sessionKey;
     }
