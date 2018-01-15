@@ -140,6 +140,8 @@ public class MessagingSystem {
                 return StatusCodes.BOTH_AGENT_QUOTAS_EXCEEDED;
             } else if (sourceLoggedOut) {
                 return StatusCodes.SOURCE_AGENT_QUOTA_EXCEEDED;
+            } else if (targetLoggedOut) {
+                return StatusCodes.TARGET_AGENT_QUOTA_EXCEEDED;
             } else {
                 // Remove blocked words
                 for (final String word : BLOCKED_WORDS) {
@@ -150,11 +152,7 @@ public class MessagingSystem {
                 if (targetAgentInfo.mailbox.addMessage(toSend)) {
                     sourceAgentInfo.messagesSent++;
                     targetAgentInfo.messagesRecv++;
-                    if (targetLoggedOut) {
-                        return StatusCodes.TARGET_AGENT_QUOTA_EXCEEDED;
-                    } else {
-                        return StatusCodes.OK;
-                    }
+                    return StatusCodes.OK;
                 } else {
                     return StatusCodes.FAILED_TO_ADD_TO_MAILBOX;
                 }
