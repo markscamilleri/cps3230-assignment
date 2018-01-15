@@ -9,7 +9,6 @@ import org.junit.Assert;
 import org.junit.Assume;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
 import static system.MessagingSystem.LOGIN_KEY_LENGTH;
@@ -150,6 +149,7 @@ public class SystemStepDefs {
         // From here on, only assertions since they form part of what is tested
 
         gotoReadMessagePage(driver2);
+        //TODO go through this whole file and assert/assume page locations
         Assert.assertEquals(AGENT_ID, driver2.findElement(By.id("from")).getText());
         Assert.assertEquals(OTHER_AGENT_ID, driver2.findElement(By.id("to")).getText());
         Assert.assertEquals(message, driver2.findElement(By.id("message")).getText());
