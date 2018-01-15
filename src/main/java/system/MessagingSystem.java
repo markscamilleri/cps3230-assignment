@@ -11,14 +11,16 @@ import static system.StatusCodes.*;
 
 public class MessagingSystem {
 
-    public final static Duration LOGIN_KEY_TIME_LIMIT = Duration.ofMinutes(1);
-    public final static Duration SESSION_KEY_TIME_LIMIT = Duration.ofMinutes(10);
+    private static final Duration LOGIN_KEY_TIME_LIMIT = Duration.ofMinutes(1);
+    private static final Duration SESSION_KEY_TIME_LIMIT = Duration.ofMinutes(10);
 
-    public final static int LOGIN_KEY_LENGTH = 10;
-    public final static int SESSION_KEY_LENGTH = 50;
+    private static final int LOGIN_KEY_LENGTH = 10;
+    private static final int SESSION_KEY_LENGTH = 50;
 
-    public final static int MAX_MESSAGE_LENGTH = 140;
-    public final static String BLOCKED_WORDS[] = {"recipe", "ginger", "nuclear"};
+    private static final int MAX_MESSAGE_LENGTH = 140;
+    private static final int MAX_MESSAGES_SENT = 25;
+    private static final int MAX_MESSAGES_RECV = 25;
+    private static final String BLOCKED_WORDS[] = {"recipe", "ginger", "nuclear"};
 
     private final Map<String, AgentInfo> agentInfos;
 
@@ -68,17 +70,28 @@ public class MessagingSystem {
         final AgentInfo info = agentInfos.get(agentId);
         if (info != null && info.loginKey.equals(loginKey)) {
             info.sessionKey = new TemporaryKey(Utils.getNRandomCharacters(SESSION_KEY_LENGTH), SESSION_KEY_TIME_LIMIT);
+            info.messagesSent = 0;
+            info.messagesRecv = 0;
             return info.sessionKey.getKey();
         } else {
             return null;
         }
     }
 
+    /**
+     * Logs out a user given an agent id by setting the agent's session key
+     * to an expired key and resetting the agent's message send/receive counts.
+     *
+     * @param agentId The agent id
+     * @return False if the agent does not exist.
+     */
     public boolean logout(String agentId) {
 
         final AgentInfo info = agentInfos.get(agentId);
         if (info != null) {
             info.sessionKey = new TemporaryKey("", Duration.ZERO);
+            info.messagesRecv = 0;
+            info.messagesSent = 0;
             return true;
         } else {
             return false;
@@ -93,10 +106,10 @@ public class MessagingSystem {
      * Should check that a message does not contain any blocked words.
      * Should check that a message is not longer than 140 characters.
      *
-     * @param sessionKey
-     * @param sourceAgentId
-     * @param targetAgentId
-     * @param message
+     * @param sessionKey    The session key
+     * @param sourceAgentId The sender agent's id
+     * @param targetAgentId The receiver agent's id
+     * @param message       The message to be sent
      * @return "OK" if the message is sent, or an appropriate error if not.
      */
     public StatusCodes sendMessage(String sessionKey, String sourceAgentId, String targetAgentId, String message) {
@@ -104,11 +117,14 @@ public class MessagingSystem {
         final AgentInfo sourceAgentInfo = agentInfos.get(sourceAgentId);
         final AgentInfo targetAgentInfo = agentInfos.get(targetAgentId);
 
-        if (sourceAgentInfo == null || targetAgentInfo == null) {
-            return AGENT_DOES_NOT_EXIST;
+        if (sourceAgentInfo == null) {
+            return SOURCE_AGENT_DOES_NOT_EXIST;
+
+        } else if (targetAgentInfo == null) {
+            return TARGET_AGENT_DOES_NOT_EXIST;
 
         } else if (sourceAgentInfo.sessionKey.isExpired()) {
-            return AGENT_NOT_LOGGED_IN;
+            return SOURCE_AGENT_NOT_LOGGED_IN;
 
         } else if (!sourceAgentInfo.sessionKey.equals(sessionKey)) {
             return SESSION_KEY_UNRECOGNIZED;
@@ -117,16 +133,36 @@ public class MessagingSystem {
             return MESSAGE_LENGTH_EXCEEDED;
 
         } else {
-            // Remove blocked words
-            for (final String word : BLOCKED_WORDS) {
-                message = message.replaceAll("(?i)" + word + "\\s?", "");
+            boolean sourceLoggedOut = false, targetLoggedOut = false;
+            if (sourceAgentInfo.messagesSent == MAX_MESSAGES_SENT) {
+                logout(sourceAgentId);
+                sourceLoggedOut = true;
+            }
+            if (targetAgentInfo.messagesRecv == MAX_MESSAGES_RECV) {
+                logout(targetAgentId);
+                targetLoggedOut = true;
             }
 
-            final Message toSend = new Message(sourceAgentId, targetAgentId, message);
-            if (targetAgentInfo.mailbox.addMessage(toSend)) {
-                return StatusCodes.OK;
+            if (sourceLoggedOut && targetLoggedOut) {
+                return StatusCodes.BOTH_AGENT_QUOTAS_EXCEEDED;
+            } else if (sourceLoggedOut) {
+                return StatusCodes.SOURCE_AGENT_QUOTA_EXCEEDED;
+            } else if (targetLoggedOut) {
+                return StatusCodes.TARGET_AGENT_QUOTA_EXCEEDED;
             } else {
-                return StatusCodes.FAILED_TO_ADD_TO_MAILBOX;
+                // Remove blocked words
+                for (final String word : BLOCKED_WORDS) {
+                    message = message.replaceAll("(?i)" + word + "\\s?", "");
+                }
+
+                final Message toSend = new Message(sourceAgentId, targetAgentId, message);
+                if (targetAgentInfo.mailbox.addMessage(toSend)) {
+                    sourceAgentInfo.messagesSent++;
+                    targetAgentInfo.messagesRecv++;
+                    return StatusCodes.OK;
+                } else {
+                    return StatusCodes.FAILED_TO_ADD_TO_MAILBOX;
+                }
             }
         }
     }

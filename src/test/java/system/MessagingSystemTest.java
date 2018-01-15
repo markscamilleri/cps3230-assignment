@@ -17,6 +17,8 @@ public class MessagingSystemTest {
     private static final int LOGIN_KEY_LENGTH = 10;
     private static final int SESSION_KEY_LENGTH = 50;
     private static final int MAX_MESSAGE_LENGTH = 140;
+    private static final int MAX_MESSAGES_SENT = 25;
+    private static final int MAX_MESSAGES_RECV = 25;
 
     // Valid login keys (one per agent)
     private static final String VALID_LKEY_1 = Utils.getNCharacters(LOGIN_KEY_LENGTH, "1");
@@ -148,6 +150,19 @@ public class MessagingSystemTest {
     }
 
     @Test
+    public void logout_trueIfAgentHadSentOrReceivedButCountersReset() {
+        addAgent(agentInfos, 1, AddType.LOGGEDIN);
+
+        AgentInfo agentInfo = agentInfos.get(AID_1);
+        agentInfo.messagesSent = 5;
+        agentInfo.messagesRecv = 5;
+
+        Assume.assumeTrue(testSystem.logout(AID_1));
+        Assert.assertEquals(0, agentInfo.messagesSent);
+        Assert.assertEquals(0, agentInfo.messagesRecv);
+    }
+
+    @Test
     public void logout_trueIfAgentLoggedIn() {
         addAgent(agentInfos, 1, AddType.LOGGEDIN);
 
@@ -166,14 +181,14 @@ public class MessagingSystemTest {
     public void sendMessage_failsIfSourceAgentDoesNotExist() {
         addAgent(agentInfos, 2, AddType.REGISTERED); // only target agent exists
 
-        Assert.assertEquals(StatusCodes.AGENT_DOES_NOT_EXIST, testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG));
+        Assert.assertEquals(StatusCodes.SOURCE_AGENT_DOES_NOT_EXIST, testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG));
     }
 
     @Test
     public void sendMessage_failsIfTargetAgentDoesNotExist() {
         addAgent(agentInfos, 1, AddType.REGISTERED); // only source agent exists
 
-        Assert.assertEquals(StatusCodes.AGENT_DOES_NOT_EXIST, testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG));
+        Assert.assertEquals(StatusCodes.TARGET_AGENT_DOES_NOT_EXIST, testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG));
     }
 
     @Test
@@ -181,7 +196,7 @@ public class MessagingSystemTest {
         addAgent(agentInfos, 1, AddType.REGISTERED); // source did not login
         addAgent(agentInfos, 2, AddType.REGISTERED); // target doesn't have to be logged in
 
-        Assert.assertEquals(StatusCodes.AGENT_NOT_LOGGED_IN, testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG));
+        Assert.assertEquals(StatusCodes.SOURCE_AGENT_NOT_LOGGED_IN, testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG));
     }
 
     @Test
@@ -193,7 +208,7 @@ public class MessagingSystemTest {
         addAgent(agentInfos, 1, AddType.LOGGEDIN);   // source must be logged in
         addAgent(agentInfos, 2, AddType.REGISTERED); // target doesn't have to be logged in
 
-        Assert.assertEquals(StatusCodes.AGENT_NOT_LOGGED_IN, testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG));
+        Assert.assertEquals(StatusCodes.SOURCE_AGENT_NOT_LOGGED_IN, testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG));
     }
 
     @Test
@@ -226,9 +241,47 @@ public class MessagingSystemTest {
             final String message_sent = VALID_MSG + altCapBW + " " + altCapBW + VALID_MSG;
             final String expect_to_receive = message_sent.replaceAll(altCapBW + "\\s?", "");
 
-            Assert.assertEquals(StatusCodes.OK, testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, message_sent));
+            Assume.assumeTrue(StatusCodes.OK == testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, message_sent));
             Assert.assertEquals(expect_to_receive, agentInfos.get(AID_2).mailbox.consumeNextMessage().getMessage());
         }
+    }
+
+    @Test
+    public void sendMessage_sourceAgentGetsLoggedOutIfQuotaReached() {
+        addAgent(agentInfos, 1, AddType.LOGGEDIN);   // source must be logged in
+        addAgent(agentInfos, 2, AddType.REGISTERED); // target doesn't have to be logged in
+
+        agentInfos.get(AID_1).messagesSent = MAX_MESSAGES_SENT;
+
+        Assume.assumeTrue(StatusCodes.SOURCE_AGENT_QUOTA_EXCEEDED ==
+                testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG));
+        Assert.assertTrue(agentInfos.get(AID_1).sessionKey.isExpired());
+    }
+
+    @Test
+    public void sendMessage_targetAgentGetsLoggedOutIfQuotaReached() {
+        addAgent(agentInfos, 1, AddType.LOGGEDIN); // source must be logged in
+        addAgent(agentInfos, 2, AddType.LOGGEDIN); // target is logged in so that final assert makes sense
+
+        agentInfos.get(AID_2).messagesRecv = MAX_MESSAGES_RECV;
+
+        Assume.assumeTrue(StatusCodes.TARGET_AGENT_QUOTA_EXCEEDED ==
+                testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG));
+        Assert.assertTrue(agentInfos.get(AID_2).sessionKey.isExpired());
+    }
+
+    @Test
+    public void sendMessage_bothAgentsLoggedOutIfQuotasReached() {
+        addAgent(agentInfos, 1, AddType.LOGGEDIN); // source must be logged in
+        addAgent(agentInfos, 2, AddType.LOGGEDIN); // target is logged in so that final assert makes sense
+
+        agentInfos.get(AID_1).messagesSent = MAX_MESSAGES_SENT;
+        agentInfos.get(AID_2).messagesRecv = MAX_MESSAGES_RECV;
+
+        Assume.assumeTrue(StatusCodes.BOTH_AGENT_QUOTAS_EXCEEDED ==
+                testSystem.sendMessage(VALID_SKEY_1, AID_1, AID_2, VALID_MSG));
+        Assert.assertTrue(agentInfos.get(AID_1).sessionKey.isExpired());
+        Assert.assertTrue(agentInfos.get(AID_2).sessionKey.isExpired());
     }
 
     @Test
@@ -336,12 +389,6 @@ public class MessagingSystemTest {
         agentInfos.put(agentId, agentInfo);
     }
 
-    private enum AddType {
-        UNREGISTERED,
-        REGISTERED,
-        LOGGEDIN
-    }
-
     private String alternateCapitalization(String string) {
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -352,5 +399,11 @@ public class MessagingSystemTest {
         }
 
         return stringBuilder.toString();
+    }
+
+    private enum AddType {
+        UNREGISTERED,
+        REGISTERED,
+        LOGGEDIN
     }
 }

@@ -64,9 +64,9 @@ public class TemporaryObjectTest {
 
     private class StepClock extends Clock {
 
-        private int stepMultiplier = 0;
         private final Instant baseTime;
         private final Duration step;
+        private int stepMultiplier = 0;
 
         StepClock(Instant baseTime, Duration step) {
             this.baseTime = baseTime;

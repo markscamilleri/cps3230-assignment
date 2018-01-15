@@ -10,8 +10,8 @@ import java.time.Instant;
 public abstract class TemporaryObject<T> {
 
     private T tempObject;
-    private Instant timeout;
-    private Clock clock;
+    private final Instant timeout;
+    private final Clock clock;
 
     protected TemporaryObject(T tempObject, Instant timeout, Clock clock) {
         this.tempObject = tempObject;
@@ -20,7 +20,8 @@ public abstract class TemporaryObject<T> {
     }
 
     public boolean isExpired() {
-        return Instant.now(clock).equals(timeout) || Instant.now(clock).isAfter(timeout);
+        final Instant now = Instant.now(clock);
+        return now.equals(timeout) || now.isAfter(timeout);
     }
 
     protected Instant getTimeout() {

@@ -5,7 +5,6 @@ import system.MessagingSystem;
 import system.Supervisor;
 import system.SupervisorImpl;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
@@ -14,11 +13,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet("/login")
-public class LoginServlet extends HttpServlet {
+class LoginServlet extends HttpServlet {
 
     private final MessagingSystem messagingSystem;
 
-    public LoginServlet(final MessagingSystem messagingSystem) {
+    LoginServlet(final MessagingSystem messagingSystem) {
         this.messagingSystem = messagingSystem;
     }
 
@@ -60,7 +59,7 @@ public class LoginServlet extends HttpServlet {
             if (agent.login()) {
                 Utils.deleteCookie(lKeyCookie, response);
                 response.addCookie(new Cookie(CookieNames.SESSION_KEY.name(), agent.getSessionKey()));
-                response.sendRedirect("/sendmail");
+                response.sendRedirect("/loggedin");
             } else {
                 response.sendRedirect("/login");
             }
