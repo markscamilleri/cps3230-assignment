@@ -1,6 +1,6 @@
 package webapp;
 
-public enum CookieNames {
+enum CookieNames {
     AGENT_ID,
     LOGIN_KEY,
     SESSION_KEY,

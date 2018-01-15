@@ -11,11 +11,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet("/readmessage")
-public class ReadMessageServlet extends HttpServlet {
+class ReadMessageServlet extends HttpServlet {
 
     private final MessagingSystem messagingSystem;
 
-    public ReadMessageServlet(MessagingSystem messagingSystem) {
+    ReadMessageServlet(MessagingSystem messagingSystem) {
         this.messagingSystem = messagingSystem;
     }
 

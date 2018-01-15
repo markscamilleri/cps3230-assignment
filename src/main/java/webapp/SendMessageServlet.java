@@ -14,11 +14,11 @@ import java.io.IOException;
  * Servlet implementation class FirstServlet
  */
 @WebServlet("/sendmessage")
-public class SendMessageServlet extends HttpServlet {
+class SendMessageServlet extends HttpServlet {
 
     private final MessagingSystem messagingSystem;
 
-    public SendMessageServlet(MessagingSystem messagingSystem) {
+    SendMessageServlet(MessagingSystem messagingSystem) {
         this.messagingSystem = messagingSystem;
     }
 

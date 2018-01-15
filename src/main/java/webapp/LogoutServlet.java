@@ -10,11 +10,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet("/logout")
-public class LogoutServlet extends HttpServlet {
+class LogoutServlet extends HttpServlet {
 
     private final MessagingSystem messagingSystem;
 
-    public LogoutServlet(final MessagingSystem messagingSystem) {
+    LogoutServlet(final MessagingSystem messagingSystem) {
         this.messagingSystem = messagingSystem;
     }
 

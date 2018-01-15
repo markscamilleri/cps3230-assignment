@@ -13,11 +13,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet("/login")
-public class LoginServlet extends HttpServlet {
+class LoginServlet extends HttpServlet {
 
     private final MessagingSystem messagingSystem;
 
-    public LoginServlet(final MessagingSystem messagingSystem) {
+    LoginServlet(final MessagingSystem messagingSystem) {
         this.messagingSystem = messagingSystem;
     }
 
