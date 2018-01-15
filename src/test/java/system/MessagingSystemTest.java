@@ -389,12 +389,6 @@ public class MessagingSystemTest {
         agentInfos.put(agentId, agentInfo);
     }
 
-    private enum AddType {
-        UNREGISTERED,
-        REGISTERED,
-        LOGGEDIN
-    }
-
     private String alternateCapitalization(String string) {
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -405,5 +399,11 @@ public class MessagingSystemTest {
         }
 
         return stringBuilder.toString();
+    }
+
+    private enum AddType {
+        UNREGISTERED,
+        REGISTERED,
+        LOGGEDIN
     }
 }
