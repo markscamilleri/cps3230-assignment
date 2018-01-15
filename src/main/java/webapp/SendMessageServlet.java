@@ -41,9 +41,10 @@ public class SendMessageServlet extends HttpServlet {
                 Utils.deleteCookie(statusCookie, response);
 
                 // Set the status message
-                if (statusValue.equals(StatusCodes.OK.name())
-                        || statusValue.equals(StatusCodes.TARGET_AGENT_QUOTA_EXCEEDED.name())) {
+                if (statusValue.equals(StatusCodes.OK.name())) {
                     sendingMessageStatusText = "Message sent successfully.";
+                } else if (statusValue.equals(StatusCodes.TARGET_AGENT_QUOTA_EXCEEDED.name())) {
+                    sendingMessageStatusText = "Message not sent since target agent's quota exceeded.";
                 } else if (statusValue.equals(StatusCodes.TARGET_AGENT_DOES_NOT_EXIST.name())) {
                     sendingMessageStatusText = "Message not sent since the target agent does not exist.";
                 } else if (statusValue.equals(StatusCodes.MESSAGE_LENGTH_EXCEEDED.name())) {
