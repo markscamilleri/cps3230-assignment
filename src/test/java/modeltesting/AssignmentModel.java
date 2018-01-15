@@ -12,6 +12,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import util.Utils;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Random;
 
@@ -234,7 +235,7 @@ public class AssignmentModel implements FsmModel {
     @Test
     public void main() {
         Instant startTime = Instant.now();
-        Instant finishTime = startTime.plusSeconds(30); //startTime.plus(Duration.ofMinutes(15));
+        Instant finishTime = startTime.plus(Duration.ofMinutes(15));
         int testcount = 0;
         
         Tester tester = new GreedyTester(new AssignmentModel());
