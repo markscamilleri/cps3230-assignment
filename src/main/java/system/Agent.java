@@ -4,7 +4,7 @@ package system;
  * This class encapsulates an Agent that can use the system.
  */
 public class Agent {
-    
+
     private final String id;
     private final Supervisor supervisor;
     private final MessagingSystem messagingSystem;
