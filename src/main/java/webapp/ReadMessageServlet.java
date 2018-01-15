@@ -50,7 +50,7 @@ public class ReadMessageServlet extends HttpServlet {
                 response.getWriter().println("" +
                         "<h1>Latest Message</h1>" +
                         "<hr>" +
-                        "<p id=\"message\">You have no new messages</p>" +
+                        "<p id=\"message\">You have no new messages.</p>" +
                         Utils.getHrefButton("/readmessage", "consume", "Try again") + "<br>" +
                         Utils.getHrefButton("/loggedin", "backToMailbox", "Go back")
                 );
