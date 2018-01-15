@@ -42,14 +42,12 @@ public class SendMessageServlet extends HttpServlet {
 
                 // Set the status message
                 if (statusValue.equals(StatusCodes.OK.name())
-                        || statusValue.equals(StatusCodes.TARGET_AGENT_QUOTA_EXCEEDED)) {
+                        || statusValue.equals(StatusCodes.TARGET_AGENT_QUOTA_EXCEEDED.name())) {
                     sendingMessageStatusText = "Message sent successfully.";
                 } else if (statusValue.equals(StatusCodes.AGENT_DOES_NOT_EXIST.name())) {
-                    sendingMessageStatusText = "That agent does not exist.";
+                    sendingMessageStatusText = "Message not sent since the target agent does not exist.";
                 } else if (statusValue.equals(StatusCodes.MESSAGE_LENGTH_EXCEEDED.name())) {
-                    sendingMessageStatusText = "The message was not sent as it is longer than 140 characters.";
-                } else if (statusValue.equals(StatusCodes.FAILED_TO_ADD_TO_MAILBOX.name())) {
-                    sendingMessageStatusText = "Failed to add the message to the destination mailbox.";
+                    sendingMessageStatusText = "Message not sent since it is longer than 140 characters.";
                 } else {
                     /*In the case of SESSION_KEY_UNRECOGNIZED, AGENT_NOT_LOGGED_IN, and
                     SESSION_KEY_INVALID_LENGTH, the user should have been logged out.*/
