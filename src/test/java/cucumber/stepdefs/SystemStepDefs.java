@@ -129,8 +129,8 @@ public class SystemStepDefs {
         final ChromeDriver driver2 = new ChromeDriver();
         registerAgent(driver2, OTHER_AGENT_ID); // register the recipient
         driver2.quit();
-        Assume.assumeTrue(driver.getCurrentUrl().endsWith(baseUrl + "/loggedin"));
 
+        Assume.assumeTrue(driver.getCurrentUrl().endsWith(baseUrl + "/loggedin"));
         gotoSendMessagePage(driver);
         Assume.assumeTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmessage"));
         
@@ -154,7 +154,7 @@ public class SystemStepDefs {
         // From here on, only assertions since they form part of what is tested
 
         gotoReadMessagePage(driver2);
-        Assume.assumeTrue(driver.getCurrentUrl().endsWith(baseUrl + "/readmessage"));
+        Assume.assumeTrue(driver2.getCurrentUrl().endsWith(baseUrl + "/readmessage"));
 
         Assert.assertEquals(AGENT_ID, driver2.findElement(By.id("from")).getText());
         Assert.assertEquals(OTHER_AGENT_ID, driver2.findElement(By.id("to")).getText());
