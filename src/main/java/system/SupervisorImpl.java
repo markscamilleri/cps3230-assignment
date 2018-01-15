@@ -11,14 +11,14 @@ public class SupervisorImpl implements Supervisor {
     public SupervisorImpl(MessagingSystem messagingSystem) {
         this.messagingSystem = messagingSystem;
     }
-    
+
     /**
      * Checks if it is safe for the agent to login by making sure
      * the id is not that of a spy (starts with "spy-")
      *
      * @param agentId The id of the given agent.
      * @return null if the agent is a spy, a 10 character login key
-     *         that is randomly generated if the agent is not a spy.
+     * that is randomly generated if the agent is not a spy.
      */
     public String getLoginKey(String agentId) {
 
