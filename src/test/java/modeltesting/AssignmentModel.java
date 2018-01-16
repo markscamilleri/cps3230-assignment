@@ -33,7 +33,6 @@ public class AssignmentModel implements FsmModel {
     private final int MAX_MESSAGE_RECEIVED = 25;
 
     private String agentID;
-    private String loginKey;
     private int sessionMessagesSent;
     private int sessionMessagesRecv;
     private int messagesInMailbox;
@@ -261,11 +260,8 @@ public class AssignmentModel implements FsmModel {
         final String AGENT_2 = "AGENT_2_" + Utils.getNRandomCharacters(5);
         registerAgentHelper(driver2, AGENT_2);
 
-        // Sender logs in
-        final String tempLoginKey = driver2.findElement(By.id("lKey")).getText();
-        loginAgentHelper(driver2, tempLoginKey);
-
-        // Sender sends the message
+        // Sender logs in and sends message
+        loginAgentHelper(driver2, driver2.findElement(By.id("lKey")).getText());
         Assume.assumeTrue(driver2.getCurrentUrl().endsWith(baseUrl + "/loggedin"));
         driver2.findElement(By.id("sendMessage")).click();
         Assume.assumeTrue(driver2.getCurrentUrl().endsWith(baseUrl + "/sendmessage"));
@@ -298,7 +294,6 @@ public class AssignmentModel implements FsmModel {
     public void reset(boolean driverReset) {
         currentState = ModelStateEnum.UNREGISTERED;
         agentID = (uniqueness++) + "_" + Utils.getNRandomCharacters(5);
-        loginKey = null;
         sessionMessagesSent = 0;
         sessionMessagesRecv = 0;
         messagesInMailbox = 0;
