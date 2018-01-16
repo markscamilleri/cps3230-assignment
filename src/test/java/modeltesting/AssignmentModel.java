@@ -88,6 +88,16 @@ public class AssignmentModel implements FsmModel {
         driver.findElement(By.id("submit")).click();
     }
 
+    private boolean checkForAutoLogout(WebDriver driver) {
+        if (agentWasLoggedOut) {
+            Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
+            currentState = ModelStateEnum.UNREGISTERED;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     @Action
     public void normalRegister() {
         agentWasLoggedOut = false;
@@ -147,10 +157,7 @@ public class AssignmentModel implements FsmModel {
     public void gotoSendMessagePage() {
         driver.findElement(By.id("sendMessage")).click();
 
-        if (agentWasLoggedOut) {
-            Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
-            currentState = ModelStateEnum.UNREGISTERED;
-        } else {
+        if (!checkForAutoLogout(driver)) {
             Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmessage"));
             currentState = ModelStateEnum.SENDING_MESSAGE;
         }
@@ -197,10 +204,7 @@ public class AssignmentModel implements FsmModel {
         // note: agent not logged out since no message was sent
         // ...but may have still been logged out due to receiveMessage
 
-        if (agentWasLoggedOut) {
-            Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
-            currentState = ModelStateEnum.UNREGISTERED;
-        } else {
+        if (!checkForAutoLogout(driver)) {
             Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmessage"));
             final String notificationText = driver.findElement(By.id("notif")).getText();
             Assert.assertTrue(notificationText.equals("Message not sent since it is longer than 140 characters."));
@@ -251,10 +255,7 @@ public class AssignmentModel implements FsmModel {
         // note: agent not logged out since no message was sent
         // ...but may have still been logged out due to receiveMessage
 
-        if (agentWasLoggedOut) {
-            Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
-            currentState = ModelStateEnum.UNREGISTERED;
-        } else {
+        if (!checkForAutoLogout(driver)) {
             Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmessage"));
             final String notificationText = driver.findElement(By.id("notif")).getText();
             Assert.assertTrue(notificationText.equals("Message not sent since the target agent does not exist."));
@@ -270,10 +271,7 @@ public class AssignmentModel implements FsmModel {
     public void gotoReadMessagePage() {
         driver.findElement(By.id("consumeMessage")).click();
 
-        if (agentWasLoggedOut) {
-            Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
-            currentState = ModelStateEnum.UNREGISTERED;
-        } else {
+        if (!checkForAutoLogout(driver)) {
             Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/readmessage"));
             currentState = ModelStateEnum.READING_MESSAGE;
         }
@@ -287,10 +285,7 @@ public class AssignmentModel implements FsmModel {
     public void consumeAnotherMessage() {
         driver.findElement(By.id("consume")).click();
 
-        if (agentWasLoggedOut) {
-            Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
-            currentState = ModelStateEnum.UNREGISTERED;
-        } else {
+        if (!checkForAutoLogout(driver)) {
             Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/readmessage"));
             currentState = ModelStateEnum.READING_MESSAGE;
         }
@@ -325,10 +320,7 @@ public class AssignmentModel implements FsmModel {
     public void goBack() {
         driver.findElement(By.id("backToMailbox")).click();
 
-        if (agentWasLoggedOut) {
-            Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
-            currentState = ModelStateEnum.UNREGISTERED;
-        } else {
+        if (!checkForAutoLogout(driver)) {
             Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/loggedin"));
             currentState = ModelStateEnum.LOGGED_IN;
         }
