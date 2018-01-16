@@ -6,7 +6,6 @@ import nz.ac.waikato.modeljunit.coverage.StateCoverage;
 import nz.ac.waikato.modeljunit.coverage.TransitionCoverage;
 import nz.ac.waikato.modeljunit.coverage.TransitionPairCoverage;
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -19,7 +18,7 @@ import java.time.Instant;
 import java.util.Random;
 
 
-public class AssignmentModel implements FsmModel {
+public class AssignmentModel_old implements FsmModel {
 
     private static final String baseUrl = "localhost:" + webapp.StartJettyHandler.PORT_NUMBER;
     private WebDriver driver = new ChromeDriver();
@@ -30,13 +29,11 @@ public class AssignmentModel implements FsmModel {
     private final int MAX_MESSAGES_SENT = 25;
     private final int MAX_MESSAGE_RECEIVED = 25;
 
-    private String agentID = null;
+    private String agentID = Utils.getNRandomCharacters(5);
     private String loginKey = null;
-    private int sessionMessagesSent = 0;
-    private int sessionMessagesRecv = 0;
-    private int messagesRecv = 0;
-
-    private long uniqueness = 0;
+    private int sessionMessagesSent = 0; // Session messages sent
+    private int sessionMessagesRecv = 0; // Session messages Received
+    private int messagesRecv = 0; // message received
 
     /**
      * Registers the agent. No checks are done if this was successful
@@ -46,8 +43,6 @@ public class AssignmentModel implements FsmModel {
      */
     private static void registerAgentHelper(WebDriver driver, String agentId) {
         driver.get(baseUrl + "/register");
-        Assume.assumeTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
-
         driver.findElement(By.id("idInput")).click();
         driver.findElement(By.id("idInput")).sendKeys(agentId);
         driver.findElement(By.id("submit")).click();
@@ -60,8 +55,6 @@ public class AssignmentModel implements FsmModel {
      * @param loginKey the loginKey to use
      */
     private static void loginAgentHelper(WebDriver driver, String loginKey) {
-        Assume.assumeTrue(driver.getCurrentUrl().endsWith(baseUrl + "/login"));
-
         driver.findElement(By.id("lKeyInput")).click();
         driver.findElement(By.id("lKeyInput")).sendKeys(loginKey);
         driver.findElement(By.id("submit")).click();
@@ -75,8 +68,6 @@ public class AssignmentModel implements FsmModel {
      * @param message       the message to send
      */
     private static void sendMessageHelper(WebDriver driver, String targetAgentId, String message) {
-        Assume.assumeTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmessage"));
-
         driver.findElement(By.id("destination")).click();
         driver.findElement(By.id("destination")).sendKeys(targetAgentId);
         driver.findElement(By.id("messageBody")).click();
@@ -98,8 +89,7 @@ public class AssignmentModel implements FsmModel {
 
     @Action
     public void spyRegister() {
-        final String tempAgentId = "spy-" + Utils.getNRandomCharacters(5);
-        registerAgentHelper(driver, tempAgentId);
+        registerAgentHelper(driver, "spy-" + Utils.getNRandomCharacters(5));
 
         Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
         currentState = ModelStateEnum.UNREGISTERED;
@@ -147,23 +137,12 @@ public class AssignmentModel implements FsmModel {
 
     @Action
     public void sendNormalMessage() {
-        System.out.println("1 MESSAGE VALUES: " + sessionMessagesSent + " " + sessionMessagesRecv + " " + messagesRecv);
         sendMessageHelper(driver, agentID, "Hello World");
+        Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmessage"));
         sessionMessagesSent++;
         sessionMessagesRecv++;
         messagesRecv++;
-
-        if (sessionMessagesSent <= MAX_MESSAGES_SENT) {
-            Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmessage"));
-            final String notificationText = driver.findElement(By.id("notif")).getText();
-            Assert.assertTrue(notificationText.equals("Message sent successfully."));
-            currentState = ModelStateEnum.SENDING_MESSAGE;
-        } else {
-            Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
-            sessionMessagesSent = 0;
-            sessionMessagesRecv = 0;
-            currentState = ModelStateEnum.UNREGISTERED;
-        }
+        currentState = ModelStateEnum.SENDING_MESSAGE;
     }
 
     public boolean sendNormalMessageGuard() {
@@ -186,23 +165,15 @@ public class AssignmentModel implements FsmModel {
 
     @Action
     public void sendMessageWithBlockedWords() {
-        System.out.println("2 MESSAGE VALUES: " + sessionMessagesSent + " " + sessionMessagesRecv + " " + messagesRecv);
         sendMessageHelper(driver, agentID, "Get the nuclEAR REcipe with GinGer");
+        Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmessage"));
+
+        final String notificationText = driver.findElement(By.id("notif")).getText();
+        Assert.assertTrue(notificationText.equals("Message sent successfully."));
         sessionMessagesSent++;
         sessionMessagesRecv++;
         messagesRecv++;
-
-        if (sessionMessagesSent <= MAX_MESSAGES_SENT) {
-            Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmessage"));
-            final String notificationText = driver.findElement(By.id("notif")).getText();
-            Assert.assertTrue(notificationText.equals("Message sent successfully."));
-            currentState = ModelStateEnum.SENDING_MESSAGE;
-        } else {
-            Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
-            sessionMessagesSent = 0;
-            sessionMessagesRecv = 0;
-            currentState = ModelStateEnum.UNREGISTERED;
-        }
+        currentState = ModelStateEnum.SENDING_MESSAGE;
     }
 
     public boolean sendMessageWithBlockedWordsGuard() {
@@ -280,6 +251,67 @@ public class AssignmentModel implements FsmModel {
                 || currentState == ModelStateEnum.HAS_READ_MESSAGE;
     }
 
+    @Action
+    public void logout() {
+        driver.findElement(By.id("logout")).click();
+        Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
+        currentState = ModelStateEnum.UNREGISTERED;
+    }
+
+    public boolean logoutGuard() {
+        return currentState == ModelStateEnum.LOGGED_IN;
+    }
+
+    @Action
+    public void autoLogoutOnReceivingMaxMessages() {
+        final WebDriver driver2 = new ChromeDriver();
+        final String AGENT_2_ID = "agent2ID-" + Utils.getNRandomCharacters(10);
+        registerAgentHelper(driver2, AGENT_2_ID);
+        final String LOGIN_KEY = driver2.findElement(By.id("lKey")).getText();
+        loginAgentHelper(driver2, LOGIN_KEY);
+        driver2.findElement(By.id("sendMessage")).click();
+
+        for (; sessionMessagesRecv <= MAX_MESSAGE_RECEIVED; sessionMessagesRecv++, messagesRecv++) {
+            sendMessageHelper(driver2, agentID, "Message " + sessionMessagesRecv);
+        }
+
+        driver2.quit();
+
+        driver.get(baseUrl + "/loggedin");
+        Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
+        Assert.assertEquals("You were logged out of the system.", driver.findElement(By.id("notif")).getText());
+        
+        currentState = ModelStateEnum.UNREGISTERED;
+    }
+
+    public boolean autoLogoutOnReceivingMaxMessagesGuard() {
+        return currentState == ModelStateEnum.LOGGED_IN ||
+                currentState == ModelStateEnum.SENDING_MESSAGE ||
+                currentState == ModelStateEnum.HAS_READ_MESSAGE;
+    }
+
+    @Action
+    public void autoLogoutOnSendingMaxMessages() {
+        final WebDriver driver2 = new ChromeDriver();
+        final String AGENT_2_ID = "agent2ID";
+        registerAgentHelper(driver2, AGENT_2_ID);
+        driver2.quit();
+
+        for (; sessionMessagesSent <= MAX_MESSAGES_SENT + 1; sessionMessagesSent++) {
+            sendMessageHelper(driver, AGENT_2_ID, "Message " + sessionMessagesSent);
+        }
+
+        Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
+        Assert.assertEquals("You were logged out of the system.", driver.findElement(By.id("notif")).getText());
+
+        currentState = ModelStateEnum.UNREGISTERED;
+    }
+
+    public boolean autoLogoutOnSendingMaxMessagesGuard() {
+        return currentState == ModelStateEnum.SENDING_MESSAGE;
+    }
+
+
     @Override
     public Object getState() {
         return currentState;
@@ -288,11 +320,10 @@ public class AssignmentModel implements FsmModel {
     @Override
     public void reset(boolean driverReset) {
         currentState = ModelStateEnum.UNREGISTERED;
-        agentID = (uniqueness++) + "_" + Utils.getNRandomCharacters(5);
+        agentID = Utils.getNRandomCharacters(5);
         loginKey = null;
         sessionMessagesSent = 0;
         sessionMessagesRecv = 0;
-        messagesRecv = 0;
 
         if (driverReset) {
             driver.quit();
@@ -320,7 +351,7 @@ public class AssignmentModel implements FsmModel {
             tester.generate();
         }
         tester.printCoverage();
-
+        
         try {
             gl.printGraphDot("graph.dot");
         } catch (FileNotFoundException e) {
