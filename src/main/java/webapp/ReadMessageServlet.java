@@ -36,7 +36,7 @@ class ReadMessageServlet extends HttpServlet {
             final String id = idCookie.getValue();
             final String sessionKey = skCookie.getValue();
 
-            if (messagingSystem.agentHasMessages(sessionKey, id)) {
+            if (messagingSystem.agentHasMessages(id)) {
                 final Message message = messagingSystem.getNextMessage(sessionKey, id);
                 response.getWriter().println("" +
                         "<h1>Latest Message</h1>" +
