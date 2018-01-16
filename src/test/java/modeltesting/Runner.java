@@ -17,7 +17,7 @@ import java.util.Random;
 
 public class Runner {
 
-    private static final Duration TEST_DURATION = Duration.ofSeconds(15);
+    private static final Duration TEST_DURATION = Duration.ofMinutes(15);
 
     @Test
     public void main() {
