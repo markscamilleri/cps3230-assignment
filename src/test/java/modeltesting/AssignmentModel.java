@@ -81,7 +81,6 @@ public class AssignmentModel implements FsmModel {
 
     @Action
     public void normalRegister() {
-        agentID = Utils.getNRandomCharacters(5);
         registerAgentHelper(driver, agentID);
 
         Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/login"));
@@ -94,8 +93,7 @@ public class AssignmentModel implements FsmModel {
 
     @Action
     public void spyRegister() {
-        agentID = "spy-" + Utils.getNRandomCharacters(5);
-        registerAgentHelper(driver, agentID);
+        registerAgentHelper(driver, "spy-" + Utils.getNRandomCharacters(5));
 
         Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
         currentState = ModelStateEnum.UNREGISTERED;
