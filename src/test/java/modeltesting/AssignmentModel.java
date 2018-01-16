@@ -273,7 +273,7 @@ public class AssignmentModel implements FsmModel {
         loginAgentHelper(driver2, LOGIN_KEY);
         driver2.findElement(By.id("sendMessage")).click();
 
-        for (messagesRecv; messagesRecv <= MAX_MESSAGE_RECEIVED; messagesRecv++) {
+        for (; messagesRecv <= MAX_MESSAGE_RECEIVED; messagesRecv++) {
             sendMessageHelper(driver2, agentID, "Message " + messagesRecv);
         }
 
