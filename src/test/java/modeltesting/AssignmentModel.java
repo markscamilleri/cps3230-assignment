@@ -29,7 +29,7 @@ public class AssignmentModel implements FsmModel {
     private final Duration TEST_DURATION = Duration.ofMinutes(15);
 
     private final int MAX_MESSAGES_SENT = 25;
-    private final int MAX_MESSAGE_RECEIVED = 4;
+    private final int MAX_MESSAGE_RECEIVED = 25;
 
     private String agentID;
     private String loginKey;
@@ -38,7 +38,7 @@ public class AssignmentModel implements FsmModel {
     private int messagesInMailbox;
 
     private boolean agentRegisteredInSystem;
-    private boolean agentWasLoggedOut;
+    private boolean agentWasAutoLoggedOut;
 
     private long uniqueness = 0;
 
@@ -88,19 +88,20 @@ public class AssignmentModel implements FsmModel {
         driver.findElement(By.id("submit")).click();
     }
 
-    private boolean checkForAutoLogout(WebDriver driver) {
-        if (agentWasLoggedOut) {
-            Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
-            currentState = ModelStateEnum.UNREGISTERED;
+    private boolean agentWasNotAutoLoggedOut(WebDriver driver) {
+        if (!agentWasAutoLoggedOut) {
             return true;
         } else {
+            Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
+            currentState = ModelStateEnum.UNREGISTERED;
             return false;
         }
     }
 
     @Action
     public void normalRegister() {
-        agentWasLoggedOut = false;
+        agentWasAutoLoggedOut = false;
+
         registerAgentHelper(driver, agentID);
 
         Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/login"));
@@ -126,7 +127,8 @@ public class AssignmentModel implements FsmModel {
 
     @Action
     public void validLoginKeyLogin() {
-        agentWasLoggedOut = false;
+        agentWasAutoLoggedOut = false;
+
         loginKey = driver.findElement(By.id("lKey")).getText();
         loginAgentHelper(driver, loginKey);
 
@@ -157,7 +159,7 @@ public class AssignmentModel implements FsmModel {
     public void gotoSendMessagePage() {
         driver.findElement(By.id("sendMessage")).click();
 
-        if (!checkForAutoLogout(driver)) {
+        if (agentWasNotAutoLoggedOut(driver)) {
             Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmessage"));
             currentState = ModelStateEnum.SENDING_MESSAGE;
         }
@@ -169,16 +171,15 @@ public class AssignmentModel implements FsmModel {
 
     @Action
     public void sendNormalMessage() {
-        System.out.println("1.1 " + sessionMessagesSent + " " + sessionMessagesRecv + " " + messagesInMailbox);
         sendMessageHelper(driver, agentID, "Msg");
 
         if (sessionMessagesRecv >= MAX_MESSAGE_RECEIVED) {
             sessionMessagesSent = 0;
             sessionMessagesRecv = 0;
-            agentWasLoggedOut = true;
+            agentWasAutoLoggedOut = true;
         }
 
-        if (sessionMessagesSent >= MAX_MESSAGES_SENT || agentWasLoggedOut) {
+        if (sessionMessagesSent >= MAX_MESSAGES_SENT || agentWasAutoLoggedOut) {
             Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
             currentState = ModelStateEnum.UNREGISTERED;
         } else {
@@ -190,7 +191,6 @@ public class AssignmentModel implements FsmModel {
             messagesInMailbox++;
             currentState = ModelStateEnum.SENDING_MESSAGE;
         }
-        System.out.println("1.2 " + sessionMessagesSent + " " + sessionMessagesRecv + " " + messagesInMailbox);
     }
 
     public boolean sendNormalMessageGuard() {
@@ -204,7 +204,7 @@ public class AssignmentModel implements FsmModel {
         // note: agent not logged out since no message was sent
         // ...but may have still been logged out due to receiveMessage
 
-        if (!checkForAutoLogout(driver)) {
+        if (agentWasNotAutoLoggedOut(driver)) {
             Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmessage"));
             final String notificationText = driver.findElement(By.id("notif")).getText();
             Assert.assertTrue(notificationText.equals("Message not sent since it is longer than 140 characters."));
@@ -218,16 +218,15 @@ public class AssignmentModel implements FsmModel {
 
     @Action
     public void sendMessageWithBlockedWords() {
-        System.out.println("2.1 " + sessionMessagesSent + " " + sessionMessagesRecv + " " + messagesInMailbox);
         sendMessageHelper(driver, agentID, "Get the nuclEAR REcipe with GinGer");
 
         if (sessionMessagesRecv >= MAX_MESSAGE_RECEIVED) {
             sessionMessagesSent = 0;
             sessionMessagesRecv = 0;
-            agentWasLoggedOut = true;
+            agentWasAutoLoggedOut = true;
         }
 
-        if (sessionMessagesSent >= MAX_MESSAGES_SENT || agentWasLoggedOut) {
+        if (sessionMessagesSent >= MAX_MESSAGES_SENT || agentWasAutoLoggedOut) {
             Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
             currentState = ModelStateEnum.UNREGISTERED;
         } else {
@@ -239,7 +238,6 @@ public class AssignmentModel implements FsmModel {
             messagesInMailbox++;
             currentState = ModelStateEnum.SENDING_MESSAGE;
         }
-        System.out.println("2.2 " + sessionMessagesSent + " " + sessionMessagesRecv + " " + messagesInMailbox);
     }
 
     public boolean sendMessageWithBlockedWordsGuard() {
@@ -255,7 +253,7 @@ public class AssignmentModel implements FsmModel {
         // note: agent not logged out since no message was sent
         // ...but may have still been logged out due to receiveMessage
 
-        if (!checkForAutoLogout(driver)) {
+        if (agentWasNotAutoLoggedOut(driver)) {
             Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmessage"));
             final String notificationText = driver.findElement(By.id("notif")).getText();
             Assert.assertTrue(notificationText.equals("Message not sent since the target agent does not exist."));
@@ -271,7 +269,7 @@ public class AssignmentModel implements FsmModel {
     public void gotoReadMessagePage() {
         driver.findElement(By.id("consumeMessage")).click();
 
-        if (!checkForAutoLogout(driver)) {
+        if (agentWasNotAutoLoggedOut(driver)) {
             Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/readmessage"));
             currentState = ModelStateEnum.READING_MESSAGE;
         }
@@ -285,7 +283,7 @@ public class AssignmentModel implements FsmModel {
     public void consumeAnotherMessage() {
         driver.findElement(By.id("consume")).click();
 
-        if (!checkForAutoLogout(driver)) {
+        if (agentWasNotAutoLoggedOut(driver)) {
             Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/readmessage"));
             currentState = ModelStateEnum.READING_MESSAGE;
         }
@@ -297,8 +295,8 @@ public class AssignmentModel implements FsmModel {
 
     @Action
     public void consumeMessage() {
-        System.out.println("4.1 " + sessionMessagesSent + " " + sessionMessagesRecv + " " + messagesInMailbox);
         Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/readmessage"));
+
         if (messagesInMailbox == 0) {
             Assert.assertEquals("You have no new messages.", driver.findElement(By.id("messageContainer")).getText());
             Assert.assertEquals("Try again", driver.findElement(By.id("consume")).getText());
@@ -307,8 +305,6 @@ public class AssignmentModel implements FsmModel {
             Assert.assertEquals("Consume another message", driver.findElement(By.id("consume")).getText());
             messagesInMailbox--;
         }
-        System.out.println("4.2 " + sessionMessagesSent + " " + sessionMessagesRecv + " " + messagesInMailbox);
-
         currentState = ModelStateEnum.HAS_READ_MESSAGE;
     }
 
@@ -320,7 +316,7 @@ public class AssignmentModel implements FsmModel {
     public void goBack() {
         driver.findElement(By.id("backToMailbox")).click();
 
-        if (!checkForAutoLogout(driver)) {
+        if (agentWasNotAutoLoggedOut(driver)) {
             Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/loggedin"));
             currentState = ModelStateEnum.LOGGED_IN;
         }
@@ -346,18 +342,17 @@ public class AssignmentModel implements FsmModel {
 
     @Action
     public void receiveMessage() throws InterruptedException {
-        System.out.println("3.1 " + sessionMessagesSent + " " + sessionMessagesRecv + " " + messagesInMailbox);
-        // "AGENT_2" prefix so that it doesn't clash with primary agent's id
+        // Sender registers ("AGENT_2" prefix for no clashes)
         final String AGENT_2 = "AGENT_2_" + Utils.getNRandomCharacters(5);
         registerAgentHelper(driver2, AGENT_2);
 
-        Assume.assumeTrue(driver2.getCurrentUrl().endsWith(baseUrl + "/login"));
+        // Sender logs in
         final String tempLoginKey = driver2.findElement(By.id("lKey")).getText();
         loginAgentHelper(driver2, tempLoginKey);
 
+        // Sender sends the message
         Assume.assumeTrue(driver2.getCurrentUrl().endsWith(baseUrl + "/loggedin"));
         driver2.findElement(By.id("sendMessage")).click();
-
         Assume.assumeTrue(driver2.getCurrentUrl().endsWith(baseUrl + "/sendmessage"));
         sendMessageHelper(driver2, agentID, "Msg " + sessionMessagesRecv);
 
@@ -370,12 +365,9 @@ public class AssignmentModel implements FsmModel {
             Assert.assertTrue(notificationText.equals("Message not sent since target agent's quota exceeded."));
             sessionMessagesSent = 0;
             sessionMessagesRecv = 0;
-            agentWasLoggedOut = true;
-            // current state does not change
+            agentWasAutoLoggedOut = true;
         }
-
         // current state does not change
-        System.out.println("3.2 " + sessionMessagesSent + " " + sessionMessagesRecv + " " + messagesInMailbox);
     }
 
     public boolean receiveMessageGuard() {
@@ -396,7 +388,7 @@ public class AssignmentModel implements FsmModel {
         sessionMessagesRecv = 0;
         messagesInMailbox = 0;
         agentRegisteredInSystem = false;
-        agentWasLoggedOut = false;
+        agentWasAutoLoggedOut = false;
 
         if (driverReset) {
             if (driver != null) driver.quit();
