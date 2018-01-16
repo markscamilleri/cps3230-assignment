@@ -34,8 +34,7 @@ class SendMessageServlet extends HttpServlet {
         } else if (!messagingSystem.agentLoggedIn(idCookie.getValue())) {
             Utils.deleteCookie(idCookie, response);
             Utils.deleteCookie(skCookie, response);
-            response.addCookie(new Cookie(CookieNames.LOGGED_OUT_STATUS.name(),
-                    "You_were_logged_out_of_the_system."));
+            response.addCookie(new Cookie(CookieNames.LOGGED_OUT_STATUS.name(), "You_were_logged_out_of_the_system."));
             response.sendRedirect("/register");
         } else {
             String sendingMessageStatusText = "";

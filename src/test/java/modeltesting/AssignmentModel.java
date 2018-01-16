@@ -24,7 +24,7 @@ public class AssignmentModel implements FsmModel {
 
     private ModelStateEnum currentState = ModelStateEnum.UNREGISTERED;
     private final Duration TEST_DURATION = Duration.ofMinutes(15);
-    
+
     private final int MAX_MESSAGES_SENT = 25;
     private final int MAX_MESSAGE_RECEIVED = 25;
 
@@ -32,7 +32,7 @@ public class AssignmentModel implements FsmModel {
     private String loginKey = null;
     private int messagesSent = 0; // messages sent
     private int messagesRecv = 0; // message received
-    
+
     /**
      * Registers the agent. No checks are done if this was successful
      *
@@ -72,9 +72,9 @@ public class AssignmentModel implements FsmModel {
         driver.findElement(By.id("messageBody")).sendKeys(message);
         driver.findElement(By.id("submit")).click();
     }
-    
-    private static void createAgent2Helper(WebDriver driver){
-    
+
+    private static void createAgent2Helper(WebDriver driver) {
+
     }
 
     @Action
@@ -263,7 +263,7 @@ public class AssignmentModel implements FsmModel {
     public boolean logoutGuard() {
         return currentState == ModelStateEnum.LOGGED_IN;
     }
-    
+
     @Action
     public void autoLogoutOnReceivingMaxMessages() {
         final WebDriver driver2 = new ChromeDriver();
@@ -272,51 +272,51 @@ public class AssignmentModel implements FsmModel {
         final String LOGIN_KEY = driver2.findElement(By.id("lKey")).getText();
         loginAgentHelper(driver2, LOGIN_KEY);
         driver2.findElement(By.id("sendMessage")).click();
-        
+
         for (int i = messagesRecv; i <= MAX_MESSAGE_RECEIVED; i++) {
-            sendMessageHelper(driver2, agentID,"Message " + i);
+            sendMessageHelper(driver2, agentID, "Message " + i);
         }
-        
+
         driver2.quit();
-        
+
         driver.get(baseUrl + "/loggedin");
         Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
-        Assert.assertEquals("You were logged out of the system",driver.findElement(By.id("notif")).getText());
-        
+        final String str = driver.findElement(By.id("notif")).getText();
+        Assert.assertEquals("You were logged out of the system", str);
+
         currentState = ModelStateEnum.UNREGISTERED;
     }
-    
-    public boolean autoLogoutOnReceivingMaxMessagesGuard(){
+
+    public boolean autoLogoutOnReceivingMaxMessagesGuard() {
         return currentState == ModelStateEnum.LOGGED_IN ||
-                       currentState == ModelStateEnum.SENDING_MESSAGE ||
-                       currentState == ModelStateEnum.READING_MESSAGE ||
-                       currentState == ModelStateEnum.HAS_READ_MESSAGE;
+                currentState == ModelStateEnum.SENDING_MESSAGE ||
+                currentState == ModelStateEnum.READING_MESSAGE ||
+                currentState == ModelStateEnum.HAS_READ_MESSAGE;
     }
-    
+
     @Action
     public void autoLogoutOnSendingMaxMessages() {
         final WebDriver driver2 = new ChromeDriver();
         final String AGENT_2_ID = "agent2ID";
         registerAgentHelper(driver2, AGENT_2_ID);
         driver2.quit();
-    
-        
+
         for (int i = messagesSent; i <= MAX_MESSAGES_SENT; i++) {
-            sendMessageHelper(driver, AGENT_2_ID,"Message " + i);
+            sendMessageHelper(driver, AGENT_2_ID, "Message " + i);
         }
-        
+
         driver.get(baseUrl + "/loggedin");
         Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
-        Assert.assertEquals("You were logged out of the system",driver.findElement(By.id("notif")).getText());
-        
+        Assert.assertEquals("You were logged out of the system", driver.findElement(By.id("notif")).getText());
+
         currentState = ModelStateEnum.UNREGISTERED;
     }
-    
-    public boolean autoLogoutOnSendingMaxMessagesGuard(){
+
+    public boolean autoLogoutOnSendingMaxMessagesGuard() {
         return currentState == ModelStateEnum.SENDING_MESSAGE;
     }
-    
-    
+
+
     @Override
     public Object getState() {
         return currentState;
