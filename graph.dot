@@ -1,0 +1,22 @@
+digraph AssignmentModel
+{
+  UNREGISTERED -> REGISTERED  [label="normalRegister"];
+  REGISTERED -> REGISTERED  [label="invalidLoginKeyLogin"];
+  REGISTERED -> LOGGED_IN  [label="validLoginKeyLogin"];
+  LOGGED_IN -> READING_MESSAGE  [label="gotoReadMessagePage"];
+  READING_MESSAGE -> HAS_READ_MESSAGE  [label="consumeMessage"];
+  HAS_READ_MESSAGE -> READING_MESSAGE  [label="consumeAnotherMessage"];
+  HAS_READ_MESSAGE -> LOGGED_IN  [label="goBack"];
+  LOGGED_IN -> SENDING_MESSAGE  [label="gotoSendMessagePage"];
+  SENDING_MESSAGE -> SENDING_MESSAGE  [label="sendLongMessage"];
+  SENDING_MESSAGE -> SENDING_MESSAGE  [label="sendNormalMessage"];
+  SENDING_MESSAGE -> SENDING_MESSAGE  [label="sendMessageWithBlockedWords"];
+  SENDING_MESSAGE -> LOGGED_IN  [label="goBack"];
+  LOGGED_IN -> UNREGISTERED  [label="logout"];
+  UNREGISTERED -> UNREGISTERED  [label="spyRegister"];
+  LOGGED_IN -> UNREGISTERED  [label="autoLogoutOnReceivingMaxMessages"];
+  SENDING_MESSAGE -> UNREGISTERED  [label="autoLogoutOnSendingMaxMessages"];
+  SENDING_MESSAGE -> SENDING_MESSAGE  [label="sendMessageWithNonExistentTarget"];
+  SENDING_MESSAGE -> UNREGISTERED  [label="autoLogoutOnReceivingMaxMessages"];
+  HAS_READ_MESSAGE -> UNREGISTERED  [label="autoLogoutOnReceivingMaxMessages"];
+}
