@@ -29,7 +29,6 @@ public class Runner {
         final SystemModel model = new SystemModel();
         final Tester tester = new GreedyTester(model);
         tester.setRandom(new Random());
-
         final GraphListener gl = tester.buildGraph();
         tester.addListener(new StopOnFailureListener());
         tester.addCoverageMetric(new TransitionCoverage());
