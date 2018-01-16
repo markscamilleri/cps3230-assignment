@@ -87,6 +87,8 @@ public class AssignmentModel implements FsmModel {
     @Action
     public void normalRegister() {
         registerAgentHelper(driver, agentID);
+        sessionMessagesSent = 0;
+        sessionMessagesRecv = 0;
 
         Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/login"));
         currentState = ModelStateEnum.REGISTERED;
@@ -114,7 +116,7 @@ public class AssignmentModel implements FsmModel {
         loginKey = driver.findElement(By.id("lKey")).getText();
         loginAgentHelper(driver, loginKey);
 
-        Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/loggedin"));
+        Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/loggedin")); // todo THIS FAILED (expired key??)
         currentState = ModelStateEnum.LOGGED_IN;
     }
 
@@ -160,8 +162,6 @@ public class AssignmentModel implements FsmModel {
             currentState = ModelStateEnum.SENDING_MESSAGE;
         } else {
             Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
-            sessionMessagesSent = 0;
-            sessionMessagesRecv = 0;
             currentState = ModelStateEnum.UNREGISTERED;
         }
     }
@@ -199,8 +199,6 @@ public class AssignmentModel implements FsmModel {
             currentState = ModelStateEnum.SENDING_MESSAGE;
         } else {
             Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
-            sessionMessagesSent = 0;
-            sessionMessagesRecv = 0;
             currentState = ModelStateEnum.UNREGISTERED;
         }
     }
@@ -278,6 +276,17 @@ public class AssignmentModel implements FsmModel {
     public boolean goBackGuard() {
         return currentState == ModelStateEnum.SENDING_MESSAGE
                 || currentState == ModelStateEnum.HAS_READ_MESSAGE;
+    }
+
+    @Action
+    public void manualLogout() {
+        driver.findElement(By.id("logout")).click();
+        Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
+        currentState = ModelStateEnum.UNREGISTERED;
+    }
+
+    public boolean manualLogoutGuard() {
+        return currentState == ModelStateEnum.LOGGED_IN;
     }
 
     @Override
