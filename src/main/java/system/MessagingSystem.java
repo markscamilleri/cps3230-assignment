@@ -170,7 +170,7 @@ public class MessagingSystem {
     /**
      * @return true if the agent has messages
      */
-    public boolean agentHasMessages(String sessionKey, String agentId) {
+    public boolean agentHasMessages(String agentId) {
 
         final AgentInfo agentInfo = agentInfos.get(agentId);
         return agentInfo != null && agentInfo.mailbox.hasMessages();
