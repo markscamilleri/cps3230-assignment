@@ -209,8 +209,8 @@ public class AssignmentModel implements FsmModel {
 
     @Action
     public void sendMessageWithNonExistentTarget() {
-        // 6 characters to not clash with test agent of 5 characters
-        final String AGENT_2 = Utils.getNRandomCharacters(6);
+        // "AGENT_2" prefix so that it doesn't clash with primary agent's id
+        final String AGENT_2 = "AGENT_2_" + Utils.getNRandomCharacters(5);
 
         sendMessageHelper(driver, AGENT_2, "Hello World");
         Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmessage"));
