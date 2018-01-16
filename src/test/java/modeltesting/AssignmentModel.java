@@ -288,9 +288,6 @@ public class AssignmentModel implements FsmModel {
         loginAgentHelper(driver2, LOGIN_KEY);
         driver2.findElement(By.id("sendMessage")).click();
         for (; min(sessionMessagesRecv, messagesRecv) < MAX_MESSAGE_RECEIVED; sessionMessagesRecv++, messagesRecv++) {
-            System.out.println("in loop");
-            System.out.println(sessionMessagesRecv);
-            System.out.println(messagesRecv);
             sendMessageHelper(driver2, agentID, "Message " + sessionMessagesRecv);
         }
     
@@ -300,13 +297,13 @@ public class AssignmentModel implements FsmModel {
         loginAgentHelper(driver2, LOGIN_KEY);
         driver2.findElement(By.id("sendMessage")).click();
         for (; min(sessionMessagesRecv, messagesRecv) <= MAX_MESSAGE_RECEIVED + 2; sessionMessagesRecv++, messagesRecv++) {
+            System.out.println(messagesRecv);
+            System.out.println(sessionMessagesRecv);
             sendMessageHelper(driver2, agentID, "Message " + sessionMessagesRecv);
         }
         driver2.quit();
         
         driver.get(baseUrl + "/loggedin");
-        System.out.println(messagesRecv);
-        System.out.println(sessionMessagesRecv);
         Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
         Assert.assertEquals("You were logged out of the system.", driver.findElement(By.id("notif")).getText());
         
