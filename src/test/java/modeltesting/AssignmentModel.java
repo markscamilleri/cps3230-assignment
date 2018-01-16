@@ -27,7 +27,7 @@ public class AssignmentModel implements FsmModel {
 
     private String agentID = null;
     private String loginKey = null;
-    private int agentMessages = 0;
+    private int messagesSentRecv = 0; // messages sent/received
 
     /**
      * Registers the agent. No checks are done if this was successful
@@ -135,7 +135,7 @@ public class AssignmentModel implements FsmModel {
     public void sendNormalMessage() {
         sendMessageHelper(driver, agentID, "Hello World");
         Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmessage"));
-        agentMessages++;
+        messagesSentRecv++;
         currentState = ModelStateEnum.SENDING_MESSAGE;
     }
 
@@ -150,7 +150,7 @@ public class AssignmentModel implements FsmModel {
 
         final String notificationText = driver.findElement(By.id("notif")).getText();
         Assert.assertTrue(notificationText.equals("Message not sent since it is longer than 140 characters."));
-        // assertion exception, we don't know where this came from
+        // assertion exception, we don't know where this came from !!!!!!!!!!!!!!
         currentState = ModelStateEnum.SENDING_MESSAGE;
     }
 
@@ -165,7 +165,7 @@ public class AssignmentModel implements FsmModel {
 
         final String notificationText = driver.findElement(By.id("notif")).getText();
         Assert.assertTrue(notificationText.equals("Message sent successfully."));
-        agentMessages++;
+        messagesSentRecv++;
         currentState = ModelStateEnum.SENDING_MESSAGE;
     }
 
@@ -216,13 +216,13 @@ public class AssignmentModel implements FsmModel {
     @Action
     public void consumeMessage() {
         Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/readmessage"));
-        if (agentMessages == 0) {
+        if (messagesSentRecv == 0) {
             Assert.assertEquals("You have no new messages.", driver.findElement(By.id("messageContainer")).getText());
             Assert.assertEquals("Try again", driver.findElement(By.id("consume")).getText());
         } else {
             Assert.assertNotEquals("You have no new messages.", driver.findElement(By.id("messageContainer")).getText());
             Assert.assertEquals("Consume another message", driver.findElement(By.id("consume")).getText());
-            agentMessages--;
+            messagesSentRecv--;
         }
 
         currentState = ModelStateEnum.HAS_READ_MESSAGE;
@@ -244,6 +244,17 @@ public class AssignmentModel implements FsmModel {
                 || currentState == ModelStateEnum.HAS_READ_MESSAGE;
     }
 
+    @Action
+    public void logout() {
+        driver.findElement(By.id("logout")).click();
+        Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
+        currentState = ModelStateEnum.UNREGISTERED;
+    }
+
+    public boolean logoutGuard() {
+        return currentState == ModelStateEnum.LOGGED_IN;
+    }
+
     @Override
     public Object getState() {
         return currentState;
@@ -254,7 +265,7 @@ public class AssignmentModel implements FsmModel {
         currentState = ModelStateEnum.UNREGISTERED;
         agentID = null;
         loginKey = null;
-        agentMessages = 0;
+        messagesSentRecv = 0;
 
         if (driverReset) {
             driver.quit();

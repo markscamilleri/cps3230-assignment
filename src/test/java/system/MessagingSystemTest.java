@@ -294,28 +294,28 @@ public class MessagingSystemTest {
 
     @Test
     public void agentHasMessages_falseIfAgentDoesNotExist() {
-        Assert.assertFalse(testSystem.agentHasMessages(VALID_SKEY_1, AID_1));
+        Assert.assertFalse(testSystem.agentHasMessages(AID_1));
     }
 
     @Test
     public void agentHasMessages_falseIfAgentNotLoggedIn() {
         addAgent(agentInfos, 1, AddType.REGISTERED);
 
-        Assert.assertFalse(testSystem.agentHasMessages(VALID_LKEY_1, AID_1));
+        Assert.assertFalse(testSystem.agentHasMessages(AID_1));
     }
 
     @Test
     public void agentHasMessages_falseIfSessionKeyDoesNotMatch() {
         addAgent(agentInfos, 1, AddType.LOGGEDIN);
 
-        Assert.assertFalse(testSystem.agentHasMessages(VALID_SKEY_2, AID_1));
+        Assert.assertFalse(testSystem.agentHasMessages(AID_1));
     }
 
     @Test
     public void agentHasMessages_falseIfAgentDoesNotHaveMessages() {
         addAgent(agentInfos, 1, AddType.LOGGEDIN);
 
-        Assert.assertFalse(testSystem.agentHasMessages(VALID_SKEY_1, AID_1));
+        Assert.assertFalse(testSystem.agentHasMessages(AID_1));
     }
 
     @Test
@@ -323,7 +323,7 @@ public class MessagingSystemTest {
         addAgent(agentInfos, 1, AddType.LOGGEDIN);
         agentInfos.get(AID_1).mailbox.addMessage(new Message(AID_2, AID_1, "msg"));
 
-        Assert.assertTrue(testSystem.agentHasMessages(VALID_SKEY_1, AID_1));
+        Assert.assertTrue(testSystem.agentHasMessages(AID_1));
     }
 
     @Test
@@ -363,6 +363,25 @@ public class MessagingSystemTest {
         agentInfos.get(AID_1).mailbox.addMessage(new Message(AID_2, AID_1, message2));
 
         Assert.assertEquals(message1, testSystem.getNextMessage(VALID_SKEY_1, AID_1).getMessage());
+    }
+
+    @Test
+    public void agentLoggedIn_returnsFalseIfAgentDoesNotExist() {
+        Assert.assertFalse(testSystem.agentLoggedIn(AID_1));
+    }
+
+    @Test
+    public void agentLoggedIn_returnsFalseIfAgentNotLoggedIn() {
+        addAgent(agentInfos, 1, AddType.REGISTERED);
+
+        Assert.assertFalse(testSystem.agentLoggedIn(AID_1));
+    }
+
+    @Test
+    public void agentLoggedIn_returnsTrueIfAgentLoggedIn() {
+        addAgent(agentInfos, 1, AddType.LOGGEDIN);
+
+        Assert.assertTrue(testSystem.agentLoggedIn(AID_1));
     }
 
     private void addAgent(final Map<String, AgentInfo> agentInfos, int agent, AddType type) {

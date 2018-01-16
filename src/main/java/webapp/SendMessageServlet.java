@@ -31,6 +31,10 @@ class SendMessageServlet extends HttpServlet {
 
         if (idCookie == null || skCookie == null) {
             response.sendRedirect("/register");
+        } else if (!messagingSystem.agentLoggedIn(idCookie.getValue())) {
+            Utils.deleteCookie(idCookie, response);
+            Utils.deleteCookie(skCookie, response);
+            response.sendRedirect("/register");
         } else {
             String sendingMessageStatusText = "";
             final Cookie statusCookie = Utils.findCookie(request.getCookies(), CookieNames.MESSAGE_SENDING_STATUS.name());

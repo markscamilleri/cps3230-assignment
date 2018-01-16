@@ -28,11 +28,15 @@ class ReadMessageServlet extends HttpServlet {
 
         if (idCookie == null || skCookie == null) {
             response.sendRedirect("/register");
+        } else if (!messagingSystem.agentLoggedIn(idCookie.getValue())) {
+            Utils.deleteCookie(idCookie, response);
+            Utils.deleteCookie(skCookie, response);
+            response.sendRedirect("/register");
         } else {
             final String id = idCookie.getValue();
             final String sessionKey = skCookie.getValue();
 
-            if (messagingSystem.agentHasMessages(sessionKey, id)) {
+            if (messagingSystem.agentHasMessages(id)) {
                 final Message message = messagingSystem.getNextMessage(sessionKey, id);
                 response.getWriter().println("" +
                         "<h1>Latest Message</h1>" +

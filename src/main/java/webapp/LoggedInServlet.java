@@ -1,5 +1,7 @@
 package webapp;
 
+import system.MessagingSystem;
+
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
@@ -10,6 +12,12 @@ import java.io.IOException;
 @WebServlet("/loggedin")
 class LoggedInServlet extends HttpServlet {
 
+    private final MessagingSystem messagingSystem;
+
+    LoggedInServlet(MessagingSystem messagingSystem) {
+        this.messagingSystem = messagingSystem;
+    }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
@@ -19,6 +27,10 @@ class LoggedInServlet extends HttpServlet {
         final Cookie skCookie = Utils.findCookie(request.getCookies(), CookieNames.SESSION_KEY.name());
 
         if (idCookie == null || skCookie == null) {
+            response.sendRedirect("/register");
+        } else if (!messagingSystem.agentLoggedIn(idCookie.getValue())) {
+            Utils.deleteCookie(idCookie, response);
+            Utils.deleteCookie(skCookie, response);
             response.sendRedirect("/register");
         } else {
             final String id = idCookie.getValue();

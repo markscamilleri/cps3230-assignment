@@ -123,7 +123,7 @@ public class MessagingSystem {
         } else if (targetAgentInfo == null) {
             return TARGET_AGENT_DOES_NOT_EXIST;
 
-        } else if (sourceAgentInfo.sessionKey.isExpired()) {
+        } else if (!agentLoggedIn(sourceAgentId)) {
             return SOURCE_AGENT_NOT_LOGGED_IN;
 
         } else if (!sourceAgentInfo.sessionKey.equals(sessionKey)) {
@@ -168,15 +168,12 @@ public class MessagingSystem {
     }
 
     /**
-     * @return true if the agent is logged in and has messages, false otherwise
+     * @return true if the agent has messages
      */
-    public boolean agentHasMessages(String sessionKey, String agentId) {
+    public boolean agentHasMessages(String agentId) {
 
         final AgentInfo agentInfo = agentInfos.get(agentId);
-        return agentInfo != null
-                && !agentInfo.sessionKey.isExpired()
-                && agentInfo.sessionKey.equals(sessionKey)
-                && agentInfo.mailbox.hasMessages();
+        return agentInfo != null && agentInfo.mailbox.hasMessages();
 
     }
 
@@ -190,11 +187,21 @@ public class MessagingSystem {
 
         final AgentInfo agentInfo = agentInfos.get(agentId);
         if (agentInfo != null
-                && !agentInfo.sessionKey.isExpired()
+                && agentLoggedIn(agentId)
                 && agentInfo.sessionKey.equals(sessionKey)) {
             return agentInfo.mailbox.consumeNextMessage();
         } else {
             return null;
         }
+    }
+
+    /**
+     * @param agentId The agent to check if is logged in
+     * @return true if agent exists and is logged in
+     */
+    public boolean agentLoggedIn(String agentId) {
+
+        final AgentInfo agentInfo = agentInfos.get(agentId);
+        return agentInfo != null && !agentInfo.sessionKey.isExpired();
     }
 }
