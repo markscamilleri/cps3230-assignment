@@ -3,6 +3,7 @@ package modeltesting;
 import nz.ac.waikato.modeljunit.GraphListener;
 import nz.ac.waikato.modeljunit.GreedyTester;
 import nz.ac.waikato.modeljunit.StopOnFailureListener;
+import nz.ac.waikato.modeljunit.Tester;
 import nz.ac.waikato.modeljunit.coverage.ActionCoverage;
 import nz.ac.waikato.modeljunit.coverage.StateCoverage;
 import nz.ac.waikato.modeljunit.coverage.TransitionCoverage;
@@ -26,8 +27,9 @@ public class Runner {
         System.setProperty("webdriver.chrome.driver", "chromedriver");
 
         final SystemModel model = new SystemModel();
-        final nz.ac.waikato.modeljunit.Tester tester = new GreedyTester(model);
+        final Tester tester = new GreedyTester(model);
         tester.setRandom(new Random());
+
         final GraphListener gl = tester.buildGraph();
         tester.addListener(new StopOnFailureListener());
         tester.addCoverageMetric(new TransitionCoverage());
