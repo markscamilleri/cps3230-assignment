@@ -24,11 +24,15 @@ public class AssignmentModel implements FsmModel {
 
     private ModelStateEnum currentState = ModelStateEnum.UNREGISTERED;
     private final Duration TEST_DURATION = Duration.ofMinutes(15);
+    
+    private final int MAX_MESSAGES_SENT = 25;
+    private final int MAX_MESSAGE_RECEIVED = 25;
 
     private String agentID = null;
     private String loginKey = null;
-    private int messagesSentRecv = 0; // messages sent/received
-
+    private int messagesSent = 0; // messages sent
+    private int messagesRecv = 0; // message received
+    
     /**
      * Registers the agent. No checks are done if this was successful
      *
@@ -67,6 +71,10 @@ public class AssignmentModel implements FsmModel {
         driver.findElement(By.id("messageBody")).click();
         driver.findElement(By.id("messageBody")).sendKeys(message);
         driver.findElement(By.id("submit")).click();
+    }
+    
+    private static void createAgent2Helper(WebDriver driver){
+    
     }
 
     @Action
@@ -135,7 +143,8 @@ public class AssignmentModel implements FsmModel {
     public void sendNormalMessage() {
         sendMessageHelper(driver, agentID, "Hello World");
         Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmessage"));
-        messagesSentRecv++;
+        messagesSent++;
+        messagesRecv++;
         currentState = ModelStateEnum.SENDING_MESSAGE;
     }
 
@@ -150,7 +159,6 @@ public class AssignmentModel implements FsmModel {
 
         final String notificationText = driver.findElement(By.id("notif")).getText();
         Assert.assertTrue(notificationText.equals("Message not sent since it is longer than 140 characters."));
-        // assertion exception, we don't know where this came from !!!!!!!!!!!!!!
         currentState = ModelStateEnum.SENDING_MESSAGE;
     }
 
@@ -165,7 +173,8 @@ public class AssignmentModel implements FsmModel {
 
         final String notificationText = driver.findElement(By.id("notif")).getText();
         Assert.assertTrue(notificationText.equals("Message sent successfully."));
-        messagesSentRecv++;
+        messagesSent++;
+        messagesRecv++;
         currentState = ModelStateEnum.SENDING_MESSAGE;
     }
 
@@ -216,13 +225,13 @@ public class AssignmentModel implements FsmModel {
     @Action
     public void consumeMessage() {
         Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/readmessage"));
-        if (messagesSentRecv == 0) {
+        if (messagesRecv == 0) {
             Assert.assertEquals("You have no new messages.", driver.findElement(By.id("messageContainer")).getText());
             Assert.assertEquals("Try again", driver.findElement(By.id("consume")).getText());
         } else {
             Assert.assertNotEquals("You have no new messages.", driver.findElement(By.id("messageContainer")).getText());
             Assert.assertEquals("Consume another message", driver.findElement(By.id("consume")).getText());
-            messagesSentRecv--;
+            messagesRecv--;
         }
 
         currentState = ModelStateEnum.HAS_READ_MESSAGE;
@@ -254,7 +263,60 @@ public class AssignmentModel implements FsmModel {
     public boolean logoutGuard() {
         return currentState == ModelStateEnum.LOGGED_IN;
     }
-
+    
+    @Action
+    public void autoLogoutOnReceivingMaxMessages() {
+        final WebDriver driver2 = new ChromeDriver();
+        final String AGENT_2_ID = "agent2ID";
+        registerAgentHelper(driver2, AGENT_2_ID);
+        final String LOGIN_KEY = driver2.findElement(By.id("lKey")).getText();
+        loginAgentHelper(driver2, LOGIN_KEY);
+        driver2.findElement(By.id("sendMessage")).click();
+        
+        for (int i = messagesRecv; i <= MAX_MESSAGE_RECEIVED; i++) {
+            sendMessageHelper(driver2, agentID,"Message " + i);
+        }
+        
+        driver2.quit();
+        
+        driver.get(baseUrl + "/loggedin");
+        Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
+        Assert.assertEquals("You were logged out of the system",driver.findElement(By.id("notif")).getText());
+        
+        currentState = ModelStateEnum.UNREGISTERED;
+    }
+    
+    public boolean autoLogoutOnReceivingMaxMessagesGuard(){
+        return currentState == ModelStateEnum.LOGGED_IN ||
+                       currentState == ModelStateEnum.SENDING_MESSAGE ||
+                       currentState == ModelStateEnum.READING_MESSAGE ||
+                       currentState == ModelStateEnum.HAS_READ_MESSAGE;
+    }
+    
+    @Action
+    public void autoLogoutOnSendingMaxMessages() {
+        final WebDriver driver2 = new ChromeDriver();
+        final String AGENT_2_ID = "agent2ID";
+        registerAgentHelper(driver2, AGENT_2_ID);
+        driver2.quit();
+    
+        
+        for (int i = messagesSent; i <= MAX_MESSAGES_SENT; i++) {
+            sendMessageHelper(driver, AGENT_2_ID,"Message " + i);
+        }
+        
+        driver.get(baseUrl + "/loggedin");
+        Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
+        Assert.assertEquals("You were logged out of the system",driver.findElement(By.id("notif")).getText());
+        
+        currentState = ModelStateEnum.UNREGISTERED;
+    }
+    
+    public boolean autoLogoutOnSendingMaxMessagesGuard(){
+        return currentState == ModelStateEnum.SENDING_MESSAGE;
+    }
+    
+    
     @Override
     public Object getState() {
         return currentState;
@@ -265,7 +327,8 @@ public class AssignmentModel implements FsmModel {
         currentState = ModelStateEnum.UNREGISTERED;
         agentID = null;
         loginKey = null;
-        messagesSentRecv = 0;
+        messagesSent = 0;
+        messagesRecv = 0;
 
         if (driverReset) {
             driver.quit();
