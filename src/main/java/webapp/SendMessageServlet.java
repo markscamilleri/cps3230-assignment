@@ -31,6 +31,10 @@ class SendMessageServlet extends HttpServlet {
 
         if (idCookie == null || skCookie == null) {
             response.sendRedirect("/register");
+        } else if (!messagingSystem.agentLoggedIn(idCookie.getValue())) {
+            Utils.deleteCookie(idCookie, response);
+            Utils.deleteCookie(skCookie, response);
+            response.sendRedirect("/register");
         } else {
             String sendingMessageStatusText = "";
             final Cookie statusCookie = Utils.findCookie(request.getCookies(), CookieNames.MESSAGE_SENDING_STATUS.name());
@@ -89,17 +93,11 @@ class SendMessageServlet extends HttpServlet {
 
             switch (status) {
                 case SOURCE_AGENT_DOES_NOT_EXIST:
+                case SOURCE_AGENT_NOT_LOGGED_IN:
                 case SESSION_KEY_UNRECOGNIZED:
                 case FAILED_TO_ADD_TO_MAILBOX:
                     response.addCookie(new Cookie(CookieNames.LOGGED_OUT_STATUS.name(),
                             "You_were_logged_out_due_to_an_error_in_the_system."));
-                    Utils.deleteCookie(idCookie, response);
-                    Utils.deleteCookie(skCookie, response);
-                    break;
-
-                case SOURCE_AGENT_NOT_LOGGED_IN:
-                    response.addCookie(new Cookie(CookieNames.LOGGED_OUT_STATUS.name(),
-                            "You_were_logged_out_of_the_system."));
                     Utils.deleteCookie(idCookie, response);
                     Utils.deleteCookie(skCookie, response);
                     break;

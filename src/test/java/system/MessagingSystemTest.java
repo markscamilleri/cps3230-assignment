@@ -365,6 +365,25 @@ public class MessagingSystemTest {
         Assert.assertEquals(message1, testSystem.getNextMessage(VALID_SKEY_1, AID_1).getMessage());
     }
 
+    @Test
+    public void agentLoggedIn_returnsFalseIfAgentDoesNotExist() {
+        Assert.assertFalse(testSystem.agentLoggedIn(AID_1));
+    }
+
+    @Test
+    public void agentLoggedIn_returnsFalseIfAgentNotLoggedIn() {
+        addAgent(agentInfos, 1, AddType.REGISTERED);
+
+        Assert.assertFalse(testSystem.agentLoggedIn(AID_1));
+    }
+
+    @Test
+    public void agentLoggedIn_returnsTrueIfAgentLoggedIn() {
+        addAgent(agentInfos, 1, AddType.LOGGEDIN);
+
+        Assert.assertTrue(testSystem.agentLoggedIn(AID_1));
+    }
+
     private void addAgent(final Map<String, AgentInfo> agentInfos, int agent, AddType type) {
 
         Assume.assumeTrue(agent == 1 || agent == 2);
