@@ -281,7 +281,8 @@ public class AssignmentModel implements FsmModel {
 
         driver.get(baseUrl + "/loggedin");
         Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
-        Assert.assertEquals("You were logged out of the system.", driver.findElement(By.id("notif")).getText());
+        final String str = driver.findElement(By.id("notif")).getText();
+        Assert.assertEquals("You were logged out of the system.", str);
 
         currentState = ModelStateEnum.UNREGISTERED;
     }
@@ -306,8 +307,8 @@ public class AssignmentModel implements FsmModel {
 
         driver.get(baseUrl + "/loggedin");
         Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
-        Assert.assertEquals("You were logged out of the system.", driver.findElement(By.id("notif")).getText());
-
+        Assert.assertEquals("You were logged out of the system.",driver.findElement(By.id("notif")).getText());
+        
         currentState = ModelStateEnum.UNREGISTERED;
     }
 

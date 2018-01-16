@@ -106,7 +106,7 @@ class SendMessageServlet extends HttpServlet {
                 case SOURCE_AGENT_QUOTA_EXCEEDED:
                 case BOTH_AGENT_QUOTAS_EXCEEDED:
                     response.addCookie(new Cookie(CookieNames.LOGGED_OUT_STATUS.name(),
-                            "You_were_logged_out_due_to_an_exceeded_quota."));
+                            "You_were_logged_out_of_the_system."));
                     Utils.deleteCookie(idCookie, response);
                     Utils.deleteCookie(skCookie, response);
                     break;
