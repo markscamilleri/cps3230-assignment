@@ -267,14 +267,14 @@ public class AssignmentModel implements FsmModel {
     @Action
     public void autoLogoutOnReceivingMaxMessages() {
         final WebDriver driver2 = new ChromeDriver();
-        final String AGENT_2_ID = "agent2ID";
+        final String AGENT_2_ID = "agent2ID-" + Utils.getNRandomCharacters(10);
         registerAgentHelper(driver2, AGENT_2_ID);
         final String LOGIN_KEY = driver2.findElement(By.id("lKey")).getText();
         loginAgentHelper(driver2, LOGIN_KEY);
         driver2.findElement(By.id("sendMessage")).click();
 
-        for (int i = messagesRecv; i <= MAX_MESSAGE_RECEIVED; i++) {
-            sendMessageHelper(driver2, agentID, "Message " + i);
+        for (messagesRecv; messagesRecv <= MAX_MESSAGE_RECEIVED; messagesRecv++) {
+            sendMessageHelper(driver2, agentID, "Message " + messagesRecv);
         }
 
         driver2.quit();
@@ -301,11 +301,10 @@ public class AssignmentModel implements FsmModel {
         registerAgentHelper(driver2, AGENT_2_ID);
         driver2.quit();
 
-        for (int i = messagesSent; i <= MAX_MESSAGES_SENT; i++) {
-            sendMessageHelper(driver, AGENT_2_ID, "Message " + i);
+        for (; messagesSent <= MAX_MESSAGES_SENT; messagesSent++) {
+            sendMessageHelper(driver, AGENT_2_ID, "Message " + messagesSent);
         }
 
-        driver.get(baseUrl + "/loggedin");
         Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
         Assert.assertEquals("You were logged out of the system.",driver.findElement(By.id("notif")).getText());
         
