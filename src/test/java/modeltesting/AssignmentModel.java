@@ -12,6 +12,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import util.Utils;
 
+import java.io.FileNotFoundException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Random;
@@ -28,9 +29,10 @@ public class AssignmentModel implements FsmModel {
     private final int MAX_MESSAGES_SENT = 25;
     private final int MAX_MESSAGE_RECEIVED = 25;
 
-    private String agentID = null;
+    private String agentID = Utils.getNRandomCharacters(5);
     private String loginKey = null;
-    private int messagesSent = 0; // messages sent
+    private int sessionMessagesSent = 0; // Session messages sent
+    private int sessionMessagesRecv = 0; // Session messages Received
     private int messagesRecv = 0; // message received
 
     /**
@@ -143,7 +145,8 @@ public class AssignmentModel implements FsmModel {
     public void sendNormalMessage() {
         sendMessageHelper(driver, agentID, "Hello World");
         Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/sendmessage"));
-        messagesSent++;
+        sessionMessagesSent++;
+        sessionMessagesRecv++;
         messagesRecv++;
         currentState = ModelStateEnum.SENDING_MESSAGE;
     }
@@ -173,7 +176,8 @@ public class AssignmentModel implements FsmModel {
 
         final String notificationText = driver.findElement(By.id("notif")).getText();
         Assert.assertTrue(notificationText.equals("Message sent successfully."));
-        messagesSent++;
+        sessionMessagesSent++;
+        sessionMessagesRecv++;
         messagesRecv++;
         currentState = ModelStateEnum.SENDING_MESSAGE;
     }
@@ -273,8 +277,8 @@ public class AssignmentModel implements FsmModel {
         loginAgentHelper(driver2, LOGIN_KEY);
         driver2.findElement(By.id("sendMessage")).click();
 
-        for (; messagesRecv <= MAX_MESSAGE_RECEIVED; messagesRecv++) {
-            sendMessageHelper(driver2, agentID, "Message " + messagesRecv);
+        for (; sessionMessagesRecv <= MAX_MESSAGE_RECEIVED; sessionMessagesRecv++, messagesRecv++) {
+            sendMessageHelper(driver2, agentID, "Message " + sessionMessagesRecv);
         }
 
         driver2.quit();
@@ -282,14 +286,13 @@ public class AssignmentModel implements FsmModel {
         driver.get(baseUrl + "/loggedin");
         Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
         Assert.assertEquals("You were logged out of the system.", driver.findElement(By.id("notif")).getText());
-
+        
         currentState = ModelStateEnum.UNREGISTERED;
     }
 
     public boolean autoLogoutOnReceivingMaxMessagesGuard() {
         return currentState == ModelStateEnum.LOGGED_IN ||
                 currentState == ModelStateEnum.SENDING_MESSAGE ||
-                currentState == ModelStateEnum.READING_MESSAGE ||
                 currentState == ModelStateEnum.HAS_READ_MESSAGE;
     }
 
@@ -300,8 +303,8 @@ public class AssignmentModel implements FsmModel {
         registerAgentHelper(driver2, AGENT_2_ID);
         driver2.quit();
 
-        for (; messagesSent <= MAX_MESSAGES_SENT; messagesSent++) {
-            sendMessageHelper(driver, AGENT_2_ID, "Message " + messagesSent);
+        for (; sessionMessagesSent <= MAX_MESSAGES_SENT + 1; sessionMessagesSent++) {
+            sendMessageHelper(driver, AGENT_2_ID, "Message " + sessionMessagesSent);
         }
 
         Assert.assertTrue(driver.getCurrentUrl().endsWith(baseUrl + "/register"));
@@ -323,10 +326,10 @@ public class AssignmentModel implements FsmModel {
     @Override
     public void reset(boolean driverReset) {
         currentState = ModelStateEnum.UNREGISTERED;
-        agentID = null;
+        agentID = Utils.getNRandomCharacters(5);
         loginKey = null;
-        messagesSent = 0;
-        messagesRecv = 0;
+        sessionMessagesSent = 0;
+        sessionMessagesRecv = 0;
 
         if (driverReset) {
             driver.quit();
@@ -343,7 +346,7 @@ public class AssignmentModel implements FsmModel {
 
         final Tester tester = new GreedyTester(new AssignmentModel());
         tester.setRandom(new Random());
-        tester.buildGraph();
+        GraphListener gl = tester.buildGraph();
         tester.addListener(new StopOnFailureListener());
         tester.addCoverageMetric(new TransitionCoverage());
         tester.addCoverageMetric(new TransitionPairCoverage());
@@ -354,5 +357,11 @@ public class AssignmentModel implements FsmModel {
             tester.generate();
         }
         tester.printCoverage();
+        
+        try {
+            gl.printGraphDot("graph.dot");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }
