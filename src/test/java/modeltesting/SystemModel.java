@@ -9,7 +9,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import util.Utils;
 
-class SystemModel implements FsmModel {
+public class SystemModel implements FsmModel {
 
     private static final String BASE_URL = "localhost:" + webapp.StartJettyHandler.PORT_NUMBER;
     private static final int MAX_MESSAGE_LENGTH = 140;

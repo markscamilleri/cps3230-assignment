@@ -1,6 +1,6 @@
 package modeltesting;
 
-enum SystemModelState {
+public enum SystemModelState {
     UNREGISTERED,
     REGISTERED,
     LOGGED_IN,
