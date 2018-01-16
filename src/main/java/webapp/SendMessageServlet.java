@@ -35,7 +35,7 @@ class SendMessageServlet extends HttpServlet {
             Utils.deleteCookie(idCookie, response);
             Utils.deleteCookie(skCookie, response);
             response.addCookie(new Cookie(CookieNames.LOGGED_OUT_STATUS.name(),
-                    "You_were_logged_out_due_to_an_exceeded_quota."));
+                    "You_were_logged_out_of_the_system."));
             response.sendRedirect("/register");
         } else {
             String sendingMessageStatusText = "";
