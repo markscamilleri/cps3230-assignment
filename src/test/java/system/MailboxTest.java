@@ -16,7 +16,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class MailboxTest {
 
-    private static final int MAX_MESSAGES = 25;
     private static final String OWNER_ID = "1234xy", SENDER_ID = "5678vw", MESSAGE = "message";
 
     private Mailbox testEmptyMailbox;
@@ -31,7 +30,7 @@ public class MailboxTest {
 
         testEmptyMailbox = new Mailbox(OWNER_ID);
 
-        messageQueue = new LinkedBlockingQueue<>(MAX_MESSAGES);
+        messageQueue = new LinkedBlockingQueue<>();
         testMailboxWith1Message = new Mailbox(OWNER_ID, messageQueue);
         messageQueue.add(mockMessage);
 

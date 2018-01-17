@@ -9,9 +9,9 @@ import java.time.Instant;
  */
 public abstract class TemporaryObject<T> {
 
-    private T tempObject;
     private final Instant timeout;
     private final Clock clock;
+    private T tempObject;
 
     protected TemporaryObject(T tempObject, Instant timeout, Clock clock) {
         this.tempObject = tempObject;
